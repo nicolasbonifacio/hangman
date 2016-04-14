@@ -19,7 +19,7 @@ public class HangmanDbHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
 
     //The Android's default system path of your application database.
-    private static String DB_PATH = "/data/data/com.nick.hangman.data/databases/";
+    private static String DB_PATH = "/data/data/com.nick.hangman/databases/";
 
     private static String DB_NAME = "hangman.db";
 
@@ -36,6 +36,11 @@ public class HangmanDbHelper extends SQLiteOpenHelper {
 
         super(context, DB_NAME, null, DATABASE_VERSION);
         this.myContext = context;
+        try {
+            createDataBase();
+        }catch(IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -43,6 +48,7 @@ public class HangmanDbHelper extends SQLiteOpenHelper {
         /**
          * Creates a empty database on the system and rewrites it with your own database.
          * */
+/*
         boolean dbExist = checkDataBase();
 
         if(!dbExist){
@@ -61,14 +67,14 @@ public class HangmanDbHelper extends SQLiteOpenHelper {
 
             }
         }
-
+*/
     }
 
     /**
      * Creates a empty database on the system and rewrites it with your own database.
      * */
-/*
-    public void createDataBase() throws IOException{
+
+    public void createDataBase() throws IOException {
 
         boolean dbExist = checkDataBase();
 
@@ -92,7 +98,7 @@ public class HangmanDbHelper extends SQLiteOpenHelper {
         }
 
     }
-*/
+
     /**
      * Check if the database already exist to avoid re-copying the file each time you open the application.
      * @return true if it exists, false if it doesn't
