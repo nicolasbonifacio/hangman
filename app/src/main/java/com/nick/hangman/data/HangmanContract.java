@@ -89,6 +89,14 @@ public class HangmanContract {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
 
+        public static String getLanguageFromUri(Uri uri) {
+            return uri.getPathSegments().get(1);
+        }
+
+        public static Uri buildCategoryLanguage(int language) {
+            return CONTENT_URI.buildUpon().appendPath(Integer.toString(language)).build();
+        }
+
     }
 
     /* Inner class that defines the table contents of the level table */
@@ -111,6 +119,14 @@ public class HangmanContract {
 
         public static Uri buildLevelUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
+        public static String getLanguageFromUri(Uri uri) {
+            return uri.getPathSegments().get(1);
+        }
+
+        public static Uri buildLevelLanguage(int language) {
+            return CONTENT_URI.buildUpon().appendPath(Integer.toString(language)).build();
         }
 
     }
@@ -138,6 +154,25 @@ public class HangmanContract {
 
         public static Uri buildWordUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
+        public static Uri buildWordWithLanguageCategoryLevel(int language, int category, int level) {
+            return CONTENT_URI.buildUpon().appendPath(Integer.toString(language))
+                    .appendPath(Integer.toString(category))
+                    .appendPath(Integer.toString(level))
+                    .build();
+        }
+
+        public static String getLanguageFromUri(Uri uri) {
+            return uri.getPathSegments().get(1);
+        }
+
+        public static String getCategoryFromUri(Uri uri) {
+            return uri.getPathSegments().get(2);
+        }
+
+        public static String getLevelFromUri(Uri uri) {
+            return uri.getPathSegments().get(3);
         }
 
     }
