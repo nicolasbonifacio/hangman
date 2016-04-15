@@ -2,12 +2,14 @@ package com.nick.hangman;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,8 +17,10 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.nick.hangman.data.HangmanContract;
@@ -53,6 +57,11 @@ public class SelectionActivityFragment extends Fragment {
             HangmanContract.CategoryEntry.COLUMN_DESCR_CATEGORY
     };
 
+    private static final String[] LEVEL_COLUMNS = {
+            HangmanContract.LevelEntry.TABLE_NAME + "." + HangmanContract.LevelEntry._ID,
+            HangmanContract.LevelEntry.COLUMN_DESCR_LEVEL
+    };
+
     //PLAYER columns
     public static final int COL_PLAYER_ID = 0;
     public static final int COL_PLAYER_DESCR_NAME = 1;
@@ -66,6 +75,10 @@ public class SelectionActivityFragment extends Fragment {
     public static final int COL_CATEGORY_ID = 0;
     public static final int COL_CATEGORY_DESCR_CATEGORY = 1;
 
+    //LEVEL columns
+    public static final int COL_LEVEL_ID = 0;
+    public static final int COL_LEVEL_DESCR_LEVEL = 1;
+
     private Uri mUri;
     private Cursor mCursor;
 
@@ -76,8 +89,10 @@ public class SelectionActivityFragment extends Fragment {
     private Player mPlayer1;
     private Language mLanguage;
     private Category mCategory;
+    private Level mLevel;
 
     private ArrayList<Category> mListCategory;
+    private ArrayList<Level> mListLevel;
 
     private int mLevelChosen;
 
@@ -93,7 +108,7 @@ public class SelectionActivityFragment extends Fragment {
             mUri = arguments.getParcelable(SelectionActivityFragment.DETAIL_URI);
         }
 
-        View rootView = inflater.inflate(R.layout.fragment_selection, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_selection, container, false);
 
         mPlayer1View = (TextView) rootView.findViewById(R.id.player1TextView);
 
@@ -104,6 +119,7 @@ public class SelectionActivityFragment extends Fragment {
         loadPlayerLastUsed();
         loadLanguageLastUsed();
         loadCategoryList();
+        loadLevelList();
 
         mCategoryListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
@@ -114,6 +130,39 @@ public class SelectionActivityFragment extends Fragment {
             }
         });
 
+        LinearLayout buttonLevelLayout = (LinearLayout) rootView.findViewById(R.id.buttonLevelLayout);
+        for (int i = 1; i <= mListLevel.size(); i++) {
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT);
+            ToggleButton btn = new ToggleButton(getContext());
+            btn.setId(i);
+            final int id_ = btn.getId();
+            btn.setText(mListLevel.get(i-1).getDescrLevel());
+            btn.setTextOn(mListLevel.get(i-1).getDescrLevel());
+            btn.setTextOff(mListLevel.get(i-1).getDescrLevel());
+            buttonLevelLayout.addView(btn, params);
+            final ToggleButton btn1 = ((ToggleButton) rootView.findViewById(id_));
+            btn1.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View view) {
+
+                    if(mLevelChosen != btn1.getId()) {
+                        mLevelChosen = btn1.getId();
+                        setLevelButtonPressed(rootView);
+                        System.out.println(mLevelChosen);
+                    }else {
+                        btn1.setChecked(true);
+                    }
+                }
+            });
+        }
+
+        ToggleButton btnStart = ((ToggleButton) rootView.findViewById(mListLevel.get(0).getId()));
+        btnStart.setChecked(true);
+        mLevelChosen = mListLevel.get(0).getId();
+        System.out.println(mLevelChosen);
+
+/*
         final ToggleButton easyButton = (ToggleButton) rootView.findViewById(R.id.easyToggleButton);
         final ToggleButton mediumButton = (ToggleButton) rootView.findViewById(R.id.mediumToggleButton);
         final ToggleButton hardButton = (ToggleButton) rootView.findViewById(R.id.hardToggleButton);
@@ -161,6 +210,9 @@ public class SelectionActivityFragment extends Fragment {
 
             }
         });
+*/
+
+
 
         return rootView;
     }
@@ -235,9 +287,45 @@ public class SelectionActivityFragment extends Fragment {
         }
     }
 
+    private void loadLevelList() {
+        mUri = HangmanContract.LevelEntry.buildLevelLanguage(mLanguage.getId());
+        mCursor = getContext().getContentResolver().query(mUri, LEVEL_COLUMNS, null, null, null);
+
+        mListLevel = new ArrayList<Level>();
+
+        if(mCursor != null && mCursor.moveToFirst()) {
+
+            do {
+                mLevel = new Level();
+                mLevel.setId(mCursor.getInt(COL_LEVEL_ID));
+                mLevel.setDescrLevel(mCursor.getString(COL_LEVEL_DESCR_LEVEL));
+                mLevel.setLanguageId(mLanguage.getId());
+
+                mListLevel.add(mLevel);
+
+            }while(mCursor.moveToNext());
+
+            mCursor.close();
+
+        }
+    }
+
     private void setDescrCategory(int position) {
 
         categorySelectedView.setText(mListCategory.get(position).getDescrCategory());
+
+    }
+
+    private void setLevelButtonPressed(View view) {
+
+        ToggleButton btn;
+        for(int i = 1; i <= mListLevel.size(); i++) {
+            btn = (ToggleButton) view.findViewById(i);
+            if(mLevelChosen != i) {
+                btn.setChecked(false);
+
+            }
+        }
 
     }
 
