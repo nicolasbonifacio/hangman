@@ -18,7 +18,9 @@ public class HangmanProvider extends ContentProvider {
     private HangmanDbHelper mOpenHelper;
 
     static final int PLAYER = 100;
+    static final int PLAYER_WITH_LAST_USED = 101;
     static final int LANGUAGE = 200;
+    static final int LANGUAGE_WITH_LAST_USED = 201;
     static final int CATEGORY = 300;
     static final int CATEGORY_WITH_LANGUAGE = 301;
     static final int LEVEL = 400;
@@ -72,6 +74,18 @@ public class HangmanProvider extends ContentProvider {
         sLevelLanguageQueryBuilder.setTables(HangmanContract.LevelEntry.TABLE_NAME);
     }
 
+    private static final SQLiteQueryBuilder sPlayerLastUsedQueryBuilder;
+    static {
+        sPlayerLastUsedQueryBuilder = new SQLiteQueryBuilder();
+        sPlayerLastUsedQueryBuilder.setTables(HangmanContract.PlayerEntry.TABLE_NAME);
+    }
+
+    private static final SQLiteQueryBuilder sLanguageLastUsedQueryBuilder;
+    static {
+        sLanguageLastUsedQueryBuilder = new SQLiteQueryBuilder();
+        sLanguageLastUsedQueryBuilder.setTables(HangmanContract.LanguageEntry.TABLE_NAME);
+    }
+
     //CATEGORY.LANGUAGE_ID = ?;
     private static final String sCategoryLanguageSelection =
             HangmanContract.CategoryEntry.TABLE_NAME +
@@ -81,6 +95,16 @@ public class HangmanProvider extends ContentProvider {
     private static final String sLevelLanguageSelection =
             HangmanContract.LevelEntry.TABLE_NAME +
                     "." + HangmanContract.LevelEntry.COLUMN_LOC_KEY_LANGUAGE + " = ? ";
+
+    //PLAYER.LAST_USED = ?;
+    private static final String sPlayerLastUsedSelection =
+            HangmanContract.PlayerEntry.TABLE_NAME +
+                    "." + HangmanContract.PlayerEntry.COLUMN_LAST_USED + " = ? ";
+
+    //LANGUAGE.LAST_USED = ?;
+    private static final String sLanguageLastUsedSelection =
+            HangmanContract.LanguageEntry.TABLE_NAME +
+                    "." + HangmanContract.LanguageEntry.COLUMN_LAST_USED + " = ? ";
 
     //WORD.LANGUAGE_ID = ?
     //WORD.CATEGORY_ID = ?
@@ -127,6 +151,34 @@ public class HangmanProvider extends ContentProvider {
         );
     }
 
+    private Cursor getPlayerByLastUsed(
+            Uri uri, String[] projection, String sortOrder) {
+        String lastUsed = HangmanContract.PlayerEntry.getLastUsedFromUri(uri);
+
+        return sPlayerLastUsedQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+                projection,
+                sPlayerLastUsedSelection,
+                new String[]{lastUsed},
+                null,
+                null,
+                sortOrder
+        );
+    }
+
+    private Cursor getLanguageByLastUsed(
+            Uri uri, String[] projection, String sortOrder) {
+        String lastUsed = HangmanContract.LanguageEntry.getLastUsedFromUri(uri);
+
+        return sLanguageLastUsedQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+                projection,
+                sLanguageLastUsedSelection,
+                new String[]{lastUsed},
+                null,
+                null,
+                sortOrder
+        );
+    }
+
     private Cursor getWordByLanguageCategoryLevel(
             Uri uri, String[] projection, String sortOrder) {
         String language = HangmanContract.WordEntry.getLanguageFromUri(uri);
@@ -149,7 +201,9 @@ public class HangmanProvider extends ContentProvider {
         final String authority = HangmanContract.CONTENT_AUTHORITY;
 
         matcher.addURI(authority, HangmanContract.PATH_PLAYER, PLAYER);
+        matcher.addURI(authority, HangmanContract.PATH_PLAYER + "/#", PLAYER_WITH_LAST_USED);
         matcher.addURI(authority, HangmanContract.PATH_LANGUAGE, LANGUAGE);
+        matcher.addURI(authority, HangmanContract.PATH_LANGUAGE + "/#", LANGUAGE_WITH_LAST_USED);
         matcher.addURI(authority, HangmanContract.PATH_CATEGORY, CATEGORY);
         matcher.addURI(authority, HangmanContract.PATH_CATEGORY + "/#", CATEGORY_WITH_LANGUAGE);
         matcher.addURI(authority, HangmanContract.PATH_LEVEL, LEVEL);
@@ -175,8 +229,12 @@ public class HangmanProvider extends ContentProvider {
         switch (match) {
             case PLAYER:
                 return HangmanContract.PlayerEntry.CONTENT_TYPE;
+            case PLAYER_WITH_LAST_USED:
+                return HangmanContract.PlayerEntry.CONTENT_ITEM_TYPE;
             case LANGUAGE:
                 return HangmanContract.LanguageEntry.CONTENT_TYPE;
+            case LANGUAGE_WITH_LAST_USED:
+                return HangmanContract.LanguageEntry.CONTENT_ITEM_TYPE;
             case CATEGORY:
                 return HangmanContract.CategoryEntry.CONTENT_TYPE;
             case CATEGORY_WITH_LANGUAGE:
@@ -213,6 +271,16 @@ public class HangmanProvider extends ContentProvider {
             // "LEVEL/#"
             case LEVEL_WITH_LANGUAGE: {
                 retCursor = getLevelByLanguage(uri, projection, sortOrder);
+                break;
+            }
+            // "PLAYER/#"
+            case PLAYER_WITH_LAST_USED: {
+                retCursor = getPlayerByLastUsed(uri, projection, sortOrder);
+                break;
+            }
+            // "LANGUAGE/#"
+            case LANGUAGE_WITH_LAST_USED: {
+                retCursor = getLanguageByLastUsed(uri, projection, sortOrder);
                 break;
             }
             // "PLAYER"

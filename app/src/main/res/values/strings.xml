@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Hangman</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_selection">SelectionActivity</string>
+
+    <string name="content_authority">com.nick.hangman</string>
 </resources>

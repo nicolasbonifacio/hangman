@@ -37,9 +37,18 @@ public class HangmanContract {
         // Columns
         public static final String COLUMN_DESCR_NAME = "descr_name";
         public static final String COLUMN_SCORE = "score";
+        public static final String COLUMN_LAST_USED = "last_used";
 
         public static Uri buildPlayerUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
+        public static String getLastUsedFromUri(Uri uri) {
+            return uri.getPathSegments().get(1);
+        }
+
+        public static Uri buildPlayerLastUsed(int flag) {
+            return CONTENT_URI.buildUpon().appendPath(Integer.toString(flag)).build();
         }
 
     }
@@ -60,9 +69,18 @@ public class HangmanContract {
 
         // Columns
         public static final String COLUMN_DESCR_LANGUAGE = "descr_language";
+        public static final String COLUMN_LAST_USED = "last_used";
 
         public static Uri buildLanguageUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
+        public static String getLastUsedFromUri(Uri uri) {
+            return uri.getPathSegments().get(1);
+        }
+
+        public static Uri buildLanguageLastUsed(int flag) {
+            return CONTENT_URI.buildUpon().appendPath(Integer.toString(flag)).build();
         }
 
     }
