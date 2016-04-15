@@ -1,5 +1,6 @@
 package com.nick.hangman;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
@@ -7,15 +8,23 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.nick.hangman.data.HangmanContract;
 import com.nick.hangman.data.HangmanProvider;
 
 import org.w3c.dom.Text;
+
+import java.util.ArrayList;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -61,10 +70,16 @@ public class SelectionActivityFragment extends Fragment {
     private Cursor mCursor;
 
     private TextView mPlayer1View;
+    private ListView mCategoryListView;
+    private TextView categorySelectedView;
 
     private Player mPlayer1;
     private Language mLanguage;
     private Category mCategory;
+
+    private ArrayList<Category> mListCategory;
+
+    private int mLevelChosen;
 
     public SelectionActivityFragment() {
     }
@@ -82,9 +97,70 @@ public class SelectionActivityFragment extends Fragment {
 
         mPlayer1View = (TextView) rootView.findViewById(R.id.player1TextView);
 
+        mCategoryListView = (ListView) rootView.findViewById(R.id.categoryListView);
+
+        categorySelectedView = (TextView) rootView.findViewById(R.id.categorySelectedTextView);
+
         loadPlayerLastUsed();
         loadLanguageLastUsed();
         loadCategoryList();
+
+        mCategoryListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View v,
+                                    int position, long id) {
+
+                setDescrCategory(position);
+
+            }
+        });
+
+        final ToggleButton easyButton = (ToggleButton) rootView.findViewById(R.id.easyToggleButton);
+        final ToggleButton mediumButton = (ToggleButton) rootView.findViewById(R.id.mediumToggleButton);
+        final ToggleButton hardButton = (ToggleButton) rootView.findViewById(R.id.hardToggleButton);
+        final Button goButton = (Button) rootView.findViewById(R.id.goButton);
+
+        easyButton.setText("Easy");
+        easyButton.setTextOn("Easy");
+        easyButton.setTextOff("Easy");
+        mediumButton.setText("Medium");
+        mediumButton.setTextOn("Medium");
+        mediumButton.setTextOff("Medium");
+        hardButton.setText("Hard");
+        hardButton.setTextOn("Hard");
+        hardButton.setTextOff("Hard");
+
+        easyButton.setChecked(true);
+        mLevelChosen = 1;
+
+        easyButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                mediumButton.setChecked(false);
+                hardButton.setChecked(false);
+                mLevelChosen = 1;
+            }
+        });
+
+        mediumButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                easyButton.setChecked(false);
+                hardButton.setChecked(false);
+                mLevelChosen = 2;
+            }
+        });
+
+        hardButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                easyButton.setChecked(false);
+                mediumButton.setChecked(false);
+                mLevelChosen = 3;
+            }
+        });
+
+        goButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+            }
+        });
 
         return rootView;
     }
@@ -93,7 +169,6 @@ public class SelectionActivityFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
     }
-
 
     private void loadPlayerLastUsed() {
         mUri = HangmanContract.PlayerEntry.buildPlayerLastUsed(PLAYER_LAST_USED_FLAG);
@@ -132,19 +207,38 @@ public class SelectionActivityFragment extends Fragment {
         mUri = HangmanContract.CategoryEntry.buildCategoryLanguage(mLanguage.getId());
         mCursor = getContext().getContentResolver().query(mUri, CATEGORY_COLUMNS, null, null, null);
 
+        mListCategory = new ArrayList<Category>();
+        ArrayList<String> listDescrCategory = new ArrayList<String>();
+
         if(mCursor != null && mCursor.moveToFirst()) {
 
             do {
-                System.out.println(mCursor.getInt(COL_CATEGORY_ID));
-                System.out.println(mCursor.getString(COL_CATEGORY_DESCR_CATEGORY));
-                System.out.println("-----------------------------");
+                mCategory = new Category();
+                mCategory.setId(mCursor.getInt(COL_CATEGORY_ID));
+                mCategory.setDescrCategory(mCursor.getString(COL_CATEGORY_DESCR_CATEGORY));
+                mCategory.setLanguageId(mLanguage.getId());
+
+                mListCategory.add(mCategory);
+                listDescrCategory.add(mCategory.getDescrCategory());
 
             }while(mCursor.moveToNext());
 
             mCursor.close();
+
+            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
+                    getContext(),
+                    android.R.layout.simple_list_item_1,
+                    listDescrCategory );
+
+            mCategoryListView.setAdapter(arrayAdapter);
+
         }
     }
 
+    private void setDescrCategory(int position) {
 
+        categorySelectedView.setText(mListCategory.get(position).getDescrCategory());
+
+    }
 
 }
