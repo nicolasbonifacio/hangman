@@ -27,11 +27,22 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.nick.hangman.MainActivity" />
         </activity>
+
         <provider
-            android:authorities="@string/content_authority"
             android:name=".data.HangmanProvider"
+            android:authorities="@string/content_authority"
             android:exported="false"
             android:syncable="true" />
+
+        <activity
+            android:name=".GameMainActivity"
+            android:label="@string/title_activity_game_main"
+            android:parentActivityName=".SelectionActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.nick.hangman.SelectionActivity" />
+        </activity>
     </application>
 
 </manifest>

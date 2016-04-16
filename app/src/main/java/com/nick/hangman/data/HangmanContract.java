@@ -174,10 +174,11 @@ public class HangmanContract {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
 
-        public static Uri buildWordWithLanguageCategoryLevel(int language, int category, int level) {
+        public static Uri buildWordWithLanguageCategoryLevel(int language, int category, int level, int isUsed) {
             return CONTENT_URI.buildUpon().appendPath(Integer.toString(language))
                     .appendPath(Integer.toString(category))
                     .appendPath(Integer.toString(level))
+                    .appendPath(Integer.toString(isUsed))
                     .build();
         }
 
@@ -191,6 +192,10 @@ public class HangmanContract {
 
         public static String getLevelFromUri(Uri uri) {
             return uri.getPathSegments().get(3);
+        }
+
+        public static String getIsUsedFromUri(Uri uri) {
+            return uri.getPathSegments().get(4);
         }
 
     }

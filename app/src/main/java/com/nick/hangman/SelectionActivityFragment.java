@@ -1,16 +1,10 @@
 package com.nick.hangman;
 
-import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
-import android.support.v7.widget.LinearLayoutCompat;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,9 +18,6 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.nick.hangman.data.HangmanContract;
-import com.nick.hangman.data.HangmanProvider;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -39,6 +30,9 @@ public class SelectionActivityFragment extends Fragment {
 
     private static final int PLAYER_LAST_USED_FLAG = 1;
     private static final int LANGUAGE_LAST_USED_FLAG = 1;
+
+    private boolean isCategorySelected = false;
+    private boolean isLevelSelected = false;
 
     private static final String[] PLAYER_COLUMNS = {
             HangmanContract.PlayerEntry.TABLE_NAME + "." + HangmanContract.PlayerEntry._ID,
@@ -121,6 +115,7 @@ public class SelectionActivityFragment extends Fragment {
         loadCategoryList();
         loadLevelList();
 
+        //Category listener
         mCategoryListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
@@ -143,13 +138,14 @@ public class SelectionActivityFragment extends Fragment {
             btn.setTextOff(mListLevel.get(i-1).getDescrLevel());
             buttonLevelLayout.addView(btn, params);
             final ToggleButton btn1 = ((ToggleButton) rootView.findViewById(id_));
+
+            //Level listener
             btn1.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
 
                     if(mLevelChosen != btn1.getId()) {
                         mLevelChosen = btn1.getId();
                         setLevelButtonPressed(rootView);
-                        System.out.println(mLevelChosen);
                     }else {
                         btn1.setChecked(true);
                     }
@@ -157,62 +153,54 @@ public class SelectionActivityFragment extends Fragment {
             });
         }
 
-        ToggleButton btnStart = ((ToggleButton) rootView.findViewById(mListLevel.get(0).getId()));
-        btnStart.setChecked(true);
-        mLevelChosen = mListLevel.get(0).getId();
-        System.out.println(mLevelChosen);
-
-/*
-        final ToggleButton easyButton = (ToggleButton) rootView.findViewById(R.id.easyToggleButton);
-        final ToggleButton mediumButton = (ToggleButton) rootView.findViewById(R.id.mediumToggleButton);
-        final ToggleButton hardButton = (ToggleButton) rootView.findViewById(R.id.hardToggleButton);
         final Button goButton = (Button) rootView.findViewById(R.id.goButton);
 
-        easyButton.setText("Easy");
-        easyButton.setTextOn("Easy");
-        easyButton.setTextOff("Easy");
-        mediumButton.setText("Medium");
-        mediumButton.setTextOn("Medium");
-        mediumButton.setTextOff("Medium");
-        hardButton.setText("Hard");
-        hardButton.setTextOn("Hard");
-        hardButton.setTextOff("Hard");
-
-        easyButton.setChecked(true);
-        mLevelChosen = 1;
-
-        easyButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                mediumButton.setChecked(false);
-                hardButton.setChecked(false);
-                mLevelChosen = 1;
-            }
-        });
-
-        mediumButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                easyButton.setChecked(false);
-                hardButton.setChecked(false);
-                mLevelChosen = 2;
-            }
-        });
-
-        hardButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                easyButton.setChecked(false);
-                mediumButton.setChecked(false);
-                mLevelChosen = 3;
-            }
-        });
-
+        //Go button listener
         goButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
+                if(isCategorySelected && isLevelSelected) {
+
+                    ParametersSelected paramsSel = new ParametersSelected();
+
+                    paramsSel.setPlayer1Id(mPlayer1.getId());
+                    paramsSel.setPlayer1DescrName(mPlayer1.getDescrName());
+                    paramsSel.setPlayer1Score(mPlayer1.getScore());
+
+                    paramsSel.setLanguageId(mLanguage.getId());
+                    paramsSel.setLanguageDescrLanguage(mLanguage.getDescrLanguage());
+
+                    paramsSel.setCategoryId(mCategory.getId());
+                    paramsSel.setCategoryDescrCategory(mCategory.getDescrCategory());
+
+                    paramsSel.setLevelId(mLevel.getId());
+                    paramsSel.setLevelDescrLevel(mLevel.getDescrLevel());
+
+                    Intent intent = new Intent(getActivity(), GameMainActivity.class);
+
+                    intent.putExtra("paramsSel", paramsSel);
+
+
+                    startActivity(intent);
+
+                }else if(!isCategorySelected && isLevelSelected) {
+                    //Category not selected and level selected
+                    Toast.makeText(getContext(),(String)getResources().getString(R.string.category_not_selected),
+                            Toast.LENGTH_SHORT).show();
+
+                }else if(isCategorySelected && !isLevelSelected) {
+                    //Category selected and level not selected
+                    Toast.makeText(getContext(),(String)getResources().getString(R.string.level_not_selected),
+                            Toast.LENGTH_SHORT).show();
+
+                }else {
+                    //Both category and level not selected
+                    Toast.makeText(getContext(),(String)getResources().getString(R.string.category_and_level_not_selected),
+                            Toast.LENGTH_SHORT).show();
+
+                }
             }
         });
-*/
-
-
 
         return rootView;
     }
@@ -232,7 +220,7 @@ public class SelectionActivityFragment extends Fragment {
             mPlayer1.setId(mCursor.getInt(COL_PLAYER_ID));
             mPlayer1.setDescrName(mCursor.getString(COL_PLAYER_DESCR_NAME));
             mPlayer1.setScore(mCursor.getInt(COL_PLAYER_SCORE));
-            mPlayer1.setLastUsed(1);
+            mPlayer1.setLastUsed(PLAYER_LAST_USED_FLAG);
 
             mPlayer1View.setText(mPlayer1.getDescrName());
 
@@ -249,7 +237,7 @@ public class SelectionActivityFragment extends Fragment {
             mLanguage = new Language();
             mLanguage.setId(mCursor.getInt(COL_LANGUAGE_ID));
             mLanguage.setDescrLanguage(mCursor.getString(COL_LANGUAGE_DESCR_LANGUAGE));
-            mLanguage.setLastUsed(1);
+            mLanguage.setLastUsed(LANGUAGE_LAST_USED_FLAG);
 
             mCursor.close();
         }
@@ -314,6 +302,12 @@ public class SelectionActivityFragment extends Fragment {
 
         categorySelectedView.setText(mListCategory.get(position).getDescrCategory());
 
+        mCategory = new Category();
+        mCategory.setId(mListCategory.get(position).getId());
+        mCategory.setDescrCategory(mListCategory.get(position).getDescrCategory());
+
+        isCategorySelected = true;
+
     }
 
     private void setLevelButtonPressed(View view) {
@@ -326,6 +320,12 @@ public class SelectionActivityFragment extends Fragment {
 
             }
         }
+
+        mLevel = new Level();
+        mLevel.setId(mListLevel.get(mLevelChosen-1).getId());
+        mLevel.setDescrLevel(mListLevel.get(mLevelChosen-1).getDescrLevel());
+
+        isLevelSelected = true;
 
     }
 

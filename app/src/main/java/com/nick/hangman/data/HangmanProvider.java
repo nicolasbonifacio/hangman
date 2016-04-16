@@ -26,10 +26,7 @@ public class HangmanProvider extends ContentProvider {
     static final int LEVEL = 400;
     static final int LEVEL_WITH_LANGUAGE = 401;
     static final int WORD = 500;
-    static final int WORD_WITH_LANGUAGE_AND_CATEGORY_AND_LEVEL = 501;
-
-    String wordSortOrder = "RANDOM() LIMIT 1";
-
+    static final int WORD_WITH_LANGUAGE_AND_CATEGORY_AND_LEVEL_NOT_USED = 501;
 
     private static final SQLiteQueryBuilder sWordLanguageCategoryLevelQueryBuilder;
     static{
@@ -109,7 +106,7 @@ public class HangmanProvider extends ContentProvider {
     //WORD.LANGUAGE_ID = ?
     //WORD.CATEGORY_ID = ?
     //WORD.LEVEL_ID = ?
-    //WORD.WORD_USED = 0
+    //WORD.WORD_USED = ?
     private static final String sWordLanguageCategoryLevelSelection =
             HangmanContract.WordEntry.TABLE_NAME +
                     "." + HangmanContract.WordEntry.COLUMN_LOC_KEY_LANGUAGE + " = ? AND " +
@@ -118,7 +115,7 @@ public class HangmanProvider extends ContentProvider {
             HangmanContract.WordEntry.TABLE_NAME +
                     "." + HangmanContract.WordEntry.COLUMN_LOC_KEY_LEVEL + " = ? AND " +
             HangmanContract.WordEntry.TABLE_NAME +
-                    "." + HangmanContract.WordEntry.COLUMN_WORD_USED + " = 0";
+                    "." + HangmanContract.WordEntry.COLUMN_WORD_USED + " = ?";
 
 
 
@@ -184,14 +181,15 @@ public class HangmanProvider extends ContentProvider {
         String language = HangmanContract.WordEntry.getLanguageFromUri(uri);
         String category = HangmanContract.WordEntry.getCategoryFromUri(uri);
         String level = HangmanContract.WordEntry.getLevelFromUri(uri);
+        String isUsed = HangmanContract.WordEntry.getIsUsedFromUri(uri);
 
         return sWordLanguageCategoryLevelQueryBuilder.query(mOpenHelper.getReadableDatabase(),
                 projection,
                 sWordLanguageCategoryLevelSelection,
-                new String[]{language, category, level},
+                new String[]{language, category, level, isUsed},
                 null,
                 null,
-                wordSortOrder
+                sortOrder
         );
     }
 
@@ -209,7 +207,7 @@ public class HangmanProvider extends ContentProvider {
         matcher.addURI(authority, HangmanContract.PATH_LEVEL, LEVEL);
         matcher.addURI(authority, HangmanContract.PATH_LEVEL + "/#", LEVEL_WITH_LANGUAGE);
         matcher.addURI(authority, HangmanContract.PATH_WORD, WORD);
-        matcher.addURI(authority, HangmanContract.PATH_WORD + "/#/#/#", WORD_WITH_LANGUAGE_AND_CATEGORY_AND_LEVEL);
+        matcher.addURI(authority, HangmanContract.PATH_WORD + "/#/#/#/#", WORD_WITH_LANGUAGE_AND_CATEGORY_AND_LEVEL_NOT_USED);
 
         return matcher;
     }
@@ -245,7 +243,7 @@ public class HangmanProvider extends ContentProvider {
                 return HangmanContract.LevelEntry.CONTENT_TYPE;
             case WORD:
                 return HangmanContract.WordEntry.CONTENT_TYPE;
-            case WORD_WITH_LANGUAGE_AND_CATEGORY_AND_LEVEL:
+            case WORD_WITH_LANGUAGE_AND_CATEGORY_AND_LEVEL_NOT_USED:
                 return HangmanContract.WordEntry.CONTENT_ITEM_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -259,8 +257,8 @@ public class HangmanProvider extends ContentProvider {
         Cursor retCursor;
         switch (sUriMatcher.match(uri)) {
             // "WORD/#/#/#"
-            case WORD_WITH_LANGUAGE_AND_CATEGORY_AND_LEVEL: {
-                retCursor = getWordByLanguageCategoryLevel(uri, projection, wordSortOrder);
+            case WORD_WITH_LANGUAGE_AND_CATEGORY_AND_LEVEL_NOT_USED: {
+                retCursor = getWordByLanguageCategoryLevel(uri, projection, sortOrder);
                 break;
             }
             // "CATEGORY/#"

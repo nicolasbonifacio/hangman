@@ -4,4 +4,22 @@
     <string name="title_activity_selection">SelectionActivity</string>
 
     <string name="content_authority">com.nick.hangman</string>
+    <string name="title_activity_game_main">GameMainActivity</string>
+
+    <!-- Selection screen -->
+    <string name="category_not_selected">Select category</string>
+    <string name="level_not_selected">Select level</string>
+    <string name="category_and_level_not_selected">Select category and level</string>
+
+    <!-- Game screen -->
+    <string name="error_loading_word">Error loading word</string>
+    <string name="player_1_name_label">Player 1:</string>
+    <string name="player_1_score_label">Score:</string>
+    <string name="player_2_name_label">Player 2:</string>
+    <string name="player_2_score_label">Score:</string>
+    <string name="category_label">Category:</string>
+    <string name="level_label">Level:</string>
+
+
+
 </resources>

@@ -1,0 +1,122 @@
+package com.nick.hangman;
+
+import java.io.Serializable;
+
+/**
+ * Created by Nick on 2016-04-15.
+ */
+public class ParametersSelected implements Serializable {
+
+    private int player1Id;
+    private String player1DescrName;
+    private int player1Score;
+
+    private int player2Id;
+    private String player2DescrName;
+    private int player2Score;
+
+    private int languageId;
+    private String languageDescrLanguage;
+
+    private int categoryId;
+    private String categoryDescrCategory;
+
+    private int levelId;
+    private String levelDescrLevel;
+
+    public int getPlayer1Id() {
+        return player1Id;
+    }
+
+    public void setPlayer1Id(int player1Id) {
+        this.player1Id = player1Id;
+    }
+
+    public String getPlayer1DescrName() {
+        return player1DescrName;
+    }
+
+    public void setPlayer1DescrName(String player1DescrName) {
+        this.player1DescrName = player1DescrName;
+    }
+
+    public int getPlayer1Score() {
+        return player1Score;
+    }
+
+    public void setPlayer1Score(int player1Score) {
+        this.player1Score = player1Score;
+    }
+
+    public int getPlayer2Id() {
+        return player2Id;
+    }
+
+    public void setPlayer2Id(int player2Id) {
+        this.player2Id = player2Id;
+    }
+
+    public String getPlayer2DescrName() {
+        return player2DescrName;
+    }
+
+    public void setPlayer2DescrName(String player2DescrName) {
+        this.player2DescrName = player2DescrName;
+    }
+
+    public int getPlayer2Score() {
+        return player2Score;
+    }
+
+    public void setPlayer2Score(int player2Score) {
+        this.player2Score = player2Score;
+    }
+
+    public int getLanguageId() {
+        return languageId;
+    }
+
+    public void setLanguageId(int languageId) {
+        this.languageId = languageId;
+    }
+
+    public String getLanguageDescrLanguage() {
+        return languageDescrLanguage;
+    }
+
+    public void setLanguageDescrLanguage(String languageDescrLanguage) {
+        this.languageDescrLanguage = languageDescrLanguage;
+    }
+
+    public int getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public String getCategoryDescrCategory() {
+        return categoryDescrCategory;
+    }
+
+    public void setCategoryDescrCategory(String categoryDescrCategory) {
+        this.categoryDescrCategory = categoryDescrCategory;
+    }
+
+    public int getLevelId() {
+        return levelId;
+    }
+
+    public void setLevelId(int levelId) {
+        this.levelId = levelId;
+    }
+
+    public String getLevelDescrLevel() {
+        return levelDescrLevel;
+    }
+
+    public void setLevelDescrLevel(String levelDescrLevel) {
+        this.levelDescrLevel = levelDescrLevel;
+    }
+}
