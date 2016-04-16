@@ -84,110 +84,114 @@ public class GameMainActivityFragment extends Fragment {
             levelDescrView.setText(paramsSel.getLevelDescrLevel());
 
             //Fetch DB for the word and splits it into an ArrayList, putting each character in one position
-            loadWordNotUsed();
-            qtdError = 0;
+            if(loadWordNotUsed()) {
+                qtdError = 0;
 
 
-            /////////////////// to be removed //////////////////////
-            mTestImageView = (TextView) rootView.findViewById(R.id.testImageTextView);
-            ////////////////////////////////////////////////////////
+                /////////////////// to be removed //////////////////////
+                mTestImageView = (TextView) rootView.findViewById(R.id.testImageTextView);
+                ////////////////////////////////////////////////////////
 
+                mListWord = new ArrayList<String>();
+                for (int i = 0; i < mWord.getWord().length(); i++) {
+                    mListWord.add(i, mWord.getWord().substring(i, i + 1));
+                }
 
-            mListWord = new ArrayList<String>();
-            for(int i=0; i<mWord.getWord().length(); i++) {
-                mListWord.add(i, mWord.getWord().substring(i, i + 1));
-            }
-
-            //Create word structure
-            LinearLayout wordLayout = (LinearLayout) rootView.findViewById(R.id.wordLayout);
-            for (int i = 1001; i <= mWord.getWord().length()+1000; i++) {
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT);
-                TextView dash = new TextView(getContext());
-                dash.setId(i);
+                //Create word structure
+                LinearLayout wordLayout = (LinearLayout) rootView.findViewById(R.id.wordLayout);
+                for (int i = 1001; i <= mWord.getWord().length() + 1000; i++) {
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT);
+                    TextView dash = new TextView(getContext());
+                    dash.setId(i);
 //                final int id_ = dash.getId();
-                dash.setText("_ ");
+                    dash.setText("_ ");
 
-                wordLayout.addView(dash, params);
-            }
+                    wordLayout.addView(dash, params);
+                }
 
-            //Create game keypad line 1
-            LinearLayout firstKeyPadLineLayout = (LinearLayout) rootView.findViewById(R.id.firstKeypadLineLayout);
-            for (int i = 2001; i <= FIRST_KEYPAD_LINE_CHARACTERS.length+2000; i++) {
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                        100,
-                        120);
-                Button btn = new Button(getContext());
-                btn.setId(i);
-                final int id_ = btn.getId();
-                btn.setText(FIRST_KEYPAD_LINE_CHARACTERS[i-2001]);
 
-                firstKeyPadLineLayout.addView(btn, params);
+                //Create game keypad line 1
+                LinearLayout firstKeyPadLineLayout = (LinearLayout) rootView.findViewById(R.id.firstKeypadLineLayout);
+                for (int i = 2001; i <= FIRST_KEYPAD_LINE_CHARACTERS.length + 2000; i++) {
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                            100,
+                            120);
+                    Button btn = new Button(getContext());
+                    btn.setId(i);
+                    final int id_ = btn.getId();
+                    btn.setText(FIRST_KEYPAD_LINE_CHARACTERS[i - 2001]);
 
-                //First key pad line button listener
-                final Button btn1 = ((Button) rootView.findViewById(id_));
-                btn1.setOnClickListener(new View.OnClickListener() {
-                    public void onClick(View view) {
+                    firstKeyPadLineLayout.addView(btn, params);
 
-                        handleGuess(FIRST_KEYPAD_LINE_CHARACTERS[btn1.getId()-2001]);
-                        btn1.setEnabled(false);
-                        btn1.setBackgroundColor(Color.parseColor("#645252"));
+                    //First key pad line button listener
+                    final Button btn1 = ((Button) rootView.findViewById(id_));
+                    btn1.setOnClickListener(new View.OnClickListener() {
+                        public void onClick(View view) {
 
-                    }
-                });
-            }
+                            handleGuess(FIRST_KEYPAD_LINE_CHARACTERS[btn1.getId() - 2001]);
+                            btn1.setEnabled(false);
+                            btn1.setBackgroundColor(Color.parseColor("#645252"));
 
-            //Create game keypad line 2
-            LinearLayout secondKeyPadLineLayout = (LinearLayout) rootView.findViewById(R.id.secondKeypadLineLayout);
-            for (int i = 3001; i <= SECOND_KEYPAD_LINE_CHARACTERS.length+3000; i++) {
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                        100,
-                        120);
-                Button btn = new Button(getContext());
-                btn.setId(i);
-                final int id_ = btn.getId();
-                btn.setText(SECOND_KEYPAD_LINE_CHARACTERS[i-3001]);
+                        }
+                    });
+                }
 
-                secondKeyPadLineLayout.addView(btn, params);
+                //Create game keypad line 2
+                LinearLayout secondKeyPadLineLayout = (LinearLayout) rootView.findViewById(R.id.secondKeypadLineLayout);
+                for (int i = 3001; i <= SECOND_KEYPAD_LINE_CHARACTERS.length + 3000; i++) {
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                            100,
+                            120);
+                    Button btn = new Button(getContext());
+                    btn.setId(i);
+                    final int id_ = btn.getId();
+                    btn.setText(SECOND_KEYPAD_LINE_CHARACTERS[i - 3001]);
 
-                //Second key pad line button listener
-                final Button btn2 = ((Button) rootView.findViewById(id_));
-                btn2.setOnClickListener(new View.OnClickListener() {
-                    public void onClick(View view) {
+                    secondKeyPadLineLayout.addView(btn, params);
 
-                        handleGuess(SECOND_KEYPAD_LINE_CHARACTERS[btn2.getId()-3001]);
-                        btn2.setEnabled(false);
-                        btn2.setBackgroundColor(Color.parseColor("#645252"));
+                    //Second key pad line button listener
+                    final Button btn2 = ((Button) rootView.findViewById(id_));
+                    btn2.setOnClickListener(new View.OnClickListener() {
+                        public void onClick(View view) {
 
-                    }
-                });
-            }
+                            handleGuess(SECOND_KEYPAD_LINE_CHARACTERS[btn2.getId() - 3001]);
+                            btn2.setEnabled(false);
+                            btn2.setBackgroundColor(Color.parseColor("#645252"));
 
-            //Create game keypad line 3
-            LinearLayout thirdKeyPadLineLayout = (LinearLayout) rootView.findViewById(R.id.thirdKeypadLineLayout);
-            for (int i = 4001; i <= THIRD_KEYPAD_LINE_CHARACTERS.length+4000; i++) {
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                        100,
-                        120);
-                Button btn = new Button(getContext());
-                btn.setId(i);
-                final int id_ = btn.getId();
-                btn.setText(THIRD_KEYPAD_LINE_CHARACTERS[i-4001]);
+                        }
+                    });
+                }
 
-                thirdKeyPadLineLayout.addView(btn, params);
+                //Create game keypad line 3
+                LinearLayout thirdKeyPadLineLayout = (LinearLayout) rootView.findViewById(R.id.thirdKeypadLineLayout);
+                for (int i = 4001; i <= THIRD_KEYPAD_LINE_CHARACTERS.length + 4000; i++) {
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                            100,
+                            120);
+                    Button btn = new Button(getContext());
+                    btn.setId(i);
+                    final int id_ = btn.getId();
+                    btn.setText(THIRD_KEYPAD_LINE_CHARACTERS[i - 4001]);
 
-                //Third key pad line button listener
-                final Button btn3 = ((Button) rootView.findViewById(id_));
-                btn3.setOnClickListener(new View.OnClickListener() {
-                    public void onClick(View view) {
+                    thirdKeyPadLineLayout.addView(btn, params);
 
-                        handleGuess(THIRD_KEYPAD_LINE_CHARACTERS[btn3.getId()-4001]);
-                        btn3.setEnabled(false);
-                        btn3.setBackgroundColor(Color.parseColor("#645252"));
+                    //Third key pad line button listener
+                    final Button btn3 = ((Button) rootView.findViewById(id_));
+                    btn3.setOnClickListener(new View.OnClickListener() {
+                        public void onClick(View view) {
 
-                    }
-                });
+                            handleGuess(THIRD_KEYPAD_LINE_CHARACTERS[btn3.getId() - 4001]);
+                            btn3.setEnabled(false);
+                            btn3.setBackgroundColor(Color.parseColor("#645252"));
+
+                        }
+                    });
+                }
+            }else {
+                Toast.makeText(getContext(),(String)getResources().getString(R.string.error_loading_word),
+                        Toast.LENGTH_SHORT).show();
             }
 
         }else {
@@ -198,7 +202,7 @@ public class GameMainActivityFragment extends Fragment {
         return rootView;
     }
 
-    private void loadWordNotUsed() {
+    private boolean loadWordNotUsed() {
         mUri = HangmanContract.WordEntry.buildWordWithLanguageCategoryLevel(paramsSel.getLanguageId(),
                 paramsSel.getCategoryId(),
                 paramsSel.getLevelId(),
@@ -217,7 +221,11 @@ public class GameMainActivityFragment extends Fragment {
             mWord.setWordUsed(WORD_USED_FLAG);
 
             mCursor.close();
+
+            return true;
         }
+
+        return false;
     }
 
     private void handleGuess(String character) {
