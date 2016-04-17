@@ -1,5 +1,6 @@
 package com.nick.hangman;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -7,10 +8,12 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -102,15 +105,31 @@ public class GameMainActivityFragment extends Fragment {
                 ////////////////////////////////////////////////////////
 
 
+////////////////////ta errado, tem que trocar pra float quando for imagem
+//                float scaledDensity = getContext().getResources().getDisplayMetrics().scaledDensity;
+                int widthPx = getContext().getResources().getDisplayMetrics().widthPixels;
+                float density = getContext().getResources().getDisplayMetrics().density;
+//                int c = getContext().getResources().getDisplayMetrics().densityDpi;
+//                float xdpi = getContext().getResources().getDisplayMetrics().xdpi;
+//                float ydpi = getContext().getResources().getDisplayMetrics().ydpi;
+//                int keypadButtonWidth = Math.round((int)(density*35));
+//                int keypadButtonHeight = Math.round((int)(density*45));
+
+                int horizontalPadding = (int)getResources().getDimension(R.dimen.activity_horizontal_margin);
+                int paddingLeftAndRight = horizontalPadding * 2;
+
+                int widthLessPadding = widthPx - paddingLeftAndRight;
 
 
+                int keypadButtonWidth = (int)(widthLessPadding / FIRST_KEYPAD_LINE_CHARACTERS.length);
+                int keypadButtonHeight = (int)(keypadButtonWidth * 1.2);
 
                 //Create game keypad line 1
                 LinearLayout firstKeyPadLineLayout = (LinearLayout) rootView.findViewById(R.id.firstKeypadLineLayout);
                 for (int i = 2001; i <= FIRST_KEYPAD_LINE_CHARACTERS.length + 2000; i++) {
                     LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                            100,
-                            120);
+                            keypadButtonWidth,
+                            keypadButtonHeight);
                     Button btn = new Button(getContext());
                     btn.setId(i);
                     final int id_ = btn.getId();
@@ -135,8 +154,8 @@ public class GameMainActivityFragment extends Fragment {
                 LinearLayout secondKeyPadLineLayout = (LinearLayout) rootView.findViewById(R.id.secondKeypadLineLayout);
                 for (int i = 3001; i <= SECOND_KEYPAD_LINE_CHARACTERS.length + 3000; i++) {
                     LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                            100,
-                            120);
+                            keypadButtonWidth,
+                            keypadButtonHeight);
                     Button btn = new Button(getContext());
                     btn.setId(i);
                     final int id_ = btn.getId();
@@ -161,8 +180,8 @@ public class GameMainActivityFragment extends Fragment {
                 LinearLayout thirdKeyPadLineLayout = (LinearLayout) rootView.findViewById(R.id.thirdKeypadLineLayout);
                 for (int i = 4001; i <= THIRD_KEYPAD_LINE_CHARACTERS.length + 4000; i++) {
                     LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                            100,
-                            120);
+                            keypadButtonWidth,
+                            keypadButtonHeight);
                     Button btn = new Button(getContext());
                     btn.setId(i);
                     final int id_ = btn.getId();
@@ -193,12 +212,6 @@ public class GameMainActivityFragment extends Fragment {
         }
 
         return rootView;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        int a = 0;
     }
 
     private boolean loadWordNotUsed() {
@@ -270,12 +283,10 @@ public class GameMainActivityFragment extends Fragment {
         }
 
         if(mGameWon) {
-            Toast.makeText(getContext(),(String)getResources().getString(R.string.win_game),
-                    Toast.LENGTH_SHORT).show();
-            setNewWord();
-            loadWordNotUsed();
-            mGameWon = false;
-        }
+            // Win game popup
+            endGamePopup(true);
+
+    }
 
         if(hasError) {
             mQtdError++;
@@ -283,8 +294,7 @@ public class GameMainActivityFragment extends Fragment {
 
             // Verify if the game is over
             if(mQtdError >= TOTAL_QTD_ERROR) {
-                Toast.makeText(getContext(),(String)getResources().getString(R.string.lose_game),
-                        Toast.LENGTH_SHORT).show();
+                endGamePopup(false);
             }
         }
 
@@ -333,6 +343,45 @@ public class GameMainActivityFragment extends Fragment {
         LinearLayout wordLayout = (LinearLayout) rootView.findViewById(R.id.wordLayout);
         wordLayout.removeAllViews();
 
+    }
+
+    private void endGamePopup(boolean gameWon) {
+
+        final Dialog dialog = new Dialog(getContext());
+
+        dialog.setContentView(R.layout.custom_dialog);
+
+
+        TextView endGameView = (TextView) dialog.findViewById(R.id.endGameTextView);
+        TextView wordSelectedView = (TextView) dialog.findViewById(R.id.wordSelected);
+
+        final Button btnNewGame = ((Button) dialog.findViewById(R.id.newGame));
+        btnNewGame.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                dialog.cancel();
+                setNewWord();
+                loadWordNotUsed();
+                mGameWon = false;
+            }
+        });
+
+        final Button btnEndGame = ((Button) dialog.findViewById(R.id.endGame));
+        btnEndGame.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                dialog.cancel();
+            }
+        });
+
+        dialog.setTitle(getResources().getString(R.string.end_game));
+        wordSelectedView.setText(mWord.getWord());
+
+        if(gameWon) {
+            endGameView.setText(getResources().getString(R.string.win_game));
+        }else {
+            endGameView.setText(getResources().getString(R.string.lose_game));
+        }
+
+        dialog.show();
     }
 
 }

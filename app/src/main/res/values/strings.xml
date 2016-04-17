@@ -21,6 +21,7 @@
     <string name="level_label">Level:</string>
     <string name="lose_game">You lose!!!</string>
     <string name="win_game">You win!!!</string>
+    <string name="end_game">Game Finished</string>
 
 
 

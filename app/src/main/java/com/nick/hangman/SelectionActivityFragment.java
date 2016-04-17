@@ -105,15 +105,26 @@ public class SelectionActivityFragment extends Fragment {
         final View rootView = inflater.inflate(R.layout.fragment_selection, container, false);
 
         mPlayer1View = (TextView) rootView.findViewById(R.id.player1TextView);
+        ToggleButton onePlayerButton = (ToggleButton) rootView.findViewById(R.id.onePlayerToggleButton);
+        ToggleButton twoPlayersButton = (ToggleButton) rootView.findViewById(R.id.twoPlayersToggleButton);
 
         mCategoryListView = (ListView) rootView.findViewById(R.id.categoryListView);
 
         categorySelectedView = (TextView) rootView.findViewById(R.id.categorySelectedTextView);
 
+        onePlayerButton.setText("One");
+        onePlayerButton.setTextOn("One");
+        onePlayerButton.setTextOff("One");
+        twoPlayersButton.setText("Two");
+        twoPlayersButton.setTextOn("Two");
+        twoPlayersButton.setTextOff("Two");
+
         loadPlayerLastUsed();
         loadLanguageLastUsed();
         loadCategoryList();
         loadLevelList();
+
+
 
         //Category listener
         mCategoryListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
