@@ -19,6 +19,8 @@
     <string name="player_2_score_label">Score:</string>
     <string name="category_label">Category:</string>
     <string name="level_label">Level:</string>
+    <string name="lose_game">You lose!!!</string>
+    <string name="win_game">You win!!!</string>
 
 
 

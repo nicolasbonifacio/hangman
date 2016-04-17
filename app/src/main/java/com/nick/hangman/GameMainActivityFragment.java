@@ -1,5 +1,6 @@
 package com.nick.hangman;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -29,6 +30,10 @@ public class GameMainActivityFragment extends Fragment {
     private static final int WORD_USED_FLAG = 1;
     private static final String WORD_SORT_ORDER = "RANDOM() LIMIT 1";
 
+    //////////////////// remove this and change for one based on the level ///////////////
+    private static final int TOTAL_QTD_ERROR = 6;
+    //////////////////////////////////////////////////////////////////////////////////////
+
     private static final String[] WORD_COLUMNS = {
             HangmanContract.WordEntry.TABLE_NAME + "." + HangmanContract.WordEntry._ID,
             HangmanContract.WordEntry.COLUMN_WORD
@@ -56,7 +61,10 @@ public class GameMainActivityFragment extends Fragment {
     private Word mWord;
 
     private ArrayList<String> mListWord;
-    private int qtdError;
+    private int mQtdError;
+    private int mQtdHits;
+    private int lastDash;
+    private boolean mGameWon;
 
     TextView mTestImageView;
 
@@ -83,33 +91,18 @@ public class GameMainActivityFragment extends Fragment {
             categoryDescrView.setText(paramsSel.getCategoryDescrCategory());
             levelDescrView.setText(paramsSel.getLevelDescrLevel());
 
+            lastDash = 0;
+            mGameWon = false;
+
             //Fetch DB for the word and splits it into an ArrayList, putting each character in one position
             if(loadWordNotUsed()) {
-                qtdError = 0;
-
 
                 /////////////////// to be removed //////////////////////
                 mTestImageView = (TextView) rootView.findViewById(R.id.testImageTextView);
                 ////////////////////////////////////////////////////////
 
-                mListWord = new ArrayList<String>();
-                for (int i = 0; i < mWord.getWord().length(); i++) {
-                    mListWord.add(i, mWord.getWord().substring(i, i + 1));
-                }
 
-                //Create word structure
-                LinearLayout wordLayout = (LinearLayout) rootView.findViewById(R.id.wordLayout);
-                for (int i = 1001; i <= mWord.getWord().length() + 1000; i++) {
-                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.WRAP_CONTENT,
-                            LinearLayout.LayoutParams.WRAP_CONTENT);
-                    TextView dash = new TextView(getContext());
-                    dash.setId(i);
-//                final int id_ = dash.getId();
-                    dash.setText("_ ");
 
-                    wordLayout.addView(dash, params);
-                }
 
 
                 //Create game keypad line 1
@@ -130,9 +123,9 @@ public class GameMainActivityFragment extends Fragment {
                     btn1.setOnClickListener(new View.OnClickListener() {
                         public void onClick(View view) {
 
-                            handleGuess(FIRST_KEYPAD_LINE_CHARACTERS[btn1.getId() - 2001]);
                             btn1.setEnabled(false);
                             btn1.setBackgroundColor(Color.parseColor("#645252"));
+                            handleGuess(FIRST_KEYPAD_LINE_CHARACTERS[btn1.getId() - 2001]);
 
                         }
                     });
@@ -156,9 +149,9 @@ public class GameMainActivityFragment extends Fragment {
                     btn2.setOnClickListener(new View.OnClickListener() {
                         public void onClick(View view) {
 
-                            handleGuess(SECOND_KEYPAD_LINE_CHARACTERS[btn2.getId() - 3001]);
                             btn2.setEnabled(false);
                             btn2.setBackgroundColor(Color.parseColor("#645252"));
+                            handleGuess(SECOND_KEYPAD_LINE_CHARACTERS[btn2.getId() - 3001]);
 
                         }
                     });
@@ -182,9 +175,9 @@ public class GameMainActivityFragment extends Fragment {
                     btn3.setOnClickListener(new View.OnClickListener() {
                         public void onClick(View view) {
 
-                            handleGuess(THIRD_KEYPAD_LINE_CHARACTERS[btn3.getId() - 4001]);
                             btn3.setEnabled(false);
                             btn3.setBackgroundColor(Color.parseColor("#645252"));
+                            handleGuess(THIRD_KEYPAD_LINE_CHARACTERS[btn3.getId() - 4001]);
 
                         }
                     });
@@ -200,6 +193,12 @@ public class GameMainActivityFragment extends Fragment {
         }
 
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        int a = 0;
     }
 
     private boolean loadWordNotUsed() {
@@ -222,6 +221,32 @@ public class GameMainActivityFragment extends Fragment {
 
             mCursor.close();
 
+            mListWord = new ArrayList<String>();
+            for (int i = 0; i < mWord.getWord().length(); i++) {
+                mListWord.add(i, mWord.getWord().substring(i, i + 1));
+            }
+
+            mQtdError = 0;
+            mQtdHits = 0;
+
+            //Create word structure
+            LinearLayout wordLayout = (LinearLayout) rootView.findViewById(R.id.wordLayout);
+            for (int i = 1001; i <= mWord.getWord().length() + 1000; i++) {
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT);
+                TextView dash = new TextView(getContext());
+                dash.setId(i);
+//                final int id_ = dash.getId();
+                dash.setText("_ ");
+
+                wordLayout.addView(dash, params);
+
+                if(i > lastDash) {
+                    lastDash = i;
+                }
+            }
+
             return true;
         }
 
@@ -235,12 +260,32 @@ public class GameMainActivityFragment extends Fragment {
             if(mListWord.get(i).equals(character)) {
                 hasError = false;
                 drawCharacter(i+1, character);
+                mQtdHits++;
+                // Verify if the game was won
+                if(mQtdHits >= mListWord.size()) {
+                    mGameWon = true;
+                }
+
             }
         }
 
+        if(mGameWon) {
+            Toast.makeText(getContext(),(String)getResources().getString(R.string.win_game),
+                    Toast.LENGTH_SHORT).show();
+            setNewWord();
+            loadWordNotUsed();
+            mGameWon = false;
+        }
+
         if(hasError) {
-            qtdError++;
-            mTestImageView.setText(Integer.toString(qtdError));
+            mQtdError++;
+            mTestImageView.setText(Integer.toString(mQtdError));
+
+            // Verify if the game is over
+            if(mQtdError >= TOTAL_QTD_ERROR) {
+                Toast.makeText(getContext(),(String)getResources().getString(R.string.lose_game),
+                        Toast.LENGTH_SHORT).show();
+            }
         }
 
     }
@@ -257,6 +302,36 @@ public class GameMainActivityFragment extends Fragment {
             }
 
         }
+
+    }
+
+    private void setNewWord() {
+
+        // Clear keypad
+        Button btn;
+
+        for (int i = 2001; i <= FIRST_KEYPAD_LINE_CHARACTERS.length + 2000; i++) {
+            btn = (Button) rootView.findViewById(i);
+            btn.setEnabled(true);
+            btn.setBackgroundColor(Color.parseColor("#d6d7d7"));
+        }
+
+        for (int i = 3001; i <= SECOND_KEYPAD_LINE_CHARACTERS.length + 3000; i++) {
+            btn = (Button) rootView.findViewById(i);
+            btn.setEnabled(true);
+            btn.setBackgroundColor(Color.parseColor("#d6d7d7"));
+        }
+
+        for (int i = 4001; i <= THIRD_KEYPAD_LINE_CHARACTERS.length + 4000; i++) {
+            btn = (Button) rootView.findViewById(i);
+            btn.setEnabled(true);
+            btn.setBackgroundColor(Color.parseColor("#d6d7d7"));
+        }
+
+        //Clear word
+        TextView dash;
+        LinearLayout wordLayout = (LinearLayout) rootView.findViewById(R.id.wordLayout);
+        wordLayout.removeAllViews();
 
     }
 
