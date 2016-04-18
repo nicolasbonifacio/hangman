@@ -1,4 +1,4 @@
-package com.nick.hangman;
+package com.nick.hangman.Objects;
 
 
 /**

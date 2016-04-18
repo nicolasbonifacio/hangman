@@ -1,10 +1,8 @@
 package com.nick.hangman;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -19,6 +17,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.nick.hangman.Objects.Category;
+import com.nick.hangman.Objects.Language;
+import com.nick.hangman.Objects.Level;
+import com.nick.hangman.Objects.Player;
 import com.nick.hangman.data.HangmanContract;
 
 import java.util.ArrayList;

@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.nick.hangman.Objects.Word;
 import com.nick.hangman.data.HangmanContract;
 
 import java.util.ArrayList;
