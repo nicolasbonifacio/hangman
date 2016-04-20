@@ -17,6 +17,7 @@ public class HangmanContract {
     public static final String PATH_PLAYER = "player";
     public static final String PATH_LANGUAGE = "language";
     public static final String PATH_CATEGORY = "category";
+    public static final String PATH_TALE_SCORE_CATEGORY = "tale_score_category";
     public static final String PATH_LEVEL = "level";
     public static final String PATH_WORD = "word";
 
@@ -38,6 +39,7 @@ public class HangmanContract {
         public static final String COLUMN_DESCR_NAME = "descr_name";
         public static final String COLUMN_SCORE = "score";
         public static final String COLUMN_LAST_USED = "last_used";
+        public static final String COLUMN_TALE_PLAYER = "tale_player";
 
         public static Uri buildPlayerUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
@@ -102,6 +104,9 @@ public class HangmanContract {
         // Columns
         public static final String COLUMN_LOC_KEY_LANGUAGE = "language_id";
         public static final String COLUMN_DESCR_CATEGORY = "descr_category";
+        public static final String COLUMN_PATH_ORDER = "path_order";
+        public static final String COLUMN_ENABLED = "enabled";
+        public static final String COLUMN_ENABLE_SCORE = "enable_score";
 
         public static Uri buildCategoryUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
@@ -113,6 +118,45 @@ public class HangmanContract {
 
         public static Uri buildCategoryLanguage(int language) {
             return CONTENT_URI.buildUpon().appendPath(Integer.toString(language)).build();
+        }
+
+    }
+
+    /* Inner class that defines the table contents of the tale_score_category table */
+    public static final class TaleScoreCategoryEntry implements BaseColumns {
+
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_TALE_SCORE_CATEGORY).build();
+
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_TALE_SCORE_CATEGORY;
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_TALE_SCORE_CATEGORY;
+
+        // Table name
+        public static final String TABLE_NAME = "tale_score_category";
+
+        // Columns
+        public static final String COLUMN_LOC_KEY_PLAYER = "player_id";
+        public static final String COLUMN_LOC_KEY_CATEGORY = "category_id";
+        public static final String COLUMN_SCORE = "score";
+
+        public static Uri buildTaleScoreCategoryUri(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
+        public static Uri buildTaleScoreCategoryWithPlayerCategory(int talePayer, int language) {
+            return CONTENT_URI.buildUpon().appendPath(Integer.toString(talePayer))
+                    .appendPath(Integer.toString(language))
+                    .build();
+        }
+
+        public static String getTalePlayerFromUri(Uri uri) {
+            return uri.getPathSegments().get(1);
+        }
+
+        public static String getLanguageLastUsedFromUri(Uri uri) {
+            return uri.getPathSegments().get(2);
         }
 
     }

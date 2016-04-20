@@ -23,20 +23,6 @@
             android:layout_height="match_parent"
             android:layout_weight="1">
 
-            <!-- Player 1 label -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/player_1_name_label"
-                android:id="@+id/player1GameLabelTextView" />
-
-            <!-- Player 1 name -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/player1GameNameTextView"
-                android:paddingLeft="@dimen/activity_horizontal_margin"/>
-
             <!-- Player 1 score label -->
             <TextView
                 android:layout_width="wrap_content"
@@ -49,32 +35,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/player1GameScoreValueTextView"
-                android:paddingLeft="@dimen/activity_horizontal_margin"/>
-
-            <!-- Player 2 label -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:id="@+id/player2GameLabelTextView" />
-
-            <!-- Player 2 name -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:id="@+id/player2GameNameTextView"
-                android:paddingLeft="@dimen/activity_horizontal_margin"/>
-
-            <!-- Player 2 score label -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:id="@+id/player2GameScoreLabelTextView" />
-
-            <!-- Player 2 score -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:id="@+id/player2GameScoreValueTextView"
                 android:paddingLeft="@dimen/activity_horizontal_margin"/>
 
             <!-- Category label -->

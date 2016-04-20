@@ -27,6 +27,8 @@ public class HangmanProvider extends ContentProvider {
     static final int LEVEL_WITH_LANGUAGE = 401;
     static final int WORD = 500;
     static final int WORD_WITH_LANGUAGE_AND_CATEGORY_AND_LEVEL_NOT_USED = 501;
+    static final int TALE_SCORE_CATEGORY = 600;
+    static final int TALE_SCORE_CATEGORY_WITH_PLAYER_AND_CATEGORY = 601;
 
     private static final SQLiteQueryBuilder sWordLanguageCategoryLevelQueryBuilder;
     static{
@@ -50,6 +52,31 @@ public class HangmanProvider extends ContentProvider {
                         "." + HangmanContract.WordEntry.COLUMN_LOC_KEY_LEVEL +
                         " = " + HangmanContract.LevelEntry.TABLE_NAME +
                         "." + HangmanContract.LevelEntry._ID);
+
+    }
+
+    private static final SQLiteQueryBuilder sTaleScoreCategoryPlayerCategoryQueryBuilder;
+    static{
+        sTaleScoreCategoryPlayerCategoryQueryBuilder = new SQLiteQueryBuilder();
+
+        //Inner join on tables TALE_SCORE_CATEGORY, PLAYER AND CATEGORY
+        sTaleScoreCategoryPlayerCategoryQueryBuilder.setTables(
+                HangmanContract.TaleScoreCategoryEntry.TABLE_NAME +
+                        " INNER JOIN " + HangmanContract.PlayerEntry.TABLE_NAME +
+                        " ON " + HangmanContract.TaleScoreCategoryEntry.TABLE_NAME +
+                        "." + HangmanContract.TaleScoreCategoryEntry.COLUMN_LOC_KEY_PLAYER +
+                        " = " + HangmanContract.PlayerEntry.TABLE_NAME +
+                        "." + HangmanContract.PlayerEntry._ID +
+                        " INNER JOIN " + HangmanContract.CategoryEntry.TABLE_NAME +
+                        " ON " + HangmanContract.TaleScoreCategoryEntry.TABLE_NAME +
+                        "." + HangmanContract.TaleScoreCategoryEntry.COLUMN_LOC_KEY_CATEGORY +
+                        " = " + HangmanContract.CategoryEntry.TABLE_NAME +
+                        "." + HangmanContract.CategoryEntry._ID +
+                        " INNER JOIN " + HangmanContract.LanguageEntry.TABLE_NAME +
+                        " ON " + HangmanContract.CategoryEntry.TABLE_NAME +
+                        "." + HangmanContract.CategoryEntry.COLUMN_LOC_KEY_LANGUAGE +
+                        " = " + HangmanContract.LanguageEntry.TABLE_NAME +
+                        "." + HangmanContract.LanguageEntry._ID);
 
     }
 
@@ -110,14 +137,20 @@ public class HangmanProvider extends ContentProvider {
     private static final String sWordLanguageCategoryLevelSelection =
             HangmanContract.WordEntry.TABLE_NAME +
                     "." + HangmanContract.WordEntry.COLUMN_LOC_KEY_LANGUAGE + " = ? AND " +
-            HangmanContract.WordEntry.TABLE_NAME +
+                    HangmanContract.WordEntry.TABLE_NAME +
                     "." + HangmanContract.WordEntry.COLUMN_LOC_KEY_CATEGORY + " = ? AND " +
-            HangmanContract.WordEntry.TABLE_NAME +
+                    HangmanContract.WordEntry.TABLE_NAME +
                     "." + HangmanContract.WordEntry.COLUMN_LOC_KEY_LEVEL + " = ? AND " +
-            HangmanContract.WordEntry.TABLE_NAME +
+                    HangmanContract.WordEntry.TABLE_NAME +
                     "." + HangmanContract.WordEntry.COLUMN_WORD_USED + " = ?";
 
-
+    //PLAYER.TALE_PLAYER = ?
+    //LANGUAGE.LAST_USED = ?
+    private static final String sTaleScoreCategoryPlayerCategorySelection =
+            HangmanContract.PlayerEntry.TABLE_NAME +
+                    "." + HangmanContract.PlayerEntry.COLUMN_TALE_PLAYER + " = ? AND " +
+                    HangmanContract.LanguageEntry.TABLE_NAME +
+                    "." + HangmanContract.LanguageEntry.COLUMN_LAST_USED + " = ?";
 
 
     private Cursor getCategoryByLanguage(
@@ -193,6 +226,21 @@ public class HangmanProvider extends ContentProvider {
         );
     }
 
+    private Cursor getTaleScoreAndCategoryByPlayerCategory(
+            Uri uri, String[] projection, String sortOrder) {
+        String talePlayer = HangmanContract.TaleScoreCategoryEntry.getTalePlayerFromUri(uri);
+        String languageLastUsed = HangmanContract.TaleScoreCategoryEntry.getLanguageLastUsedFromUri(uri);
+
+        return sTaleScoreCategoryPlayerCategoryQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+                projection,
+                sTaleScoreCategoryPlayerCategorySelection,
+                new String[]{talePlayer, languageLastUsed},
+                null,
+                null,
+                sortOrder
+        );
+    }
+
     static UriMatcher buildUriMatcher() {
 
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -208,6 +256,8 @@ public class HangmanProvider extends ContentProvider {
         matcher.addURI(authority, HangmanContract.PATH_LEVEL + "/#", LEVEL_WITH_LANGUAGE);
         matcher.addURI(authority, HangmanContract.PATH_WORD, WORD);
         matcher.addURI(authority, HangmanContract.PATH_WORD + "/#/#/#/#", WORD_WITH_LANGUAGE_AND_CATEGORY_AND_LEVEL_NOT_USED);
+        matcher.addURI(authority, HangmanContract.PATH_TALE_SCORE_CATEGORY, TALE_SCORE_CATEGORY);
+        matcher.addURI(authority, HangmanContract.PATH_TALE_SCORE_CATEGORY + "/#/#", TALE_SCORE_CATEGORY_WITH_PLAYER_AND_CATEGORY);
 
         return matcher;
     }
@@ -237,6 +287,10 @@ public class HangmanProvider extends ContentProvider {
                 return HangmanContract.CategoryEntry.CONTENT_TYPE;
             case CATEGORY_WITH_LANGUAGE:
                 return HangmanContract.CategoryEntry.CONTENT_TYPE;
+            case TALE_SCORE_CATEGORY:
+                return HangmanContract.TaleScoreCategoryEntry.CONTENT_TYPE;
+            case TALE_SCORE_CATEGORY_WITH_PLAYER_AND_CATEGORY:
+                return HangmanContract.TaleScoreCategoryEntry.CONTENT_TYPE;
             case LEVEL:
                 return HangmanContract.LevelEntry.CONTENT_TYPE;
             case LEVEL_WITH_LANGUAGE:
@@ -256,9 +310,14 @@ public class HangmanProvider extends ContentProvider {
 
         Cursor retCursor;
         switch (sUriMatcher.match(uri)) {
-            // "WORD/#/#/#"
+            // "WORD/#/#/#/#"
             case WORD_WITH_LANGUAGE_AND_CATEGORY_AND_LEVEL_NOT_USED: {
                 retCursor = getWordByLanguageCategoryLevel(uri, projection, sortOrder);
+                break;
+            }
+            // "TALE_SCORE_CATEGORY/#/#"
+            case TALE_SCORE_CATEGORY_WITH_PLAYER_AND_CATEGORY: {
+                retCursor = getTaleScoreAndCategoryByPlayerCategory(uri, projection, sortOrder);
                 break;
             }
             // "CATEGORY/#"
@@ -311,6 +370,19 @@ public class HangmanProvider extends ContentProvider {
             case CATEGORY: {
                 retCursor = mOpenHelper.getReadableDatabase().query(
                         HangmanContract.CategoryEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
+            // "TALE_SCORE_CATEGORY"
+            case TALE_SCORE_CATEGORY: {
+                retCursor = mOpenHelper.getReadableDatabase().query(
+                        HangmanContract.TaleScoreCategoryEntry.TABLE_NAME,
                         projection,
                         selection,
                         selectionArgs,
@@ -384,6 +456,14 @@ public class HangmanProvider extends ContentProvider {
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;
             }
+            case TALE_SCORE_CATEGORY: {
+                long _id = db.insert(HangmanContract.TaleScoreCategoryEntry.TABLE_NAME, null, values);
+                if ( _id > 0 )
+                    returnUri = HangmanContract.TaleScoreCategoryEntry.buildTaleScoreCategoryUri(_id);
+                else
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                break;
+            }
             case LEVEL: {
                 long _id = db.insert(HangmanContract.LevelEntry.TABLE_NAME, null, values);
                 if ( _id > 0 )
@@ -431,6 +511,10 @@ public class HangmanProvider extends ContentProvider {
                 rowsDeleted = db.delete(
                         HangmanContract.CategoryEntry.TABLE_NAME, selection, selectionArgs);
                 break;
+            case TALE_SCORE_CATEGORY:
+                rowsDeleted = db.delete(
+                        HangmanContract.TaleScoreCategoryEntry.TABLE_NAME, selection, selectionArgs);
+                break;
             case LEVEL:
                 rowsDeleted = db.delete(
                         HangmanContract.LevelEntry.TABLE_NAME, selection, selectionArgs);
@@ -463,6 +547,10 @@ public class HangmanProvider extends ContentProvider {
                 break;
             case CATEGORY:
                 rowsUpdated = db.update(HangmanContract.CategoryEntry.TABLE_NAME, values, selection,
+                        selectionArgs);
+                break;
+            case TALE_SCORE_CATEGORY:
+                rowsUpdated = db.update(HangmanContract.TaleScoreCategoryEntry.TABLE_NAME, values, selection,
                         selectionArgs);
                 break;
             case LEVEL:

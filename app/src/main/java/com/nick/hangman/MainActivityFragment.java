@@ -24,7 +24,7 @@ public class MainActivityFragment extends Fragment {
         playButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
 
-                startActivity(new Intent(getContext(), SelectionActivity.class));
+                startActivity(new Intent(getContext(), TaleActivity.class));
 
             }
         });

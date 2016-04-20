@@ -82,12 +82,12 @@ public class GameMainActivityFragment extends Fragment {
         if (intent != null && intent.hasExtra("paramsSel")) {
             paramsSel = (ParametersSelected) intent.getSerializableExtra("paramsSel");
 
-            TextView player1NameView = (TextView) rootView.findViewById(R.id.player1GameNameTextView);
+            //TextView player1NameView = (TextView) rootView.findViewById(R.id.player1GameNameTextView);
             TextView player1ScoreView = (TextView) rootView.findViewById(R.id.player1GameScoreValueTextView);
             TextView categoryDescrView = (TextView) rootView.findViewById(R.id.categoryGameDescrTextView);
             TextView levelDescrView = (TextView) rootView.findViewById(R.id.levelGameDescrTextView);
 
-            player1NameView.setText(paramsSel.getPlayer1DescrName());
+            //player1NameView.setText(paramsSel.getPlayer1DescrName());
             player1ScoreView.setText(Integer.toString(paramsSel.getPlayer1Score()));
             categoryDescrView.setText(paramsSel.getCategoryDescrCategory());
             levelDescrView.setText(paramsSel.getLevelDescrLevel());
@@ -357,9 +357,12 @@ public class GameMainActivityFragment extends Fragment {
         btnNewGame.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 dialog.cancel();
+                startActivity(new Intent(getContext(), TaleActivity.class));
+/*
                 setNewWord();
                 loadWordNotUsed();
                 mGameWon = false;
+*/
             }
         });
 
