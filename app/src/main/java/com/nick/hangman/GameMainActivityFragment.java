@@ -360,7 +360,7 @@ public class GameMainActivityFragment extends Fragment {
                 dialog.cancel();
 
 //////////////////////
-
+/*
                 ContentValues values = new ContentValues();
                 values.put(HangmanContract.TaleScoreCategoryEntry.COLUMN_CATEGORY_ENABLED, 1);
 
@@ -373,7 +373,7 @@ public class GameMainActivityFragment extends Fragment {
 
                 System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
                 System.out.println(qtd);
-
+*/
 
 
 //////////////////

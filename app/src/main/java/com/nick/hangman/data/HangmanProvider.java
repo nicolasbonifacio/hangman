@@ -29,6 +29,8 @@ public class HangmanProvider extends ContentProvider {
     static final int WORD_WITH_LANGUAGE_AND_CATEGORY_AND_LEVEL_NOT_USED = 501;
     static final int TALE_SCORE_CATEGORY = 600;
     static final int TALE_SCORE_CATEGORY_WITH_PLAYER_AND_CATEGORY = 601;
+    static final int SCORE_MODEL = 700;
+    static final int SCORE_MODEL_WITH_CATEGORY = 701;
 
     private static final SQLiteQueryBuilder sWordLanguageCategoryLevelQueryBuilder;
     static{
@@ -110,6 +112,12 @@ public class HangmanProvider extends ContentProvider {
         sLanguageLastUsedQueryBuilder.setTables(HangmanContract.LanguageEntry.TABLE_NAME);
     }
 
+    private static final SQLiteQueryBuilder sScoreModelCategoryQueryBuilder;
+    static {
+        sScoreModelCategoryQueryBuilder = new SQLiteQueryBuilder();
+        sScoreModelCategoryQueryBuilder.setTables(HangmanContract.ScoreModelEntry.TABLE_NAME);
+    }
+
     //CATEGORY.LANGUAGE_ID = ?;
     private static final String sCategoryLanguageSelection =
             HangmanContract.CategoryEntry.TABLE_NAME +
@@ -129,6 +137,11 @@ public class HangmanProvider extends ContentProvider {
     private static final String sLanguageLastUsedSelection =
             HangmanContract.LanguageEntry.TABLE_NAME +
                     "." + HangmanContract.LanguageEntry.COLUMN_LAST_USED + " = ? ";
+
+    //SCORE_MODEL.CATEGORY_ID = ?;
+    private static final String sScoreModelCategorySelection =
+            HangmanContract.ScoreModelEntry.TABLE_NAME +
+                    "." + HangmanContract.ScoreModelEntry.COLUMN_LOC_KEY_CATEGORY + " = ? ";
 
     //WORD.LANGUAGE_ID = ?
     //WORD.CATEGORY_ID = ?
@@ -209,6 +222,20 @@ public class HangmanProvider extends ContentProvider {
         );
     }
 
+    private Cursor getScoreModelByCategory(
+            Uri uri, String[] projection, String sortOrder) {
+        String category = HangmanContract.ScoreModelEntry.getCategoryFromUri(uri);
+
+        return sScoreModelCategoryQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+                projection,
+                sScoreModelCategorySelection,
+                new String[]{category},
+                null,
+                null,
+                sortOrder
+        );
+    }
+
     private Cursor getWordByLanguageCategoryLevel(
             Uri uri, String[] projection, String sortOrder) {
         String language = HangmanContract.WordEntry.getLanguageFromUri(uri);
@@ -258,6 +285,8 @@ public class HangmanProvider extends ContentProvider {
         matcher.addURI(authority, HangmanContract.PATH_WORD + "/#/#/#/#", WORD_WITH_LANGUAGE_AND_CATEGORY_AND_LEVEL_NOT_USED);
         matcher.addURI(authority, HangmanContract.PATH_TALE_SCORE_CATEGORY, TALE_SCORE_CATEGORY);
         matcher.addURI(authority, HangmanContract.PATH_TALE_SCORE_CATEGORY + "/#/#", TALE_SCORE_CATEGORY_WITH_PLAYER_AND_CATEGORY);
+        matcher.addURI(authority, HangmanContract.PATH_SCORE_MODEL, SCORE_MODEL);
+        matcher.addURI(authority, HangmanContract.PATH_SCORE_MODEL + "/#", SCORE_MODEL_WITH_CATEGORY);
 
         return matcher;
     }
@@ -299,6 +328,10 @@ public class HangmanProvider extends ContentProvider {
                 return HangmanContract.WordEntry.CONTENT_TYPE;
             case WORD_WITH_LANGUAGE_AND_CATEGORY_AND_LEVEL_NOT_USED:
                 return HangmanContract.WordEntry.CONTENT_ITEM_TYPE;
+            case SCORE_MODEL:
+                return HangmanContract.ScoreModelEntry.CONTENT_TYPE;
+            case SCORE_MODEL_WITH_CATEGORY:
+                return HangmanContract.ScoreModelEntry.CONTENT_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -338,6 +371,11 @@ public class HangmanProvider extends ContentProvider {
             // "LANGUAGE/#"
             case LANGUAGE_WITH_LAST_USED: {
                 retCursor = getLanguageByLastUsed(uri, projection, sortOrder);
+                break;
+            }
+            // "SCORE_MODEL/#"
+            case SCORE_MODEL_WITH_CATEGORY: {
+                retCursor = getScoreModelByCategory(uri, projection, sortOrder);
                 break;
             }
             // "PLAYER"
@@ -418,6 +456,19 @@ public class HangmanProvider extends ContentProvider {
                 );
                 break;
             }
+            // "SCORE_MODEL"
+            case SCORE_MODEL: {
+                retCursor = mOpenHelper.getReadableDatabase().query(
+                        HangmanContract.ScoreModelEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -480,6 +531,14 @@ public class HangmanProvider extends ContentProvider {
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;
             }
+            case SCORE_MODEL: {
+                long _id = db.insert(HangmanContract.ScoreModelEntry.TABLE_NAME, null, values);
+                if ( _id > 0 )
+                    returnUri = HangmanContract.ScoreModelEntry.buildScoreModelUri(_id);
+                else
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                break;
+            }
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -518,6 +577,10 @@ public class HangmanProvider extends ContentProvider {
             case LEVEL:
                 rowsDeleted = db.delete(
                         HangmanContract.LevelEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            case SCORE_MODEL:
+                rowsDeleted = db.delete(
+                        HangmanContract.ScoreModelEntry.TABLE_NAME, selection, selectionArgs);
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -559,6 +622,10 @@ public class HangmanProvider extends ContentProvider {
                 break;
             case WORD:
                 rowsUpdated = db.update(HangmanContract.WordEntry.TABLE_NAME, values, selection,
+                        selectionArgs);
+                break;
+            case SCORE_MODEL:
+                rowsUpdated = db.update(HangmanContract.ScoreModelEntry.TABLE_NAME, values, selection,
                         selectionArgs);
                 break;
             default:

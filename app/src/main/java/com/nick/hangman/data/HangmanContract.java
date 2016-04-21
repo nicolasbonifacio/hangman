@@ -20,6 +20,7 @@ public class HangmanContract {
     public static final String PATH_TALE_SCORE_CATEGORY = "tale_score_category";
     public static final String PATH_LEVEL = "level";
     public static final String PATH_WORD = "word";
+    public static final String PATH_SCORE_MODEL = "score_model";
 
     /* Inner class that defines the table contents of the player table */
     public static final class PlayerEntry implements BaseColumns {
@@ -240,6 +241,40 @@ public class HangmanContract {
 
         public static String getIsUsedFromUri(Uri uri) {
             return uri.getPathSegments().get(4);
+        }
+
+    }
+
+    /* Inner class that defines the table contents of the score_model table */
+    public static final class ScoreModelEntry implements BaseColumns {
+
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_SCORE_MODEL).build();
+
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_SCORE_MODEL;
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_SCORE_MODEL;
+
+        // Table name
+        public static final String TABLE_NAME = "score_model";
+
+        // Columns
+        public static final String COLUMN_LOC_KEY_CATEGORY = "category_id";
+        public static final String COLUMN_NUM_ERRORS = "num_errors";
+        public static final String COLUMN_POINTS = "points";
+        public static final String COLUMN_QTD_STARS = "qtd_stars";
+
+        public static Uri buildScoreModelUri(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
+        public static String getCategoryFromUri(Uri uri) {
+            return uri.getPathSegments().get(1);
+        }
+
+        public static Uri buildScoreModelCategory(int category) {
+            return CONTENT_URI.buildUpon().appendPath(Integer.toString(category)).build();
         }
 
     }
