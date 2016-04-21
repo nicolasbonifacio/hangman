@@ -104,9 +104,6 @@ public class HangmanContract {
         // Columns
         public static final String COLUMN_LOC_KEY_LANGUAGE = "language_id";
         public static final String COLUMN_DESCR_CATEGORY = "descr_category";
-        public static final String COLUMN_PATH_ORDER = "path_order";
-        public static final String COLUMN_ENABLED = "enabled";
-        public static final String COLUMN_ENABLE_SCORE = "enable_score";
 
         public static Uri buildCategoryUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
@@ -139,7 +136,10 @@ public class HangmanContract {
         // Columns
         public static final String COLUMN_LOC_KEY_PLAYER = "player_id";
         public static final String COLUMN_LOC_KEY_CATEGORY = "category_id";
-        public static final String COLUMN_SCORE = "score";
+        public static final String COLUMN_PLAYER_SCORE = "player_score";
+        public static final String COLUMN_PATH_ORDER = "path_order";
+        public static final String COLUMN_CATEGORY_ENABLED = "category_enabled";
+        public static final String COLUMN_CATEGORY_ENABLE_SCORE = "category_enable_score";
 
         public static Uri buildTaleScoreCategoryUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);

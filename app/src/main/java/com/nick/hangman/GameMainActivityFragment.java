@@ -1,6 +1,7 @@
 package com.nick.hangman;
 
 import android.app.Dialog;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -357,12 +358,28 @@ public class GameMainActivityFragment extends Fragment {
         btnNewGame.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 dialog.cancel();
-                startActivity(new Intent(getContext(), TaleActivity.class));
-/*
-                setNewWord();
-                loadWordNotUsed();
-                mGameWon = false;
-*/
+
+//////////////////////
+
+                ContentValues values = new ContentValues();
+                values.put(HangmanContract.TaleScoreCategoryEntry.COLUMN_CATEGORY_ENABLED, 1);
+
+                int qtd = getContext().getContentResolver().update(
+                        HangmanContract.TaleScoreCategoryEntry.CONTENT_URI,
+                        values,
+                        null,
+                        null
+                );
+
+                System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+                System.out.println(qtd);
+
+
+
+//////////////////
+
+                getActivity().finish();
+
             }
         });
 

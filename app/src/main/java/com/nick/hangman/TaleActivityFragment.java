@@ -32,25 +32,27 @@ public class TaleActivityFragment extends Fragment {
 
     private static final int LANGUAGE_LAST_USED_FLAG = 1;
     private static final int TALE_PLAYER_FLAG = 1;
-    private static final String TALE_SCORE_CATEGORY_SORT_ORDER = HangmanContract.CategoryEntry.TABLE_NAME + ".PATH_ORDER";
+    private static final String TALE_SCORE_CATEGORY_SORT_ORDER = HangmanContract.TaleScoreCategoryEntry.TABLE_NAME + ".PATH_ORDER";
 
     private static final String[] TALE_SCORE_CATEGORY_COLUMNS = {
-            HangmanContract.TaleScoreCategoryEntry.TABLE_NAME + "." + HangmanContract.CategoryEntry._ID,
-            HangmanContract.TaleScoreCategoryEntry.TABLE_NAME + "." + HangmanContract.TaleScoreCategoryEntry.COLUMN_SCORE,
+            HangmanContract.TaleScoreCategoryEntry.TABLE_NAME + "." + HangmanContract.TaleScoreCategoryEntry._ID,
+            HangmanContract.TaleScoreCategoryEntry.TABLE_NAME + "." + HangmanContract.TaleScoreCategoryEntry.COLUMN_PLAYER_SCORE,
             HangmanContract.CategoryEntry.TABLE_NAME + "." + HangmanContract.CategoryEntry.COLUMN_DESCR_CATEGORY,
-            HangmanContract.CategoryEntry.TABLE_NAME + "." + HangmanContract.CategoryEntry.COLUMN_ENABLED,
-            HangmanContract.CategoryEntry.TABLE_NAME + "." + HangmanContract.CategoryEntry.COLUMN_ENABLE_SCORE,
+            HangmanContract.TaleScoreCategoryEntry.TABLE_NAME + "." + HangmanContract.TaleScoreCategoryEntry.COLUMN_CATEGORY_ENABLED,
+            HangmanContract.TaleScoreCategoryEntry.TABLE_NAME + "." + HangmanContract.TaleScoreCategoryEntry.COLUMN_CATEGORY_ENABLE_SCORE,
             HangmanContract.TaleScoreCategoryEntry.TABLE_NAME + "." + HangmanContract.TaleScoreCategoryEntry.COLUMN_LOC_KEY_CATEGORY
     };
 
     //TALE_SCORE_CATEGORY_COLUMNS columns
     public static final int COL_TALE_SCORE_CATEGORY_ID = 0;
-    public static final int COL_TALE_SCORE_CATEGORY_SCORE = 1;
+    public static final int COL_TALE_SCORE_CATEGORY_PLAYER_SCORE = 1;
     public static final int COL_CATEGORY_DESCR_CATEGORY = 2;
-    public static final int COL_CATEGORY_ENABLED = 3;
-    public static final int COL_CATEGORY_ENABLE_SCORE = 4;
+    public static final int COL_TALE_SCORE_CATEGORY_CATEGORY_ENABLED = 3;
+    public static final int COL_TALE_SCORE_CATEGORY_CATEGORY_ENABLE_SCORE = 4;
     public static final int COL_TALE_SCORE_CATEGORY_CATEGORY_ID = 5;
 
+    private View rootView;
+    private ScrollView scroller;
     private Uri mUri;
     private Cursor mCursor;
 
@@ -69,57 +71,97 @@ public class TaleActivityFragment extends Fragment {
             mUri = arguments.getParcelable(SelectionActivityFragment.DETAIL_URI);
         }
 
-        final View rootView = inflater.inflate(R.layout.fragment_tale, container, false);
+        rootView = inflater.inflate(R.layout.fragment_tale, container, false);
+
+        scroller = new ScrollView(getActivity());
+        scroller.setRotation(180);
+        scroller.addView(rootView);
+
+        return scroller;
+
+
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        //Verify if it's the first time passing by that screen. If it is, creates the structures.
+        //Otherwise, just reload them.
+        boolean firstLoad;
+        if(mListTaleScoreCategory == null) {
+            firstLoad = true;
+        }else {
+            firstLoad = false;
+        }
 
         loadTaleScoreCategoryList();
+
+        if(firstLoad) {
+            mPath = new Integer[mListTaleScoreCategory.size()][3];
+        }
+
         if(mListTaleScoreCategory != null) {
 
-            mPath = new Integer[mListTaleScoreCategory.size()][3];
             int spaceIds = mListTaleScoreCategory.size()+1;
-
-            ScrollView scroller = new ScrollView(getActivity());
-            scroller.setRotation(180);
-            scroller.addView(rootView);
 
             LinearLayout taleLayout = (LinearLayout) rootView.findViewById(R.id.taleLayout);
             for (int i = 1; i <= mListTaleScoreCategory.size(); i++) {
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT);
-                Button btn = new Button(getContext());
-                btn.setId(i);
-                final int id_ = btn.getId();
-                btn.setText(mListTaleScoreCategory.get(i - 1).getDescrCategory());
-                btn.setRotation(180);
-                if(mListTaleScoreCategory.get(i - 1).getEnabled() == 0) {
-                    btn.setEnabled(false);
-                }
-                taleLayout.addView(btn, params);
+                if(firstLoad) {
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT);
 
-                mPath[i-1][0] = i;
-                mPath[i-1][1] = spaceIds;
-                mPath[i-1][2] = 5;
-
-                ImageView space;
-                for(int j = 0; j < 5; j++) {
-                    space = new ImageView(getContext());
-                    space.setId(spaceIds);
-                    space.setMinimumWidth(60);
-                    space.setMinimumHeight(100);
-                    space.setBackgroundColor(Color.parseColor("#b2acac"));
-                    taleLayout.addView(space, params);
-
-                    spaceIds++;
-                }
-
-                //Tale list listener
-                final Button btn1 = ((Button) rootView.findViewById(id_));
-                btn1.setOnClickListener(new View.OnClickListener() {
-                    public void onClick(View view) {
-
-                        callGameScreen(id_);
+                    Button btn = new Button(getContext());
+                    btn.setId(i);
+                    final int id_ = btn.getId();
+                    btn.setText(mListTaleScoreCategory.get(i - 1).getDescrCategory());
+                    btn.setRotation(180);
+                    if (mListTaleScoreCategory.get(i - 1).getEnabled() == 0) {
+                        btn.setEnabled(false);
+                    } else {
+                        btn.setEnabled(true);
                     }
-                });
+                    taleLayout.addView(btn, params);
+
+                    mPath[i - 1][0] = i;
+                    mPath[i - 1][1] = spaceIds;
+                    mPath[i - 1][2] = 5;
+
+                    ImageView space;
+                    for (int j = 0; j < 5; j++) {
+                        space = new ImageView(getContext());
+                        space.setId(spaceIds);
+                        space.setMinimumWidth(60);
+                        space.setMinimumHeight(100);
+                        space.setBackgroundColor(Color.parseColor("#b2acac"));
+                        taleLayout.addView(space, params);
+
+                        spaceIds++;
+                    }
+
+                    //Tale list listener
+                    final Button btn1 = ((Button) rootView.findViewById(id_));
+                    btn1.setOnClickListener(new View.OnClickListener() {
+                        public void onClick(View view) {
+
+                            callGameScreen(id_);
+                        }
+                    });
+
+                }else {
+                    Button btn = (Button) scroller.findViewById(i);
+                    if (mListTaleScoreCategory.get(i - 1).getEnabled() == 0) {
+                        btn.setEnabled(false);
+                    } else {
+                        btn.setEnabled(true);
+                    }
+                }
             }
 
             ImageView teste;
@@ -130,16 +172,9 @@ public class TaleActivityFragment extends Fragment {
             teste = (ImageView) scroller.findViewById(15);
             teste.setBackgroundColor(Color.parseColor("#83db63"));
 
-            return scroller;
-        }else {
-            return rootView;
+
         }
 
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
     }
 
     private void loadTaleScoreCategoryList() {
@@ -156,10 +191,10 @@ public class TaleActivityFragment extends Fragment {
             do {
                 taleScoreCategory = new TaleScoreCategory();
                 taleScoreCategory.setId(mCursor.getInt(COL_TALE_SCORE_CATEGORY_ID));
-                taleScoreCategory.setScore(mCursor.getInt(COL_TALE_SCORE_CATEGORY_SCORE));
+                taleScoreCategory.setScore(mCursor.getInt(COL_TALE_SCORE_CATEGORY_PLAYER_SCORE));
                 taleScoreCategory.setDescrCategory(mCursor.getString(COL_CATEGORY_DESCR_CATEGORY));
-                taleScoreCategory.setEnabled(mCursor.getInt(COL_CATEGORY_ENABLED));
-                taleScoreCategory.setEnableScore(mCursor.getInt(COL_CATEGORY_ENABLE_SCORE));
+                taleScoreCategory.setEnabled(mCursor.getInt(COL_TALE_SCORE_CATEGORY_CATEGORY_ENABLED));
+                taleScoreCategory.setEnableScore(mCursor.getInt(COL_TALE_SCORE_CATEGORY_CATEGORY_ENABLE_SCORE));
                 taleScoreCategory.setCategoryId(mCursor.getInt(COL_TALE_SCORE_CATEGORY_CATEGORY_ID));
 
                 mListTaleScoreCategory.add(taleScoreCategory);
