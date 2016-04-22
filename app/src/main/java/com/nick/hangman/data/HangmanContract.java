@@ -21,6 +21,7 @@ public class HangmanContract {
     public static final String PATH_LEVEL = "level";
     public static final String PATH_WORD = "word";
     public static final String PATH_SCORE_MODEL = "score_model";
+    public static final String PATH_TALE_OVERALL = "tale_overall";
 
     /* Inner class that defines the table contents of the player table */
     public static final class PlayerEntry implements BaseColumns {
@@ -219,11 +220,25 @@ public class HangmanContract {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
 
-        public static Uri buildWordWithLanguageCategoryLevel(int language, int category, int level, int isUsed) {
+        public static Uri buildWordWithLanguageCategoryLevel(int language, int category, int isUsed, int level) {
+            return CONTENT_URI.buildUpon().appendPath(Integer.toString(language))
+                    .appendPath(Integer.toString(category))
+                    .appendPath(Integer.toString(isUsed))
+                    .appendPath(Integer.toString(level))
+                    .build();
+        }
+
+        public static Uri buildWordWithLanguageCategory(int language, int category, int isUsed) {
+            return CONTENT_URI.buildUpon().appendPath(Integer.toString(language))
+                    .appendPath(Integer.toString(category))
+                    .appendPath(Integer.toString(isUsed))
+                    .build();
+        }
+
+        public static Uri buildCountWordsUsageWithLanguageCategoryLevel(int language, int category, int level) {
             return CONTENT_URI.buildUpon().appendPath(Integer.toString(language))
                     .appendPath(Integer.toString(category))
                     .appendPath(Integer.toString(level))
-                    .appendPath(Integer.toString(isUsed))
                     .build();
         }
 
@@ -235,12 +250,16 @@ public class HangmanContract {
             return uri.getPathSegments().get(2);
         }
 
-        public static String getLevelFromUri(Uri uri) {
+        public static String getIsUsedFromUri(Uri uri) {
             return uri.getPathSegments().get(3);
         }
 
-        public static String getIsUsedFromUri(Uri uri) {
+        public static String getLevelFromUri(Uri uri) {
             return uri.getPathSegments().get(4);
+        }
+
+        public static String getLevelForWordUsageFromUri(Uri uri) {
+            return uri.getPathSegments().get(3);
         }
 
     }
@@ -273,8 +292,54 @@ public class HangmanContract {
             return uri.getPathSegments().get(1);
         }
 
-        public static Uri buildScoreModelCategory(int category) {
-            return CONTENT_URI.buildUpon().appendPath(Integer.toString(category)).build();
+        public static String getNumErrorsFromUri(Uri uri) {
+            return uri.getPathSegments().get(2);
+        }
+
+        public static Uri buildScoreModelWithCategoryNumErrors(int category, int numErrors) {
+            return CONTENT_URI.buildUpon().appendPath(Integer.toString(category))
+                    .appendPath(Integer.toString(numErrors))
+                    .build();
+        }
+
+    }
+
+    /* Inner class that defines the table contents of the tale_overall table */
+    public static final class TaleOverallEntry implements BaseColumns {
+
+        public static final Uri CONTENT_URI =
+                    BASE_CONTENT_URI.buildUpon().appendPath(PATH_TALE_OVERALL).build();
+
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_TALE_OVERALL;
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_TALE_OVERALL;
+
+        // Table name
+        public static final String TABLE_NAME = "tale_overall";
+
+        // Columns
+        public static final String COLUMN_LOC_KEY_PLAYER = "player_id";
+        public static final String COLUMN_LOC_KEY_CATEGORY = "category_id";
+        public static final String COLUMN_LOC_KEY_WORD = "word_id";
+        public static final String COLUMN_NUM_STARS = "num_stars";
+
+        public static Uri buildTaleOverallUri(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
+        public static Uri buildTaleOverallWithPlayerCategory(int player, int category) {
+            return CONTENT_URI.buildUpon().appendPath(Integer.toString(player))
+                    .appendPath(Integer.toString(category))
+                    .build();
+        }
+
+        public static String getPlayerFromUri(Uri uri) {
+            return uri.getPathSegments().get(1);
+        }
+
+        public static String getCategoryFromUri(Uri uri) {
+            return uri.getPathSegments().get(2);
         }
 
     }

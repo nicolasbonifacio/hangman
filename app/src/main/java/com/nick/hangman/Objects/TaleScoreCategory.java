@@ -12,6 +12,7 @@ public class TaleScoreCategory {
     private String descrCategory;
     private int enabled;
     private int enableScore;
+    private int pathOrder;
 
     public int getId() {
         return id;
@@ -67,5 +68,13 @@ public class TaleScoreCategory {
 
     public void setEnableScore(int enableScore) {
         this.enableScore = enableScore;
+    }
+
+    public int getPathOrder() {
+        return pathOrder;
+    }
+
+    public void setPathOrder(int pathOrder) {
+        this.pathOrder = pathOrder;
     }
 }

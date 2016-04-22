@@ -40,13 +40,13 @@ public class MainActivityFragment extends Fragment {
             public void onClick(View view) {
 
                 ContentValues values = new ContentValues();
-                values.put(HangmanContract.TaleScoreCategoryEntry.COLUMN_CATEGORY_ENABLED, 1);
+                values.put(HangmanContract.WordEntry.COLUMN_WORD_USED, 0);
 
                 int qtd = getContext().getContentResolver().update(
-                        HangmanContract.TaleScoreCategoryEntry.CONTENT_URI,
+                        HangmanContract.WordEntry.CONTENT_URI,
                         values,
-                        "_id = ?",
-                        new String[]{"1"}
+                        null,
+                        null
                 );
 
                 System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");

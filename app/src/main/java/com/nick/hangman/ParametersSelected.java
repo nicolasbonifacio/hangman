@@ -24,6 +24,12 @@ public class ParametersSelected implements Serializable {
     private int levelId;
     private String levelDescrLevel;
 
+    private int taleScoreCategoryId;
+    private int taleScoreCategoryScore;
+    private int taleScoreCategoryEnableScore;
+    private int taleScoreCategoryPathOrder;
+    private int taleScoreCategoryIdNextCategory;
+
     public int getPlayer1Id() {
         return player1Id;
     }
@@ -118,5 +124,45 @@ public class ParametersSelected implements Serializable {
 
     public void setLevelDescrLevel(String levelDescrLevel) {
         this.levelDescrLevel = levelDescrLevel;
+    }
+
+    public int getTaleScoreCategoryId() {
+        return taleScoreCategoryId;
+    }
+
+    public void setTaleScoreCategoryId(int taleScoreCategoryId) {
+        this.taleScoreCategoryId = taleScoreCategoryId;
+    }
+
+    public int getTaleScoreCategoryScore() {
+        return taleScoreCategoryScore;
+    }
+
+    public void setTaleScoreCategoryScore(int taleScoreCategoryScore) {
+        this.taleScoreCategoryScore = taleScoreCategoryScore;
+    }
+
+    public int getTaleScoreCategoryEnableScore() {
+        return taleScoreCategoryEnableScore;
+    }
+
+    public void setTaleScoreCategoryEnableScore(int taleScoreCategoryEnableScore) {
+        this.taleScoreCategoryEnableScore = taleScoreCategoryEnableScore;
+    }
+
+    public int getTaleScoreCategoryPathOrder() {
+        return taleScoreCategoryPathOrder;
+    }
+
+    public void setTaleScoreCategoryPathOrder(int taleScoreCategoryPathOrder) {
+        this.taleScoreCategoryPathOrder = taleScoreCategoryPathOrder;
+    }
+
+    public int getTaleScoreCategoryIdNextCategory() {
+        return taleScoreCategoryIdNextCategory;
+    }
+
+    public void setTaleScoreCategoryIdNextCategory(int taleScoreCategoryIdNextCategory) {
+        this.taleScoreCategoryIdNextCategory = taleScoreCategoryIdNextCategory;
     }
 }

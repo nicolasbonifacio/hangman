@@ -1,6 +1,7 @@
 package com.nick.hangman;
 
 import android.app.Dialog;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
@@ -30,6 +31,8 @@ public class GameMainActivityFragment extends Fragment {
 
     private static final int WORD_NOT_USED_FLAG = 0;
     private static final int WORD_USED_FLAG = 1;
+    private static final int ENABLED_FLAG = 1;
+
     private static final String WORD_SORT_ORDER = "RANDOM() LIMIT 1";
 
     //////////////////// remove this and change for one based on the level ///////////////
@@ -39,6 +42,11 @@ public class GameMainActivityFragment extends Fragment {
     private static final String[] WORD_COLUMNS = {
             HangmanContract.WordEntry.TABLE_NAME + "." + HangmanContract.WordEntry._ID,
             HangmanContract.WordEntry.COLUMN_WORD
+    };
+
+    private static final String[] SCORE_MODEL_COLUMNS = {
+            HangmanContract.ScoreModelEntry.TABLE_NAME + "." + HangmanContract.ScoreModelEntry.COLUMN_POINTS,
+            HangmanContract.ScoreModelEntry.TABLE_NAME + "." + HangmanContract.ScoreModelEntry.COLUMN_QTD_STARS
     };
 
     private static final String[] FIRST_KEYPAD_LINE_CHARACTERS = {"A", "B", "C", "D", "E", "F",
@@ -54,6 +62,10 @@ public class GameMainActivityFragment extends Fragment {
     //WORD columns
     public static final int COL_WORD_ID = 0;
     public static final int COL_WORD_WORD = 1;
+
+    //SCORE_MODEL columns
+    public static final int COL_SCORE_MODEL_POINTS = 0;
+    public static final int COL_SCORE_MODEL_QTD_STARS = 1;
 
     private Uri mUri;
     private Cursor mCursor;
@@ -89,7 +101,7 @@ public class GameMainActivityFragment extends Fragment {
             TextView levelDescrView = (TextView) rootView.findViewById(R.id.levelGameDescrTextView);
 
             //player1NameView.setText(paramsSel.getPlayer1DescrName());
-            player1ScoreView.setText(Integer.toString(paramsSel.getPlayer1Score()));
+            player1ScoreView.setText(Integer.toString(paramsSel.getTaleScoreCategoryScore()));
             categoryDescrView.setText(paramsSel.getCategoryDescrCategory());
             levelDescrView.setText(paramsSel.getLevelDescrLevel());
 
@@ -101,6 +113,8 @@ public class GameMainActivityFragment extends Fragment {
 
                 /////////////////// to be removed //////////////////////
                 mTestImageView = (TextView) rootView.findViewById(R.id.testImageTextView);
+                TextView answer = (TextView) rootView.findViewById(R.id.answerTextView);
+                answer.setText(mWord.getWord());
                 ////////////////////////////////////////////////////////
 
 
@@ -200,6 +214,7 @@ public class GameMainActivityFragment extends Fragment {
                         }
                     });
                 }
+
             }else {
                 Toast.makeText(getContext(),(String)getResources().getString(R.string.error_loading_word),
                         Toast.LENGTH_SHORT).show();
@@ -214,10 +229,19 @@ public class GameMainActivityFragment extends Fragment {
     }
 
     private boolean loadWordNotUsed() {
-        mUri = HangmanContract.WordEntry.buildWordWithLanguageCategoryLevel(paramsSel.getLanguageId(),
-                paramsSel.getCategoryId(),
-                paramsSel.getLevelId(),
-                WORD_NOT_USED_FLAG);
+
+        if(paramsSel.getLevelId() == 0) {
+            //All levels released
+            mUri = HangmanContract.WordEntry.buildWordWithLanguageCategory(paramsSel.getLanguageId(),
+                    paramsSel.getCategoryId(),
+                    WORD_NOT_USED_FLAG);
+        }else {
+            //Sets a specific level
+            mUri = HangmanContract.WordEntry.buildWordWithLanguageCategoryLevel(paramsSel.getLanguageId(),
+                    paramsSel.getCategoryId(),
+                    WORD_NOT_USED_FLAG,
+                    paramsSel.getLevelId());
+        }
 
         mCursor = getContext().getContentResolver().query(mUri, WORD_COLUMNS, null, null, WORD_SORT_ORDER);
 
@@ -350,48 +374,22 @@ public class GameMainActivityFragment extends Fragment {
 
         dialog.setContentView(R.layout.custom_dialog);
 
-
         TextView endGameView = (TextView) dialog.findViewById(R.id.endGameTextView);
         TextView wordSelectedView = (TextView) dialog.findViewById(R.id.wordSelected);
+        TextView numStars = (TextView) dialog.findViewById(R.id.numStars);
+
+        wordSelectedView.setText(mWord.getWord());
+
+        int qtdStars = loadPointsAndStarsFromScoreModel(mQtdError);
+        numStars.setText(Integer.toString(qtdStars));
 
         final Button btnNewGame = ((Button) dialog.findViewById(R.id.newGame));
         btnNewGame.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 dialog.cancel();
-
-//////////////////////
-/*
-                ContentValues values = new ContentValues();
-                values.put(HangmanContract.TaleScoreCategoryEntry.COLUMN_CATEGORY_ENABLED, 1);
-
-                int qtd = getContext().getContentResolver().update(
-                        HangmanContract.TaleScoreCategoryEntry.CONTENT_URI,
-                        values,
-                        null,
-                        null
-                );
-
-                System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-                System.out.println(qtd);
-*/
-
-
-//////////////////
-
                 getActivity().finish();
-
             }
         });
-
-        final Button btnEndGame = ((Button) dialog.findViewById(R.id.endGame));
-        btnEndGame.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                dialog.cancel();
-            }
-        });
-
-        dialog.setTitle(getResources().getString(R.string.end_game));
-        wordSelectedView.setText(mWord.getWord());
 
         if(gameWon) {
             endGameView.setText(getResources().getString(R.string.win_game));
@@ -400,6 +398,102 @@ public class GameMainActivityFragment extends Fragment {
         }
 
         dialog.show();
+    }
+
+    private int loadPointsAndStarsFromScoreModel(int numErrors) {
+        mUri = HangmanContract.ScoreModelEntry.buildScoreModelWithCategoryNumErrors(paramsSel.getCategoryId(), numErrors);
+
+        mCursor = getContext().getContentResolver().query(mUri, SCORE_MODEL_COLUMNS, null, null, null);
+
+        int qtdStars = 0;
+        int qtdPoints = 0;
+
+        if(mCursor != null && mCursor.moveToFirst()) {
+
+            qtdStars = mCursor.getInt(COL_SCORE_MODEL_QTD_STARS);
+            qtdPoints = mCursor.getInt(COL_SCORE_MODEL_POINTS);
+
+            ContentValues taleOverallValues = new ContentValues();
+            taleOverallValues.put(HangmanContract.TaleOverallEntry.COLUMN_LOC_KEY_PLAYER, paramsSel.getPlayer1Id());
+            taleOverallValues.put(HangmanContract.TaleOverallEntry.COLUMN_LOC_KEY_CATEGORY, paramsSel.getCategoryId());
+            taleOverallValues.put(HangmanContract.TaleOverallEntry.COLUMN_LOC_KEY_WORD, mWord.getId());
+            taleOverallValues.put(HangmanContract.TaleOverallEntry.COLUMN_NUM_STARS, qtdStars);
+
+            Uri insertedUri = getContext().getContentResolver().insert(
+                    HangmanContract.TaleOverallEntry.CONTENT_URI,
+                    taleOverallValues
+            );
+
+            System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+            System.out.println(ContentUris.parseId(insertedUri));
+
+            mCursor.close();
+
+            updatePlayerScore(qtdPoints);
+
+
+        }
+
+        updateWordUsed(mWord.getId());
+
+        return qtdStars;
+
+    }
+
+    private void updatePlayerScore(int points) {
+
+        int totalPoints = points + paramsSel.getTaleScoreCategoryScore();
+        String id = Integer.toString(paramsSel.getTaleScoreCategoryId());
+        String idNextCategory = Integer.toString(paramsSel.getTaleScoreCategoryIdNextCategory());
+
+        if(totalPoints >= paramsSel.getTaleScoreCategoryEnableScore()) {
+            //Update player score and unlock new category
+            totalPoints = paramsSel.getTaleScoreCategoryEnableScore();
+
+            ContentValues valuesNextCategory = new ContentValues();
+            valuesNextCategory.put(HangmanContract.TaleScoreCategoryEntry.COLUMN_CATEGORY_ENABLED, ENABLED_FLAG);
+
+            int qtdRws = getContext().getContentResolver().update(
+                    HangmanContract.TaleScoreCategoryEntry.CONTENT_URI,
+                    valuesNextCategory,
+                    "_id = ?",
+                    new String[]{idNextCategory}
+            );
+
+            if(qtdRws == 0) {
+                //It's the end
+            }
+        }
+
+        ContentValues values = new ContentValues();
+        values.put(HangmanContract.TaleScoreCategoryEntry.COLUMN_PLAYER_SCORE, totalPoints);
+
+        int qtd = getContext().getContentResolver().update(
+                HangmanContract.TaleScoreCategoryEntry.CONTENT_URI,
+                values,
+                "_id = ?",
+                new String[]{id}
+        );
+
+    }
+
+    public void updateWordUsed(int wordId) {
+
+        String id = Integer.toString(wordId);
+
+        ContentValues wordValues = new ContentValues();
+        wordValues.put(HangmanContract.WordEntry.COLUMN_WORD_USED, WORD_USED_FLAG);
+
+        int qtd = getContext().getContentResolver().update(
+                HangmanContract.WordEntry.CONTENT_URI,
+                wordValues,
+                "_id = ?",
+                new String[]{id}
+        );
+
+        System.out.println("bbbbbbbbbbbbbbbbbbbbbbbbb");
+        System.out.println(qtd);
+
     }
 
 }

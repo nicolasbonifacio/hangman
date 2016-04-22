@@ -27,10 +27,16 @@ public class HangmanProvider extends ContentProvider {
     static final int LEVEL_WITH_LANGUAGE = 401;
     static final int WORD = 500;
     static final int WORD_WITH_LANGUAGE_AND_CATEGORY_AND_LEVEL_NOT_USED = 501;
+    static final int WORD_WITH_LANGUAGE_AND_CATEGORY_NOT_USED = 502;
+    static final int WORD_COUNT_USAGE_WITH_LANGUAGE_CATEGORY_LEVEL = 503;
     static final int TALE_SCORE_CATEGORY = 600;
     static final int TALE_SCORE_CATEGORY_WITH_PLAYER_AND_CATEGORY = 601;
     static final int SCORE_MODEL = 700;
-    static final int SCORE_MODEL_WITH_CATEGORY = 701;
+    static final int SCORE_MODEL_WITH_CATEGORY_AND_NUM_ERRORS = 701;
+    static final int TALE_OVERALL = 800;
+    static final int TALE_OVERALL_WITH_PLAYER_AND_CATEGORY = 801;
+
+    static final String WORD_GROUP_BY_FIELD = "WORD_USED";
 
     private static final SQLiteQueryBuilder sWordLanguageCategoryLevelQueryBuilder;
     static{
@@ -112,50 +118,87 @@ public class HangmanProvider extends ContentProvider {
         sLanguageLastUsedQueryBuilder.setTables(HangmanContract.LanguageEntry.TABLE_NAME);
     }
 
-    private static final SQLiteQueryBuilder sScoreModelCategoryQueryBuilder;
+    private static final SQLiteQueryBuilder sScoreModelCategoryNumErrorsQueryBuilder;
     static {
-        sScoreModelCategoryQueryBuilder = new SQLiteQueryBuilder();
-        sScoreModelCategoryQueryBuilder.setTables(HangmanContract.ScoreModelEntry.TABLE_NAME);
+        sScoreModelCategoryNumErrorsQueryBuilder = new SQLiteQueryBuilder();
+        sScoreModelCategoryNumErrorsQueryBuilder.setTables(HangmanContract.ScoreModelEntry.TABLE_NAME);
     }
 
-    //CATEGORY.LANGUAGE_ID = ?;
+    private static final SQLiteQueryBuilder sTaleOverallPlayerCategoryQueryBuilder;
+    static {
+        sTaleOverallPlayerCategoryQueryBuilder = new SQLiteQueryBuilder();
+        sTaleOverallPlayerCategoryQueryBuilder.setTables(HangmanContract.TaleOverallEntry.TABLE_NAME);
+    }
+
+    private static final SQLiteQueryBuilder sCountWordsUsageWithLanguageCategoryLevelQueryBuilder;
+    static {
+        sCountWordsUsageWithLanguageCategoryLevelQueryBuilder = new SQLiteQueryBuilder();
+        sCountWordsUsageWithLanguageCategoryLevelQueryBuilder.setTables(HangmanContract.WordEntry.TABLE_NAME);
+    }
+
+    //CATEGORY.LANGUAGE_ID = ?
     private static final String sCategoryLanguageSelection =
             HangmanContract.CategoryEntry.TABLE_NAME +
                     "." + HangmanContract.CategoryEntry.COLUMN_LOC_KEY_LANGUAGE + " = ? ";
 
-    //LEVEL.LANGUAGE_ID = ?;
+    //LEVEL.LANGUAGE_ID = ?
     private static final String sLevelLanguageSelection =
             HangmanContract.LevelEntry.TABLE_NAME +
                     "." + HangmanContract.LevelEntry.COLUMN_LOC_KEY_LANGUAGE + " = ? ";
 
-    //PLAYER.LAST_USED = ?;
+    //PLAYER.LAST_USED = ?
     private static final String sPlayerLastUsedSelection =
             HangmanContract.PlayerEntry.TABLE_NAME +
                     "." + HangmanContract.PlayerEntry.COLUMN_LAST_USED + " = ? ";
 
-    //LANGUAGE.LAST_USED = ?;
+    //LANGUAGE.LAST_USED = ?
     private static final String sLanguageLastUsedSelection =
             HangmanContract.LanguageEntry.TABLE_NAME +
                     "." + HangmanContract.LanguageEntry.COLUMN_LAST_USED + " = ? ";
 
-    //SCORE_MODEL.CATEGORY_ID = ?;
-    private static final String sScoreModelCategorySelection =
+    //SCORE_MODEL.CATEGORY_ID = ?
+    //SCORE_MODEL.NUM_ERRORS = ?
+    private static final String sScoreModelCategoryNumErrorsSelection =
             HangmanContract.ScoreModelEntry.TABLE_NAME +
-                    "." + HangmanContract.ScoreModelEntry.COLUMN_LOC_KEY_CATEGORY + " = ? ";
+                    "." + HangmanContract.ScoreModelEntry.COLUMN_LOC_KEY_CATEGORY + " = ? AND " +
+            HangmanContract.ScoreModelEntry.TABLE_NAME +
+                    "." + HangmanContract.ScoreModelEntry.COLUMN_NUM_ERRORS + " = ?";
 
     //WORD.LANGUAGE_ID = ?
     //WORD.CATEGORY_ID = ?
-    //WORD.LEVEL_ID = ?
     //WORD.WORD_USED = ?
+    //WORD.LEVEL_ID = ?
     private static final String sWordLanguageCategoryLevelSelection =
             HangmanContract.WordEntry.TABLE_NAME +
                     "." + HangmanContract.WordEntry.COLUMN_LOC_KEY_LANGUAGE + " = ? AND " +
                     HangmanContract.WordEntry.TABLE_NAME +
                     "." + HangmanContract.WordEntry.COLUMN_LOC_KEY_CATEGORY + " = ? AND " +
                     HangmanContract.WordEntry.TABLE_NAME +
-                    "." + HangmanContract.WordEntry.COLUMN_LOC_KEY_LEVEL + " = ? AND " +
+                    "." + HangmanContract.WordEntry.COLUMN_WORD_USED + " = ? AND " +
+                    HangmanContract.WordEntry.TABLE_NAME +
+                    "." + HangmanContract.WordEntry.COLUMN_LOC_KEY_LEVEL + " = ?";
+
+    //WORD.LANGUAGE_ID = ?
+    //WORD.CATEGORY_ID = ?
+    //WORD.WORD_USED = ?
+    private static final String sWordLanguageCategorySelection =
+            HangmanContract.WordEntry.TABLE_NAME +
+                    "." + HangmanContract.WordEntry.COLUMN_LOC_KEY_LANGUAGE + " = ? AND " +
+                    HangmanContract.WordEntry.TABLE_NAME +
+                    "." + HangmanContract.WordEntry.COLUMN_LOC_KEY_CATEGORY + " = ? AND " +
                     HangmanContract.WordEntry.TABLE_NAME +
                     "." + HangmanContract.WordEntry.COLUMN_WORD_USED + " = ?";
+
+    //WORD.LANGUAGE_ID = ?
+    //WORD.CATEGORY_ID = ?
+    //WORD.LEVEL_ID = ?
+    private static final String sCountWordsUsageWithLanguageCategoryLevelSelection =
+            HangmanContract.WordEntry.TABLE_NAME +
+                    "." + HangmanContract.WordEntry.COLUMN_LOC_KEY_LANGUAGE + " = ? AND " +
+                    HangmanContract.WordEntry.TABLE_NAME +
+                    "." + HangmanContract.WordEntry.COLUMN_LOC_KEY_CATEGORY + " = ? AND " +
+                    HangmanContract.WordEntry.TABLE_NAME +
+                    "." + HangmanContract.WordEntry.COLUMN_LOC_KEY_LEVEL + " = ?";
 
     //PLAYER.TALE_PLAYER = ?
     //LANGUAGE.LAST_USED = ?
@@ -164,6 +207,14 @@ public class HangmanProvider extends ContentProvider {
                     "." + HangmanContract.PlayerEntry.COLUMN_TALE_PLAYER + " = ? AND " +
                     HangmanContract.LanguageEntry.TABLE_NAME +
                     "." + HangmanContract.LanguageEntry.COLUMN_LAST_USED + " = ?";
+
+    //TALE_OVERALL.PLAYER_ID = ?
+    //TALE_OVERALL.CATEGORY_ID = ?
+    private static final String sTaleOverallPlayerCategorySelection =
+            HangmanContract.TaleOverallEntry.TABLE_NAME +
+                    "." + HangmanContract.TaleOverallEntry.COLUMN_LOC_KEY_PLAYER + " = ? AND " +
+                    HangmanContract.TaleOverallEntry.TABLE_NAME +
+                    "." + HangmanContract.TaleOverallEntry.COLUMN_LOC_KEY_CATEGORY + " = ?";
 
 
     private Cursor getCategoryByLanguage(
@@ -222,17 +273,18 @@ public class HangmanProvider extends ContentProvider {
         );
     }
 
-    private Cursor getScoreModelByCategory(
-            Uri uri, String[] projection, String sortOrder) {
+    private Cursor getScoreModelByCategoryNumErrors(
+            Uri uri, String[] projection) {
         String category = HangmanContract.ScoreModelEntry.getCategoryFromUri(uri);
+        String numErrors = HangmanContract.ScoreModelEntry.getNumErrorsFromUri(uri);
 
-        return sScoreModelCategoryQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+        return sScoreModelCategoryNumErrorsQueryBuilder.query(mOpenHelper.getReadableDatabase(),
                 projection,
-                sScoreModelCategorySelection,
-                new String[]{category},
+                sScoreModelCategoryNumErrorsSelection,
+                new String[]{category, numErrors},
                 null,
                 null,
-                sortOrder
+                null
         );
     }
 
@@ -240,14 +292,46 @@ public class HangmanProvider extends ContentProvider {
             Uri uri, String[] projection, String sortOrder) {
         String language = HangmanContract.WordEntry.getLanguageFromUri(uri);
         String category = HangmanContract.WordEntry.getCategoryFromUri(uri);
-        String level = HangmanContract.WordEntry.getLevelFromUri(uri);
         String isUsed = HangmanContract.WordEntry.getIsUsedFromUri(uri);
+        String level = HangmanContract.WordEntry.getLevelFromUri(uri);
 
         return sWordLanguageCategoryLevelQueryBuilder.query(mOpenHelper.getReadableDatabase(),
                 projection,
                 sWordLanguageCategoryLevelSelection,
-                new String[]{language, category, level, isUsed},
+                new String[]{language, category, isUsed, level},
                 null,
+                null,
+                sortOrder
+        );
+    }
+
+    private Cursor getWordByLanguageCategory(
+            Uri uri, String[] projection, String sortOrder) {
+        String language = HangmanContract.WordEntry.getLanguageFromUri(uri);
+        String category = HangmanContract.WordEntry.getCategoryFromUri(uri);
+        String isUsed = HangmanContract.WordEntry.getIsUsedFromUri(uri);
+
+        return sWordLanguageCategoryLevelQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+                projection,
+                sWordLanguageCategorySelection,
+                new String[]{language, category, isUsed},
+                null,
+                null,
+                sortOrder
+        );
+    }
+
+    private Cursor getCountWordsUsageWithLanguageCategoryLevel(
+            Uri uri, String[] projection, String sortOrder) {
+        String language = HangmanContract.WordEntry.getLanguageFromUri(uri);
+        String category = HangmanContract.WordEntry.getCategoryFromUri(uri);
+        String level = HangmanContract.WordEntry.getLevelForWordUsageFromUri(uri);
+
+        return sCountWordsUsageWithLanguageCategoryLevelQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+                projection,
+                sCountWordsUsageWithLanguageCategoryLevelSelection,
+                new String[]{language, category, level},
+                WORD_GROUP_BY_FIELD,
                 null,
                 sortOrder
         );
@@ -262,6 +346,21 @@ public class HangmanProvider extends ContentProvider {
                 projection,
                 sTaleScoreCategoryPlayerCategorySelection,
                 new String[]{talePlayer, languageLastUsed},
+                null,
+                null,
+                sortOrder
+        );
+    }
+
+    private Cursor getNumStarsByPlayerCategory(
+            Uri uri, String[] projection, String sortOrder) {
+        String player = HangmanContract.TaleOverallEntry.getPlayerFromUri(uri);
+        String category = HangmanContract.TaleOverallEntry.getCategoryFromUri(uri);
+
+        return sTaleOverallPlayerCategoryQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+                projection,
+                sTaleOverallPlayerCategorySelection,
+                new String[]{player, category},
                 null,
                 null,
                 sortOrder
@@ -283,10 +382,14 @@ public class HangmanProvider extends ContentProvider {
         matcher.addURI(authority, HangmanContract.PATH_LEVEL + "/#", LEVEL_WITH_LANGUAGE);
         matcher.addURI(authority, HangmanContract.PATH_WORD, WORD);
         matcher.addURI(authority, HangmanContract.PATH_WORD + "/#/#/#/#", WORD_WITH_LANGUAGE_AND_CATEGORY_AND_LEVEL_NOT_USED);
+        matcher.addURI(authority, HangmanContract.PATH_WORD + "/#/#/#", WORD_WITH_LANGUAGE_AND_CATEGORY_NOT_USED);
+        matcher.addURI(authority, HangmanContract.PATH_WORD + "/#/#/#", WORD_COUNT_USAGE_WITH_LANGUAGE_CATEGORY_LEVEL);
         matcher.addURI(authority, HangmanContract.PATH_TALE_SCORE_CATEGORY, TALE_SCORE_CATEGORY);
         matcher.addURI(authority, HangmanContract.PATH_TALE_SCORE_CATEGORY + "/#/#", TALE_SCORE_CATEGORY_WITH_PLAYER_AND_CATEGORY);
         matcher.addURI(authority, HangmanContract.PATH_SCORE_MODEL, SCORE_MODEL);
-        matcher.addURI(authority, HangmanContract.PATH_SCORE_MODEL + "/#", SCORE_MODEL_WITH_CATEGORY);
+        matcher.addURI(authority, HangmanContract.PATH_SCORE_MODEL + "/#/#", SCORE_MODEL_WITH_CATEGORY_AND_NUM_ERRORS);
+        matcher.addURI(authority, HangmanContract.PATH_TALE_OVERALL, TALE_OVERALL);
+        matcher.addURI(authority, HangmanContract.PATH_TALE_OVERALL + "/#/#", TALE_OVERALL_WITH_PLAYER_AND_CATEGORY);
 
         return matcher;
     }
@@ -328,10 +431,18 @@ public class HangmanProvider extends ContentProvider {
                 return HangmanContract.WordEntry.CONTENT_TYPE;
             case WORD_WITH_LANGUAGE_AND_CATEGORY_AND_LEVEL_NOT_USED:
                 return HangmanContract.WordEntry.CONTENT_ITEM_TYPE;
+            case WORD_WITH_LANGUAGE_AND_CATEGORY_NOT_USED:
+                return HangmanContract.WordEntry.CONTENT_ITEM_TYPE;
+            case WORD_COUNT_USAGE_WITH_LANGUAGE_CATEGORY_LEVEL:
+                return HangmanContract.WordEntry.CONTENT_TYPE;
             case SCORE_MODEL:
                 return HangmanContract.ScoreModelEntry.CONTENT_TYPE;
-            case SCORE_MODEL_WITH_CATEGORY:
-                return HangmanContract.ScoreModelEntry.CONTENT_TYPE;
+            case SCORE_MODEL_WITH_CATEGORY_AND_NUM_ERRORS:
+                return HangmanContract.ScoreModelEntry.CONTENT_ITEM_TYPE;
+            case TALE_OVERALL:
+                return HangmanContract.TaleOverallEntry.CONTENT_TYPE;
+            case TALE_OVERALL_WITH_PLAYER_AND_CATEGORY:
+                return HangmanContract.TaleOverallEntry.CONTENT_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -348,9 +459,29 @@ public class HangmanProvider extends ContentProvider {
                 retCursor = getWordByLanguageCategoryLevel(uri, projection, sortOrder);
                 break;
             }
+            // "WORD/#/#/#"
+            case WORD_WITH_LANGUAGE_AND_CATEGORY_NOT_USED: {
+                retCursor = getWordByLanguageCategory(uri, projection, sortOrder);
+                break;
+            }
+            // "WORD/#/#/#"
+            case WORD_COUNT_USAGE_WITH_LANGUAGE_CATEGORY_LEVEL: {
+                retCursor = getCountWordsUsageWithLanguageCategoryLevel(uri, projection, sortOrder);
+                break;
+            }
             // "TALE_SCORE_CATEGORY/#/#"
             case TALE_SCORE_CATEGORY_WITH_PLAYER_AND_CATEGORY: {
                 retCursor = getTaleScoreAndCategoryByPlayerCategory(uri, projection, sortOrder);
+                break;
+            }
+            // "TALE_OVERALL/#/#"
+            case TALE_OVERALL_WITH_PLAYER_AND_CATEGORY: {
+                retCursor = getNumStarsByPlayerCategory(uri, projection, sortOrder);
+                break;
+            }
+            // "SCORE_MODEL/#/#"
+            case SCORE_MODEL_WITH_CATEGORY_AND_NUM_ERRORS: {
+                retCursor = getScoreModelByCategoryNumErrors(uri, projection);
                 break;
             }
             // "CATEGORY/#"
@@ -371,11 +502,6 @@ public class HangmanProvider extends ContentProvider {
             // "LANGUAGE/#"
             case LANGUAGE_WITH_LAST_USED: {
                 retCursor = getLanguageByLastUsed(uri, projection, sortOrder);
-                break;
-            }
-            // "SCORE_MODEL/#"
-            case SCORE_MODEL_WITH_CATEGORY: {
-                retCursor = getScoreModelByCategory(uri, projection, sortOrder);
                 break;
             }
             // "PLAYER"
@@ -469,6 +595,19 @@ public class HangmanProvider extends ContentProvider {
                 );
                 break;
             }
+            // "TALE_OVERALL"
+            case TALE_OVERALL: {
+                retCursor = mOpenHelper.getReadableDatabase().query(
+                        HangmanContract.TaleOverallEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -539,6 +678,14 @@ public class HangmanProvider extends ContentProvider {
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;
             }
+            case TALE_OVERALL: {
+                long _id = db.insert(HangmanContract.TaleOverallEntry.TABLE_NAME, null, values);
+                if ( _id > 0 )
+                    returnUri = HangmanContract.TaleOverallEntry.buildTaleOverallUri(_id);
+                else
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                break;
+            }
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -581,6 +728,10 @@ public class HangmanProvider extends ContentProvider {
             case SCORE_MODEL:
                 rowsDeleted = db.delete(
                         HangmanContract.ScoreModelEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            case TALE_OVERALL:
+                rowsDeleted = db.delete(
+                        HangmanContract.TaleOverallEntry.TABLE_NAME, selection, selectionArgs);
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -626,6 +777,10 @@ public class HangmanProvider extends ContentProvider {
                 break;
             case SCORE_MODEL:
                 rowsUpdated = db.update(HangmanContract.ScoreModelEntry.TABLE_NAME, values, selection,
+                        selectionArgs);
+                break;
+            case TALE_OVERALL:
+                rowsUpdated = db.update(HangmanContract.TaleOverallEntry.TABLE_NAME, values, selection,
                         selectionArgs);
                 break;
             default:
