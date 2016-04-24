@@ -19,7 +19,7 @@ public class MainActivityFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main_activity, container, false);
 
@@ -38,7 +38,7 @@ public class MainActivityFragment extends Fragment {
         Button baseButton = (Button)rootView.findViewById(R.id.baseButton);
         baseButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-
+/*
                 ContentValues values = new ContentValues();
                 values.put(HangmanContract.WordEntry.COLUMN_WORD_USED, 0);
 
@@ -51,12 +51,26 @@ public class MainActivityFragment extends Fragment {
 
                 System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
                 System.out.println(qtd);
+*/
+
+                startActivity(new Intent(getContext(), BannerActivity.class));
 
             }
         });
 //////////////////////////////////////////////////////////
 
+        Button interestitialButton = (Button)rootView.findViewById(R.id.interstitialButton);
+        interestitialButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+
+                startActivity(new Intent(getContext(), InterstitialActivity.class));
+
+            }
+        });
+
         return rootView;
     }
+
+
 
 }

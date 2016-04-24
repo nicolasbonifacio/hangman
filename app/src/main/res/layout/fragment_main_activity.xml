@@ -17,11 +17,23 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Base"
+        android:text="Banner"
         android:id="@+id/baseButton"
         android:layout_gravity="center"
         android:layout_below="@+id/playButton"
         android:layout_alignLeft="@+id/playButton"
         android:layout_alignStart="@+id/playButton" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Interstitial"
+        android:id="@+id/interstitialButton"
+        android:layout_gravity="center"
+        android:layout_below="@+id/baseButton"
+        android:layout_alignLeft="@+id/baseButton"
+        android:layout_alignStart="@+id/baseButton" />
+
+
 
 </RelativeLayout>

@@ -3,6 +3,12 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_selection">SelectionActivity</string>
 
+    <!-- TESTING banner id -->
+    <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
+
+    <!-- TESTING interstitial id -->
+    <string name="interstitial_ad_unit_id">ca-app-pub-3940256099942544/1033173712</string>
+
     <string name="content_authority">com.nick.hangman</string>
     <string name="title_activity_game_main">GameMainActivity</string>
 
