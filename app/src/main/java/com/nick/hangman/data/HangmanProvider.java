@@ -35,6 +35,7 @@ public class HangmanProvider extends ContentProvider {
     static final int SCORE_MODEL_WITH_CATEGORY_AND_NUM_ERRORS = 701;
     static final int TALE_OVERALL = 800;
     static final int TALE_OVERALL_WITH_PLAYER_AND_CATEGORY = 801;
+    static final int TALE_OVERALL_WITH_PLAYER = 802;
 
     static final String WORD_GROUP_BY_FIELD = "WORD_USED";
 
@@ -130,6 +131,12 @@ public class HangmanProvider extends ContentProvider {
         sTaleOverallPlayerCategoryQueryBuilder.setTables(HangmanContract.TaleOverallEntry.TABLE_NAME);
     }
 
+    private static final SQLiteQueryBuilder sTaleOverallPlayerQueryBuilder;
+    static {
+        sTaleOverallPlayerQueryBuilder = new SQLiteQueryBuilder();
+        sTaleOverallPlayerQueryBuilder.setTables(HangmanContract.TaleOverallEntry.TABLE_NAME);
+    }
+
     private static final SQLiteQueryBuilder sCountWordsUsageWithLanguageCategoryLevelQueryBuilder;
     static {
         sCountWordsUsageWithLanguageCategoryLevelQueryBuilder = new SQLiteQueryBuilder();
@@ -216,6 +223,16 @@ public class HangmanProvider extends ContentProvider {
                     HangmanContract.TaleOverallEntry.TABLE_NAME +
                     "." + HangmanContract.TaleOverallEntry.COLUMN_LOC_KEY_CATEGORY + " = ?";
 
+    //TALE_OVERALL.PLAYER_ID = ?
+    private static final String sTaleOverallPlayerSelection =
+            HangmanContract.TaleOverallEntry.TABLE_NAME +
+                    "." + HangmanContract.TaleOverallEntry.COLUMN_LOC_KEY_PLAYER + " = ?";
+
+    private static final String sTaleOverallPlayerGroupBy =
+            HangmanContract.TaleOverallEntry.TABLE_NAME +
+                    "." + HangmanContract.TaleOverallEntry.COLUMN_LOC_KEY_PLAYER + ", " +
+            HangmanContract.TaleOverallEntry.TABLE_NAME +
+                    "." + HangmanContract.TaleOverallEntry.COLUMN_LOC_KEY_CATEGORY;
 
     private Cursor getCategoryByLanguage(
             Uri uri, String[] projection, String sortOrder) {
@@ -367,6 +384,20 @@ public class HangmanProvider extends ContentProvider {
         );
     }
 
+    private Cursor getNumStarsByPlayer(
+            Uri uri, String[] projection, String sortOrder) {
+        String player = HangmanContract.TaleOverallEntry.getPlayerFromUri(uri);
+
+        return sTaleOverallPlayerQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+                projection,
+                sTaleOverallPlayerSelection,
+                new String[]{player},
+                sTaleOverallPlayerGroupBy,
+                null,
+                sortOrder
+        );
+    }
+
     static UriMatcher buildUriMatcher() {
 
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -382,7 +413,7 @@ public class HangmanProvider extends ContentProvider {
         matcher.addURI(authority, HangmanContract.PATH_LEVEL + "/#", LEVEL_WITH_LANGUAGE);
         matcher.addURI(authority, HangmanContract.PATH_WORD, WORD);
         matcher.addURI(authority, HangmanContract.PATH_WORD + "/#/#/#/#", WORD_WITH_LANGUAGE_AND_CATEGORY_AND_LEVEL_NOT_USED);
-        matcher.addURI(authority, HangmanContract.PATH_WORD + "/#/#/#", WORD_WITH_LANGUAGE_AND_CATEGORY_NOT_USED);
+        //matcher.addURI(authority, HangmanContract.PATH_WORD + "/#/#/#", WORD_WITH_LANGUAGE_AND_CATEGORY_NOT_USED);
         matcher.addURI(authority, HangmanContract.PATH_WORD + "/#/#/#", WORD_COUNT_USAGE_WITH_LANGUAGE_CATEGORY_LEVEL);
         matcher.addURI(authority, HangmanContract.PATH_TALE_SCORE_CATEGORY, TALE_SCORE_CATEGORY);
         matcher.addURI(authority, HangmanContract.PATH_TALE_SCORE_CATEGORY + "/#/#", TALE_SCORE_CATEGORY_WITH_PLAYER_AND_CATEGORY);
@@ -390,6 +421,7 @@ public class HangmanProvider extends ContentProvider {
         matcher.addURI(authority, HangmanContract.PATH_SCORE_MODEL + "/#/#", SCORE_MODEL_WITH_CATEGORY_AND_NUM_ERRORS);
         matcher.addURI(authority, HangmanContract.PATH_TALE_OVERALL, TALE_OVERALL);
         matcher.addURI(authority, HangmanContract.PATH_TALE_OVERALL + "/#/#", TALE_OVERALL_WITH_PLAYER_AND_CATEGORY);
+        matcher.addURI(authority, HangmanContract.PATH_TALE_OVERALL + "/#", TALE_OVERALL_WITH_PLAYER);
 
         return matcher;
     }
@@ -443,6 +475,8 @@ public class HangmanProvider extends ContentProvider {
                 return HangmanContract.TaleOverallEntry.CONTENT_TYPE;
             case TALE_OVERALL_WITH_PLAYER_AND_CATEGORY:
                 return HangmanContract.TaleOverallEntry.CONTENT_TYPE;
+            case TALE_OVERALL_WITH_PLAYER:
+                return HangmanContract.TaleOverallEntry.CONTENT_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -477,6 +511,11 @@ public class HangmanProvider extends ContentProvider {
             // "TALE_OVERALL/#/#"
             case TALE_OVERALL_WITH_PLAYER_AND_CATEGORY: {
                 retCursor = getNumStarsByPlayerCategory(uri, projection, sortOrder);
+                break;
+            }
+            // "TALE_OVERALL/#"
+            case TALE_OVERALL_WITH_PLAYER: {
+                retCursor = getNumStarsByPlayer(uri, projection, sortOrder);
                 break;
             }
             // "SCORE_MODEL/#/#"

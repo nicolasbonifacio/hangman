@@ -35,23 +35,9 @@ public class MainActivityFragment extends Fragment {
 
 
 ///////////////////////////////////////////////////////
-        Button baseButton = (Button)rootView.findViewById(R.id.baseButton);
-        baseButton.setOnClickListener(new View.OnClickListener() {
+        Button bannerButton = (Button)rootView.findViewById(R.id.bannerButton);
+        bannerButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-/*
-                ContentValues values = new ContentValues();
-                values.put(HangmanContract.WordEntry.COLUMN_WORD_USED, 0);
-
-                int qtd = getContext().getContentResolver().update(
-                        HangmanContract.WordEntry.CONTENT_URI,
-                        values,
-                        null,
-                        null
-                );
-
-                System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-                System.out.println(qtd);
-*/
 
                 startActivity(new Intent(getContext(), BannerActivity.class));
 
@@ -64,6 +50,26 @@ public class MainActivityFragment extends Fragment {
             public void onClick(View view) {
 
                 startActivity(new Intent(getContext(), InterstitialActivity.class));
+
+            }
+        });
+
+        Button baseButton = (Button)rootView.findViewById(R.id.baseButton);
+        baseButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+
+                ContentValues values = new ContentValues();
+                values.put(HangmanContract.WordEntry.COLUMN_WORD_USED, 0);
+
+                int qtd = getContext().getContentResolver().update(
+                        HangmanContract.WordEntry.CONTENT_URI,
+                        values,
+                        null,
+                        null
+                );
+
+                System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+                System.out.println(qtd);
 
             }
         });

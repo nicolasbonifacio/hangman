@@ -334,6 +334,11 @@ public class HangmanContract {
                     .build();
         }
 
+        public static Uri buildTaleOverallWithPlayer(int player) {
+            return CONTENT_URI.buildUpon().appendPath(Integer.toString(player))
+                    .build();
+        }
+
         public static String getPlayerFromUri(Uri uri) {
             return uri.getPathSegments().get(1);
         }

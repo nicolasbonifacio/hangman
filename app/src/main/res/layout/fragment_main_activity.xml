@@ -18,7 +18,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Banner"
-        android:id="@+id/baseButton"
+        android:id="@+id/bannerButton"
         android:layout_gravity="center"
         android:layout_below="@+id/playButton"
         android:layout_alignLeft="@+id/playButton"
@@ -30,9 +30,18 @@
         android:text="Interstitial"
         android:id="@+id/interstitialButton"
         android:layout_gravity="center"
-        android:layout_below="@+id/baseButton"
-        android:layout_alignLeft="@+id/baseButton"
-        android:layout_alignStart="@+id/baseButton" />
+        android:layout_below="@+id/bannerButton"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Base"
+        android:id="@+id/baseButton"
+        android:layout_gravity="center"
+        android:layout_below="@+id/interstitialButton"
+        android:layout_alignLeft="@+id/bannerButton"
+        android:layout_alignStart="@+id/bannerButton" />
 
 
 

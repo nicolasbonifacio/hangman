@@ -58,6 +58,13 @@ public class GameMainActivityFragment extends Fragment {
     private static final String[] THIRD_KEYPAD_LINE_CHARACTERS = {"S", "T", "U", "V", "W", "X",
             "Y", "Z"};
 
+    private static final String sWordLanguageCategorySelection =
+            HangmanContract.WordEntry.TABLE_NAME +
+                    "." + HangmanContract.WordEntry.COLUMN_LOC_KEY_LANGUAGE + " = ? AND " +
+                    HangmanContract.WordEntry.TABLE_NAME +
+                    "." + HangmanContract.WordEntry.COLUMN_LOC_KEY_CATEGORY + " = ? AND " +
+                    HangmanContract.WordEntry.TABLE_NAME +
+                    "." + HangmanContract.WordEntry.COLUMN_WORD_USED + " = ?";
 
     //WORD columns
     public static final int COL_WORD_ID = 0;
@@ -132,7 +139,6 @@ public class GameMainActivityFragment extends Fragment {
                 int paddingLeftAndRight = horizontalPadding * 2;
 
                 int widthLessPadding = widthPx - paddingLeftAndRight;
-
 
                 int keypadButtonWidth = (int)(widthLessPadding / FIRST_KEYPAD_LINE_CHARACTERS.length);
                 int keypadButtonHeight = (int)(keypadButtonWidth * 1.2);
@@ -232,18 +238,25 @@ public class GameMainActivityFragment extends Fragment {
 
         if(paramsSel.getLevelId() == 0) {
             //All levels released
-            mUri = HangmanContract.WordEntry.buildWordWithLanguageCategory(paramsSel.getLanguageId(),
-                    paramsSel.getCategoryId(),
-                    WORD_NOT_USED_FLAG);
+            String sLanguage = Integer.toString(paramsSel.getLanguageId());
+            String sCategory = Integer.toString(paramsSel.getCategoryId());
+            String sWordNotUsed = Integer.toString(WORD_NOT_USED_FLAG);
+
+            mCursor = getContext().getContentResolver().query(HangmanContract.WordEntry.CONTENT_URI,
+                    WORD_COLUMNS,
+                    sWordLanguageCategorySelection, //selection
+                    new String[]{sLanguage, sCategory, sWordNotUsed}, //selection args
+                    null);
+
         }else {
             //Sets a specific level
             mUri = HangmanContract.WordEntry.buildWordWithLanguageCategoryLevel(paramsSel.getLanguageId(),
                     paramsSel.getCategoryId(),
                     WORD_NOT_USED_FLAG,
                     paramsSel.getLevelId());
-        }
 
-        mCursor = getContext().getContentResolver().query(mUri, WORD_COLUMNS, null, null, WORD_SORT_ORDER);
+            mCursor = getContext().getContentResolver().query(mUri, WORD_COLUMNS, null, null, WORD_SORT_ORDER);
+        }
 
         if(mCursor != null && mCursor.moveToFirst()) {
 
