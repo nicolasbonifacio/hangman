@@ -1,7 +1,6 @@
 package com.nick.hangman;
 
 import android.app.Dialog;
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
@@ -13,7 +12,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +33,13 @@ public class GameMainActivityFragment extends Fragment {
     private static final int WORD_NOT_USED_FLAG = 0;
     private static final int WORD_USED_FLAG = 1;
     private static final int ENABLED_FLAG = 1;
+    private static final int GALLOWS_IMAGE_BEGIN_FLAG = 0;
+    private static final int WORD_PADDING_TIMES = 5;
+    private static final String DASH_FLAG = "DASH";
+    private static final int MAX_CHARACTERS_PER_LINE = 14;
+    private static final int HEIGHT_DENSITY_TIMES = 20;
+    private static final float GALLOWS_PERC_HEIGHT = 0.26f;
+    private static final float GALLOWS_HEIGHT_AND_WIDTH_RATIO = 1.4434f;
 
     private static final String WORD_SORT_ORDER = "RANDOM() LIMIT 1";
 
@@ -77,17 +85,22 @@ public class GameMainActivityFragment extends Fragment {
     private Uri mUri;
     private Cursor mCursor;
     private View rootView;
+    private ImageView mGallowsView;
 
     private ParametersSelected paramsSel;
     private Word mWord;
 
-    private ArrayList<String> mListWord;
+    private ArrayList<ArrayList> mListWord;
+    private ArrayList<String> mListCharacters;
     private int mQtdError;
     private int mQtdHits;
     private int lastDash;
     private boolean mGameWon;
+    private int mTotalCharacters;
+    private float mDensity;
+    private int mCharacterHeight;
 
-    TextView mTestImageView;
+    private Utils mUtils;
 
     public GameMainActivityFragment() {
     }
@@ -102,40 +115,76 @@ public class GameMainActivityFragment extends Fragment {
         if (intent != null && intent.hasExtra("paramsSel")) {
             paramsSel = (ParametersSelected) intent.getSerializableExtra("paramsSel");
 
-            //TextView player1NameView = (TextView) rootView.findViewById(R.id.player1GameNameTextView);
+            int horizontalPadding = (int)getResources().getDimension(R.dimen.activity_horizontal_margin);
+            int verticalPadding = (int)getResources().getDimension(R.dimen.activity_vertical_margin);
+            int widthPx = getContext().getResources().getDisplayMetrics().widthPixels;
+            int heightPx = getContext().getResources().getDisplayMetrics().heightPixels;
+            mDensity = getContext().getResources().getDisplayMetrics().density;
+
             TextView player1ScoreView = (TextView) rootView.findViewById(R.id.player1GameScoreValueTextView);
             TextView categoryDescrView = (TextView) rootView.findViewById(R.id.categoryGameDescrTextView);
-            TextView levelDescrView = (TextView) rootView.findViewById(R.id.levelGameDescrTextView);
 
-            //player1NameView.setText(paramsSel.getPlayer1DescrName());
             player1ScoreView.setText(Integer.toString(paramsSel.getTaleScoreCategoryScore()));
             categoryDescrView.setText(paramsSel.getCategoryDescrCategory());
-            levelDescrView.setText(paramsSel.getLevelDescrLevel());
+
+            //Progress bar
+            //Half screen width, minus two times horizontal padding
+            int baseProgressBarWidth = (int)(widthPx / 2) - (horizontalPadding * 2);
+
+            RelativeLayout baseProgressBarLayout = (RelativeLayout) rootView.findViewById(R.id.baseProgressBarLayout);
+            RelativeLayout.LayoutParams baseRelativeParams = new RelativeLayout.LayoutParams(
+                    baseProgressBarWidth,
+                    (int)getResources().getDimension(R.dimen.base_progress_bar_height));
+
+            ImageView baseLevelDescrView = new ImageView(getContext());
+            baseLevelDescrView.setBackgroundColor(getResources().getColor(R.color.colorBaseProgressBar));
+
+            baseProgressBarLayout.addView(baseLevelDescrView, baseRelativeParams);
+
+            //% of level completed
+            int percCompletedBar = (int)(paramsSel.getLevelPercCompleted() * baseProgressBarWidth) / 100;
+
+            RelativeLayout progressBarLayout = (RelativeLayout) rootView.findViewById(R.id.progressBarLayout);
+            RelativeLayout.LayoutParams progressRelativeParams = new RelativeLayout.LayoutParams(
+                    percCompletedBar,
+                    (int)getResources().getDimension(R.dimen.progress_bar_height));
+
+            ImageView levelDescrView = new ImageView(getContext());
+            levelDescrView.setImageDrawable(getResources().getDrawable(R.drawable.progress_bar));
+            levelDescrView.setScaleType(ImageView.ScaleType.CENTER);
+            levelDescrView.setAdjustViewBounds(false);
+            levelDescrView.setPadding(0, 0, 0, 0);
+            levelDescrView.setMaxWidth(percCompletedBar);
+            levelDescrView.setMinimumWidth(percCompletedBar);
+
+            progressBarLayout.addView(levelDescrView, progressRelativeParams);
 
             lastDash = 0;
             mGameWon = false;
-
+            mUtils = new Utils();
             //Fetch DB for the word and splits it into an ArrayList, putting each character in one position
             if(loadWordNotUsed()) {
 
-                /////////////////// to be removed //////////////////////
-                mTestImageView = (TextView) rootView.findViewById(R.id.testImageTextView);
-                TextView answer = (TextView) rootView.findViewById(R.id.answerTextView);
-                answer.setText(mWord.getWord());
-                ////////////////////////////////////////////////////////
+                int gallowsHeight = (int)((heightPx * GALLOWS_PERC_HEIGHT));
+                int gallowsWidth = (int)((heightPx * GALLOWS_PERC_HEIGHT) / GALLOWS_HEIGHT_AND_WIDTH_RATIO);
 
+                mGallowsView = (ImageView) rootView.findViewById(R.id.imageGallowsView);
+                mGallowsView.setImageDrawable(getResources().getDrawable(mUtils.getGallowsImage(GALLOWS_IMAGE_BEGIN_FLAG)));
+                mGallowsView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                mGallowsView.setAdjustViewBounds(true);
+                mGallowsView.setPadding(0, 0, 0, 0);
+                mGallowsView.setMaxWidth(gallowsWidth);
+                mGallowsView.setMaxHeight(gallowsHeight);
+                mGallowsView.setMinimumWidth(gallowsWidth);
+                mGallowsView.setMinimumHeight(gallowsHeight);
 
-////////////////////ta errado, tem que trocar pra float quando for imagem
 //                float scaledDensity = getContext().getResources().getDisplayMetrics().scaledDensity;
-                int widthPx = getContext().getResources().getDisplayMetrics().widthPixels;
-                float density = getContext().getResources().getDisplayMetrics().density;
 //                int c = getContext().getResources().getDisplayMetrics().densityDpi;
 //                float xdpi = getContext().getResources().getDisplayMetrics().xdpi;
 //                float ydpi = getContext().getResources().getDisplayMetrics().ydpi;
 //                int keypadButtonWidth = Math.round((int)(density*35));
 //                int keypadButtonHeight = Math.round((int)(density*45));
 
-                int horizontalPadding = (int)getResources().getDimension(R.dimen.activity_horizontal_margin);
                 int paddingLeftAndRight = horizontalPadding * 2;
 
                 int widthLessPadding = widthPx - paddingLeftAndRight;
@@ -162,7 +211,7 @@ public class GameMainActivityFragment extends Fragment {
                         public void onClick(View view) {
 
                             btn1.setEnabled(false);
-                            btn1.setBackgroundColor(Color.parseColor("#645252"));
+                            btn1.setBackgroundColor(getResources().getColor(R.color.colorButtonDisabled));
                             handleGuess(FIRST_KEYPAD_LINE_CHARACTERS[btn1.getId() - 2001]);
 
                         }
@@ -188,7 +237,7 @@ public class GameMainActivityFragment extends Fragment {
                         public void onClick(View view) {
 
                             btn2.setEnabled(false);
-                            btn2.setBackgroundColor(Color.parseColor("#645252"));
+                            btn2.setBackgroundColor(getResources().getColor(R.color.colorButtonDisabled));
                             handleGuess(SECOND_KEYPAD_LINE_CHARACTERS[btn2.getId() - 3001]);
 
                         }
@@ -214,7 +263,7 @@ public class GameMainActivityFragment extends Fragment {
                         public void onClick(View view) {
 
                             btn3.setEnabled(false);
-                            btn3.setBackgroundColor(Color.parseColor("#645252"));
+                            btn3.setBackgroundColor(getResources().getColor(R.color.colorButtonDisabled));
                             handleGuess(THIRD_KEYPAD_LINE_CHARACTERS[btn3.getId() - 4001]);
 
                         }
@@ -270,30 +319,81 @@ public class GameMainActivityFragment extends Fragment {
 
             mCursor.close();
 
-            mListWord = new ArrayList<String>();
-            for (int i = 0; i < mWord.getWord().length(); i++) {
-                mListWord.add(i, mWord.getWord().substring(i, i + 1));
+            mTotalCharacters = 0;
+
+//mWord.setWord("HOUSE OF CARDS");
+            mWord.setWord(mWord.getWord().replace("   ", " "));
+            mWord.setWord(mWord.getWord().replace("  ", " "));
+
+            //Splits the word for it's spaces
+            mListWord = new ArrayList<ArrayList>();
+            String[] words = mWord.getWord().split(" ");
+
+            for(int j = 0; j < words.length; j++) {
+                mListCharacters = new ArrayList<String>();
+                for (int i = 0; i < words[j].length(); i++) {
+                    mListCharacters.add(i, words[j].substring(i, i + 1));
+                    mTotalCharacters++;
+                }
+                mListWord.add(j, mListCharacters);
+
             }
 
             mQtdError = 0;
             mQtdHits = 0;
 
             //Create word structure
-            LinearLayout wordLayout = (LinearLayout) rootView.findViewById(R.id.wordLayout);
-            for (int i = 1001; i <= mWord.getWord().length() + 1000; i++) {
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT);
-                TextView dash = new TextView(getContext());
-                dash.setId(i);
-//                final int id_ = dash.getId();
-                dash.setText("_ ");
-
-                wordLayout.addView(dash, params);
-
-                if(i > lastDash) {
-                    lastDash = i;
+            int higherNumCharactersMore = 0;
+            boolean hasMoreThanMax = false;
+            for(int j = 0; j < words.length; j++) {
+                if(words[j].length() > MAX_CHARACTERS_PER_LINE) {
+                    int numCharactersMore = words[j].length();
+                    if(numCharactersMore > higherNumCharactersMore) {
+                        higherNumCharactersMore = numCharactersMore;
+                        mCharacterHeight = (int)(((HEIGHT_DENSITY_TIMES * mDensity) * MAX_CHARACTERS_PER_LINE) / higherNumCharactersMore);
+                    }
+                    hasMoreThanMax = true;
                 }
+            }
+            if(!hasMoreThanMax) {
+                mCharacterHeight = (int)(HEIGHT_DENSITY_TIMES * mDensity);
+            }
+
+            LinearLayout wordLayout = (LinearLayout) rootView.findViewById(R.id.wordLayout);
+            LinearLayout wordLineLayout;
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT);
+
+            LinearLayout.LayoutParams paramsCharacter = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    mCharacterHeight);
+
+            int id = 1001;
+            for(int j = 0; j < words.length; j++) {
+                wordLineLayout = new LinearLayout(getContext());
+                wordLineLayout.setOrientation(LinearLayout.HORIZONTAL);
+                wordLineLayout.setLayoutParams(params);
+                wordLineLayout.setPadding(0, (int)mDensity * WORD_PADDING_TIMES, 0, (int)mDensity * WORD_PADDING_TIMES);
+
+                for (int i = 1001; i <= words[j].length() + 1000; i++) {
+
+                    ImageView dash = new ImageView(getContext());
+                    dash.setId(id);
+                    dash.setImageDrawable(getResources().getDrawable(mUtils.getCharacterImage(DASH_FLAG)));
+                    dash.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                    dash.setAdjustViewBounds(true);
+                    dash.setPadding(0, 0, 0, 0);
+                    dash.setMaxHeight(mCharacterHeight);
+                    dash.setMinimumHeight(mCharacterHeight);
+                    wordLineLayout.addView(dash, paramsCharacter);
+
+                    if (id > lastDash) {
+                        lastDash = id;
+                    }
+                    id++;
+                }
+                wordLayout.addView(wordLineLayout, params);
             }
 
             return true;
@@ -304,29 +404,33 @@ public class GameMainActivityFragment extends Fragment {
 
     private void handleGuess(String character) {
         boolean hasError = true;
-
-        for(int i=0; i<mListWord.size(); i++) {
-            if(mListWord.get(i).equals(character)) {
-                hasError = false;
-                drawCharacter(i+1, character);
-                mQtdHits++;
-                // Verify if the game was won
-                if(mQtdHits >= mListWord.size()) {
-                    mGameWon = true;
+        ArrayList<String> listCharacters = new ArrayList<String>();
+        int id = 1001;
+        for(int j = 0; j < mListWord.size(); j++) {
+            listCharacters = mListWord.get(j);
+            for (int i = 0; i < listCharacters.size(); i++) {
+                if (listCharacters.get(i).equals(character)) {
+                    hasError = false;
+                    drawCharacter(id, character);
+                    mQtdHits++;
+                    // Verify if the game was won
+                    if (mQtdHits >= mTotalCharacters) {
+                        mGameWon = true;
+                    }
                 }
-
+                id++;
             }
         }
 
         if(mGameWon) {
             // Win game popup
             endGamePopup(true);
-
-    }
+        }
 
         if(hasError) {
             mQtdError++;
-            mTestImageView.setText(Integer.toString(mQtdError));
+
+            mGallowsView.setImageDrawable(getResources().getDrawable(mUtils.getGallowsImage(mQtdError)));
 
             // Verify if the game is over
             if(mQtdError >= TOTAL_QTD_ERROR) {
@@ -338,17 +442,20 @@ public class GameMainActivityFragment extends Fragment {
 
     private void drawCharacter(int position, String sCharacter) {
 
-        TextView dashView;
+        ImageView characterView;
 
-        for (int i = 1001; i <= mWord.getWord().length()+1000; i++) {
+        for (int i = 1001; i <= mTotalCharacters+1000; i++) {
 
-            if(i == position+1000) {
-                dashView = (TextView) rootView.findViewById(i);
-                dashView.setText(sCharacter + " ");
+            if(i == position) {
+                characterView = (ImageView) rootView.findViewById(i);
+                characterView.setImageDrawable(getResources().getDrawable(mUtils.getCharacterImage(sCharacter)));
+                characterView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                characterView.setAdjustViewBounds(true);
+                characterView.setPadding(0, 0, 0, 0);
+                characterView.setMaxHeight(mCharacterHeight);
+                characterView.setMinimumHeight(mCharacterHeight);
             }
-
         }
-
     }
 
     private void setNewWord() {
@@ -437,13 +544,9 @@ public class GameMainActivityFragment extends Fragment {
                     taleOverallValues
             );
 
-            System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-            System.out.println(ContentUris.parseId(insertedUri));
-
             mCursor.close();
 
             updatePlayerScore(qtdPoints);
-
 
         }
 
@@ -503,9 +606,6 @@ public class GameMainActivityFragment extends Fragment {
                 "_id = ?",
                 new String[]{id}
         );
-
-        System.out.println("bbbbbbbbbbbbbbbbbbbbbbbbb");
-        System.out.println(qtd);
 
     }
 

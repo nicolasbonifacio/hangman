@@ -10,4 +10,15 @@
     <!-- Teal 50 -->
     <color name="colorBackground">#E0F2F1</color>
 
+    <!-- Teal 500 -->
+    <color name="colorButtonDisabled">#009688</color>
+
+    <!-- Grey 500 -->
+    <color name="colorDivisionGameScreen">#9E9E9E</color>
+
+    <!-- Grey 300 -->
+    <color name="colorBaseProgressBar">#E0E0E0</color>
+
+
+
 </resources>

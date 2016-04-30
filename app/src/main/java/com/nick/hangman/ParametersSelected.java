@@ -22,6 +22,7 @@ public class ParametersSelected implements Serializable {
     private String categoryDescrCategory;
 
     private int levelId;
+    private int levelPercCompleted;
     private String levelDescrLevel;
 
     private int taleScoreCategoryId;
@@ -116,6 +117,14 @@ public class ParametersSelected implements Serializable {
 
     public void setLevelId(int levelId) {
         this.levelId = levelId;
+    }
+
+    public int getLevelPercCompleted() {
+        return levelPercCompleted;
+    }
+
+    public void setLevelPercCompleted(int levelPercCompleted) {
+        this.levelPercCompleted = levelPercCompleted;
     }
 
     public String getLevelDescrLevel() {

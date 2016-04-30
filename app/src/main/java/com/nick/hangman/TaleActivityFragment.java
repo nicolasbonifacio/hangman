@@ -107,10 +107,9 @@ public class TaleActivityFragment extends Fragment {
 
     public static final int WIDTH_BUTTON_CATEGORY_PERCENTAGE = 65;
     public static final int WIDTH_ICON_STARS_PERCENTAGE = 45;
-    public static final int PADDING_TEXT_LEFT_PERCENTAGE = 10;
+    public static final int PADDING_TEXT_LEFT_PERCENTAGE = 15;
 
     private View rootView;
-    private ScrollView scroller;
     private Uri mUri;
     private Cursor mCursor;
 
@@ -149,13 +148,7 @@ public class TaleActivityFragment extends Fragment {
         }
 
         rootView = inflater.inflate(R.layout.fragment_tale, container, false);
-/*
-        scroller = new ScrollView(getActivity());
-        scroller.setRotation(180);
-        scroller.addView(rootView);
 
-        return scroller;
-*/
         return rootView;
 
     }
@@ -245,7 +238,7 @@ public class TaleActivityFragment extends Fragment {
         String text = mListTaleScoreCategory.get(i - 1).getDescrCategory();
         text = text.replace(" ", "\r\n");
         categoryName.setText(text);
-        categoryName.setPadding((int)(((mWidthPx/3)*PADDING_TEXT_LEFT_PERCENTAGE)/100), 0, 0, 0);  //10% of a third of the screen width
+        categoryName.setPadding((int)(((mWidthPx/3)*PADDING_TEXT_LEFT_PERCENTAGE)/100), 0, 0, 0);  //15% of a third of the screen width
         categoryName.setGravity(Gravity.LEFT);
 
         LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(
@@ -407,8 +400,9 @@ public class TaleActivityFragment extends Fragment {
         paramsSel.setCategoryId(mListTaleScoreCategory.get(position-1).getCategoryId());
         paramsSel.setPlayer1Id(TALE_PLAYER_FLAG);
 
+        //% of level completed
         int percLevel = (int)(paramsSel.getTaleScoreCategoryScore()*100)/paramsSel.getTaleScoreCategoryEnableScore();
-        paramsSel.setLevelDescrLevel(Integer.toString(percLevel));
+        paramsSel.setLevelPercCompleted(percLevel);
 
         int third = (int)(paramsSel.getTaleScoreCategoryEnableScore()/3);
         if(paramsSel.getTaleScoreCategoryScore() < third) {
@@ -490,16 +484,10 @@ public class TaleActivityFragment extends Fragment {
                                         , Integer.toString(level)}
                         );
 
-                        System.out.println("cccccccccccccccccccccccc");
-                        System.out.println(qtdRws);
-
                     }
                 }
-
             }
-
         }
-
     }
 
     private void loadQtdStarsCategoryOverall() {

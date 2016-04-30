@@ -142,4 +142,122 @@ public class Utils {
         return iconCode;
     }
 
+    public int getGallowsImage(int numErrors) {
+
+        int imageCode;
+
+        switch (numErrors) {
+            case 0: imageCode = R.drawable.img_0_gallows;
+                break;
+            case 1: imageCode = R.drawable.img_1_head;
+                break;
+            case 2: imageCode = R.drawable.img_2_body;
+                break;
+            case 3: imageCode = R.drawable.img_3_right_arm;
+                break;
+            case 4: imageCode = R.drawable.img_4_left_arm;
+                break;
+            case 5: imageCode = R.drawable.img_5_right_leg;
+                break;
+            case 6: imageCode = R.drawable.img_6_left_leg;
+                break;
+            default: imageCode = R.drawable.img_0_gallows;
+        }
+
+        return imageCode;
+    }
+
+    public int getCharacterImage(String character) {
+
+        int imageCode;
+
+        switch (character) {
+            case "A":
+                imageCode = R.drawable.character_a;
+                break;
+            case "B":
+                imageCode = R.drawable.character_b;
+                break;
+            case "C":
+                imageCode = R.drawable.character_c;
+                break;
+            case "D":
+                imageCode = R.drawable.character_d;
+                break;
+            case "E":
+                imageCode = R.drawable.character_e;
+                break;
+            case "F":
+                imageCode = R.drawable.character_f;
+                break;
+            case "G":
+                imageCode = R.drawable.character_g;
+                break;
+            case "H":
+                imageCode = R.drawable.character_h;
+                break;
+            case "I":
+                imageCode = R.drawable.character_i;
+                break;
+            case "J":
+                imageCode = R.drawable.character_j;
+                break;
+            case "K":
+                imageCode = R.drawable.character_k;
+                break;
+            case "L":
+                imageCode = R.drawable.character_l;
+                break;
+            case "M":
+                imageCode = R.drawable.character_m;
+                break;
+            case "N":
+                imageCode = R.drawable.character_n;
+                break;
+            case "O":
+                imageCode = R.drawable.character_o;
+                break;
+            case "P":
+                imageCode = R.drawable.character_p;
+                break;
+            case "Q":
+                imageCode = R.drawable.character_q;
+                break;
+            case "R":
+                imageCode = R.drawable.character_r;
+                break;
+            case "S":
+                imageCode = R.drawable.character_s;
+                break;
+            case "T":
+                imageCode = R.drawable.character_t;
+                break;
+            case "U":
+                imageCode = R.drawable.character_u;
+                break;
+            case "V":
+                imageCode = R.drawable.character_v;
+                break;
+            case "W":
+                imageCode = R.drawable.character_w;
+                break;
+            case "X":
+                imageCode = R.drawable.character_x;
+                break;
+            case "Y":
+                imageCode = R.drawable.character_y;
+                break;
+            case "Z":
+                imageCode = R.drawable.character_z;
+                break;
+            case "DASH":
+                imageCode = R.drawable.character_dash;
+                break;
+            default:
+                imageCode = R.drawable.character_dash;
+        }
+
+        return imageCode;
+
+    }
 }

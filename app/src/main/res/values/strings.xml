@@ -24,7 +24,7 @@
     <string name="player_2_name_label">Player 2:</string>
     <string name="player_2_score_label">Score:</string>
     <string name="category_label">Category:</string>
-    <string name="level_label">Level:</string>
+    <string name="level_label">To next level:</string>
     <string name="lose_game">You lose!!!</string>
     <string name="win_game">You win!!!</string>
     <string name="end_game">Game Finished</string>
