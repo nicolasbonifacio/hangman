@@ -2,8 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:orientation="vertical"
     android:background="@color/colorBackground"
@@ -14,7 +12,9 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin">
 
 
         <LinearLayout
@@ -23,45 +23,25 @@
             android:layout_height="match_parent"
             android:layout_weight="1">
 
-            <!-- Player 1 score label -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/player_1_score_label"
-                android:id="@+id/player1GameScoreLabelTextView" />
-
-            <!-- Player 1 score -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/player1GameScoreValueTextView"
-                android:paddingLeft="@dimen/activity_horizontal_margin"/>
-
-            <!-- Category label -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/category_label"
-                android:id="@+id/categoryGameLabelTextView" />
-
-            <!-- Category descr -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/categoryGameDescrTextView"
-                android:paddingLeft="@dimen/activity_horizontal_margin"/>
-
             <!-- Level label -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/level_label"
+                android:textSize="@dimen/game_details_label_font_size"
+                android:fontFamily="sans-serif"
+                android:textStyle="bold"
                 android:id="@+id/levelGameLabelTextView" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/game_details_same_subject_vertical_padding"/>
 
             <!-- Level descr -->
             <RelativeLayout
                 android:layout_width="wrap_content"
-                android:layout_height="16dp"
+                android:layout_height="@dimen/activity_vertical_margin"
                 android:gravity="center">
 
                 <RelativeLayout
@@ -88,6 +68,34 @@
 
             </RelativeLayout>
 
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/game_details_different_subject_vertical_padding"/>
+
+            <!-- Category label -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/category_label"
+                android:textSize="@dimen/game_details_label_font_size"
+                android:fontFamily="sans-serif"
+                android:textStyle="bold"
+                android:id="@+id/categoryGameLabelTextView" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/game_details_same_subject_vertical_padding"/>
+
+            <!-- Category descr -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/categoryGameDescrTextView"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"/>
+
         </LinearLayout>
 
         <!-- Gallows image -->
@@ -113,6 +121,8 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:gravity="center"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
         android:id="@+id/wordLayout">
 
     </LinearLayout>
@@ -161,8 +171,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true">
+        android:layout_alignParentBottom="true">
 
         <include layout="@layout/activity_banner" />
 

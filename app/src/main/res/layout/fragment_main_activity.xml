@@ -43,6 +43,13 @@
         android:layout_alignLeft="@+id/bannerButton"
         android:layout_alignStart="@+id/bannerButton" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Picture"
+        android:id="@+id/testePictureButton"
+        android:layout_above="@+id/playButton"
+        android:layout_centerHorizontal="true" />
 
 
 </RelativeLayout>

@@ -74,6 +74,15 @@ public class MainActivityFragment extends Fragment {
             }
         });
 
+        Button testePictureButton = (Button)rootView.findViewById(R.id.testePictureButton);
+        testePictureButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+
+                startActivity(new Intent(getContext(), PictureSelectionActivity.class));
+
+            }
+        });
+
         return rootView;
     }
 

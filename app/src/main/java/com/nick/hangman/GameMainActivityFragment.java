@@ -3,8 +3,10 @@ package com.nick.hangman;
 import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -40,6 +42,8 @@ public class GameMainActivityFragment extends Fragment {
     private static final int HEIGHT_DENSITY_TIMES = 20;
     private static final float GALLOWS_PERC_HEIGHT = 0.26f;
     private static final float GALLOWS_HEIGHT_AND_WIDTH_RATIO = 1.4434f;
+    private static final float KEYPAD_FONT_SIZE = 22f;
+    private static final float GAME_DETAILS_INFO_FONT_SIZE = 18f;
 
     private static final String WORD_SORT_ORDER = "RANDOM() LIMIT 1";
 
@@ -121,11 +125,13 @@ public class GameMainActivityFragment extends Fragment {
             int heightPx = getContext().getResources().getDisplayMetrics().heightPixels;
             mDensity = getContext().getResources().getDisplayMetrics().density;
 
-            TextView player1ScoreView = (TextView) rootView.findViewById(R.id.player1GameScoreValueTextView);
+            //TextView player1ScoreView = (TextView) rootView.findViewById(R.id.player1GameScoreValueTextView);
             TextView categoryDescrView = (TextView) rootView.findViewById(R.id.categoryGameDescrTextView);
 
-            player1ScoreView.setText(Integer.toString(paramsSel.getTaleScoreCategoryScore()));
+            //player1ScoreView.setText(Integer.toString(paramsSel.getTaleScoreCategoryScore()));
             categoryDescrView.setText(paramsSel.getCategoryDescrCategory());
+            categoryDescrView.setTextSize(GAME_DETAILS_INFO_FONT_SIZE);
+            categoryDescrView.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
 
             //Progress bar
             //Half screen width, minus two times horizontal padding
@@ -185,7 +191,7 @@ public class GameMainActivityFragment extends Fragment {
 //                int keypadButtonWidth = Math.round((int)(density*35));
 //                int keypadButtonHeight = Math.round((int)(density*45));
 
-                int paddingLeftAndRight = horizontalPadding * 2;
+                int paddingLeftAndRight = (int)(getResources().getDimension(R.dimen.keypad_padding_horizontal) * 2);
 
                 int widthLessPadding = widthPx - paddingLeftAndRight;
 
@@ -202,6 +208,9 @@ public class GameMainActivityFragment extends Fragment {
                     btn.setId(i);
                     final int id_ = btn.getId();
                     btn.setText(FIRST_KEYPAD_LINE_CHARACTERS[i - 2001]);
+                    btn.setTextSize(KEYPAD_FONT_SIZE);
+                    btn.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
+                    btn.setPadding(0, 0, 0, 0);
 
                     firstKeyPadLineLayout.addView(btn, params);
 
@@ -228,6 +237,9 @@ public class GameMainActivityFragment extends Fragment {
                     btn.setId(i);
                     final int id_ = btn.getId();
                     btn.setText(SECOND_KEYPAD_LINE_CHARACTERS[i - 3001]);
+                    btn.setTextSize(KEYPAD_FONT_SIZE);
+                    btn.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
+                    btn.setPadding(0, 0, 0, 0);
 
                     secondKeyPadLineLayout.addView(btn, params);
 
@@ -254,6 +266,9 @@ public class GameMainActivityFragment extends Fragment {
                     btn.setId(i);
                     final int id_ = btn.getId();
                     btn.setText(THIRD_KEYPAD_LINE_CHARACTERS[i - 4001]);
+                    btn.setTextSize(KEYPAD_FONT_SIZE);
+                    btn.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
+                    btn.setPadding(0, 0, 0, 0);
 
                     thirdKeyPadLineLayout.addView(btn, params);
 
