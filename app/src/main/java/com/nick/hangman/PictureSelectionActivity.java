@@ -10,6 +10,7 @@ import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -20,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -284,8 +286,17 @@ public class PictureSelectionActivity extends AppCompatActivity {
         try {
             if(((right - left) > 0) && ((bottom - top) > 0)) {
 
+                File folder = new File(Environment.getExternalStorageDirectory() +
+                        File.separator + "HangmanTale");
+
+                boolean isSuccess = true;
+                if (!folder.exists()) {
+                    isSuccess = folder.mkdir();
+                }
+
                 long currentTime = System.currentTimeMillis();
-                String caminho = String.format("/storage/emulated/0/HangmanTale/Hangman_%d.jpg", currentTime);
+                String caminho = String.format(Environment.getExternalStorageDirectory() + File.separator +
+                        "HangmanTale" + File.separator + "Hangman_%d.jpg", currentTime);
 
                 outStream = new FileOutputStream(caminho);
 

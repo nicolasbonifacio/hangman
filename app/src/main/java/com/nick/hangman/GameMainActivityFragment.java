@@ -5,14 +5,18 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -40,10 +44,14 @@ public class GameMainActivityFragment extends Fragment {
     private static final String DASH_FLAG = "DASH";
     private static final int MAX_CHARACTERS_PER_LINE = 14;
     private static final int HEIGHT_DENSITY_TIMES = 20;
-    private static final float GALLOWS_PERC_HEIGHT = 0.26f;
+    private static final float GALLOWS_PERC_HEIGHT = 0.26f; //26%
+    private static final float GALLOWS_PERC_HEIGHT_WITH_IMAGE = 0.35f; //35%
     private static final float GALLOWS_HEIGHT_AND_WIDTH_RATIO = 1.4434f;
     private static final float KEYPAD_FONT_SIZE = 22f;
     private static final float GAME_DETAILS_INFO_FONT_SIZE = 18f;
+    private static final int IMAGE_FACE_CENTER_IN_DP = 101;
+    private static final int IMAGE_FACE_BASE_HEIGHT_IN_DP = 62;
+    private static final int IMAGE_FACE_Y_IN_DP = 23;
 
     private static final String WORD_SORT_ORDER = "RANDOM() LIMIT 1";
 
@@ -103,6 +111,7 @@ public class GameMainActivityFragment extends Fragment {
     private int mTotalCharacters;
     private float mDensity;
     private int mCharacterHeight;
+    private boolean mIsImageSelected;
 
     private Utils mUtils;
 
@@ -118,6 +127,8 @@ public class GameMainActivityFragment extends Fragment {
 
         if (intent != null && intent.hasExtra("paramsSel")) {
             paramsSel = (ParametersSelected) intent.getSerializableExtra("paramsSel");
+
+            mIsImageSelected = true;
 
             int horizontalPadding = (int)getResources().getDimension(R.dimen.activity_horizontal_margin);
             int verticalPadding = (int)getResources().getDimension(R.dimen.activity_vertical_margin);
@@ -171,18 +182,36 @@ public class GameMainActivityFragment extends Fragment {
             //Fetch DB for the word and splits it into an ArrayList, putting each character in one position
             if(loadWordNotUsed()) {
 
-                int gallowsHeight = (int)((heightPx * GALLOWS_PERC_HEIGHT));
-                int gallowsWidth = (int)((heightPx * GALLOWS_PERC_HEIGHT) / GALLOWS_HEIGHT_AND_WIDTH_RATIO);
+                if(mIsImageSelected) {
 
-                mGallowsView = (ImageView) rootView.findViewById(R.id.imageGallowsView);
-                mGallowsView.setImageDrawable(getResources().getDrawable(mUtils.getGallowsImage(GALLOWS_IMAGE_BEGIN_FLAG)));
-                mGallowsView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                mGallowsView.setAdjustViewBounds(true);
-                mGallowsView.setPadding(0, 0, 0, 0);
-                mGallowsView.setMaxWidth(gallowsWidth);
-                mGallowsView.setMaxHeight(gallowsHeight);
-                mGallowsView.setMinimumWidth(gallowsWidth);
-                mGallowsView.setMinimumHeight(gallowsHeight);
+                    int gallowsHeight = (int) ((heightPx * GALLOWS_PERC_HEIGHT_WITH_IMAGE));
+                    int gallowsWidth = (int) ((heightPx * GALLOWS_PERC_HEIGHT_WITH_IMAGE) / GALLOWS_HEIGHT_AND_WIDTH_RATIO);
+
+                    mGallowsView = (ImageView) rootView.findViewById(R.id.imageGallowsView);
+                    mGallowsView.setImageDrawable(getResources().getDrawable(mUtils.getGallowsImageWithImage(GALLOWS_IMAGE_BEGIN_FLAG)));
+                    mGallowsView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                    mGallowsView.setAdjustViewBounds(true);
+                    mGallowsView.setPadding(0, 0, 0, 0);
+                    mGallowsView.setMaxWidth(gallowsWidth);
+                    mGallowsView.setMaxHeight(gallowsHeight);
+                    mGallowsView.setMinimumWidth(gallowsWidth);
+                    mGallowsView.setMinimumHeight(gallowsHeight);
+
+                }else {
+
+                    int gallowsHeight = (int) ((heightPx * GALLOWS_PERC_HEIGHT));
+                    int gallowsWidth = (int) ((heightPx * GALLOWS_PERC_HEIGHT) / GALLOWS_HEIGHT_AND_WIDTH_RATIO);
+
+                    mGallowsView = (ImageView) rootView.findViewById(R.id.imageGallowsView);
+                    mGallowsView.setImageDrawable(getResources().getDrawable(mUtils.getGallowsImage(GALLOWS_IMAGE_BEGIN_FLAG)));
+                    mGallowsView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                    mGallowsView.setAdjustViewBounds(true);
+                    mGallowsView.setPadding(0, 0, 0, 0);
+                    mGallowsView.setMaxWidth(gallowsWidth);
+                    mGallowsView.setMaxHeight(gallowsHeight);
+                    mGallowsView.setMinimumWidth(gallowsWidth);
+                    mGallowsView.setMinimumHeight(gallowsHeight);
+                }
 
 //                float scaledDensity = getContext().getResources().getDisplayMetrics().scaledDensity;
 //                int c = getContext().getResources().getDisplayMetrics().densityDpi;
@@ -336,7 +365,7 @@ public class GameMainActivityFragment extends Fragment {
 
             mTotalCharacters = 0;
 
-//mWord.setWord("HOUSE OF CARDS");
+mWord.setWord("HOUSE OF CARDS");
             mWord.setWord(mWord.getWord().replace("   ", " "));
             mWord.setWord(mWord.getWord().replace("  ", " "));
 
@@ -445,7 +474,34 @@ public class GameMainActivityFragment extends Fragment {
         if(hasError) {
             mQtdError++;
 
-            mGallowsView.setImageDrawable(getResources().getDrawable(mUtils.getGallowsImage(mQtdError)));
+            if(mIsImageSelected) {
+
+                int originalImageWidth = 137;
+                int originalImageHeight = 183;
+                float imageRatio = (float)originalImageHeight/originalImageWidth;
+
+                int imageWidth = (int)((IMAGE_FACE_BASE_HEIGHT_IN_DP * mDensity)/imageRatio);
+                int imageHeight = (int)(IMAGE_FACE_BASE_HEIGHT_IN_DP * mDensity);
+
+                RelativeLayout gallowsLayout = (RelativeLayout) rootView.findViewById(R.id.gallowsLayout);
+                RelativeLayout.LayoutParams gallowsParams = new RelativeLayout.LayoutParams(
+                        imageWidth,
+                        imageHeight // sempre tem que ser 61dp
+                );
+
+                mGallowsView.setImageDrawable(getResources().getDrawable(mUtils.getGallowsImageWithImage(mQtdError)));
+
+                ImageView imageHead = new ImageView(getContext());
+                imageHead.setImageDrawable(getResources().getDrawable(R.drawable.person_head));
+
+                imageHead.setX((int)((IMAGE_FACE_CENTER_IN_DP * mDensity)-(imageWidth / 2)));
+                imageHead.setY((int)(IMAGE_FACE_Y_IN_DP * mDensity)); //sempre tem que ser 23dp
+
+                gallowsLayout.addView(imageHead, gallowsParams);
+
+            }else {
+                mGallowsView.setImageDrawable(getResources().getDrawable(mUtils.getGallowsImage(mQtdError)));
+            }
 
             // Verify if the game is over
             if(mQtdError >= TOTAL_QTD_ERROR) {

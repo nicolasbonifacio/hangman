@@ -167,6 +167,31 @@ public class Utils {
         return imageCode;
     }
 
+    public int getGallowsImageWithImage(int numErrors) {
+
+        int imageCode;
+
+        switch (numErrors) {
+            case 0: imageCode = R.drawable.gallows_0_image;
+                break;
+            case 1: imageCode = R.drawable.gallows_1_image_head;
+                break;
+            case 2: imageCode = R.drawable.gallows_2_image_body;
+                break;
+            case 3: imageCode = R.drawable.gallows_3_image_right_arm;
+                break;
+            case 4: imageCode = R.drawable.gallows_4_image_left_arm;
+                break;
+            case 5: imageCode = R.drawable.gallows_5_image_right_leg;
+                break;
+            case 6: imageCode = R.drawable.gallows_6_image_left_leg;
+                break;
+            default: imageCode = R.drawable.gallows_0_image;
+        }
+
+        return imageCode;
+    }
+
     public int getCharacterImage(String character) {
 
         int imageCode;
