@@ -68,8 +68,17 @@
         <activity android:name=".BannerActivity" />
         <activity android:name=".InterstitialActivity" />
         <activity
-            android:name=".PictureSelectionActivity"
+            android:name=".PictureCreationActivity"
             android:label="@string/title_activity_picture_selection"
+            android:parentActivityName=".SelectionActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.nick.hangman.SelectionActivity" />
+        </activity>
+        <activity
+            android:name=".PictureManagementActivity"
+            android:label="@string/title_activity_picture_managment"
             android:parentActivityName=".SelectionActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data

@@ -9,14 +9,14 @@ import android.view.ViewGroup;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class PictureSelectionActivityFragment extends Fragment {
+public class PictureCreationActivityFragment extends Fragment {
 
-    public PictureSelectionActivityFragment() {
+    public PictureCreationActivityFragment() {
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_picture_selection, container, false);
+        return inflater.inflate(R.layout.fragment_picture_creation, container, false);
     }
 }

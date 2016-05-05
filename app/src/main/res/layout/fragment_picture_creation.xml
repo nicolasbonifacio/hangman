@@ -4,8 +4,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@android:color/background_dark"
-    tools:context="com.nick.hangman.PictureSelectionActivityFragment"
-    tools:showIn="@layout/activity_picture_selection">
+    tools:context=".PictureCreationActivityFragment"
+    tools:showIn="@layout/activity_picture_creation">
 
     <RelativeLayout
         android:layout_width="match_parent"

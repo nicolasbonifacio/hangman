@@ -14,6 +14,13 @@
     <!-- Game details font size -->
     <dimen name="game_details_label_font_size">18sp</dimen>
 
+    <!-- Picture management font size -->
+    <dimen name="your_last_image_font_size">22sp</dimen>
+    <dimen name="avatar_text_font_size">14sp</dimen>
+
+    <!-- Picture management dimensions -->
+    <dimen name="image_padding">16dp</dimen>
+
     <!-- Game details padding -->
     <dimen name="game_details_same_subject_vertical_padding">4dp</dimen>
     <dimen name="game_details_different_subject_vertical_padding">8dp</dimen>

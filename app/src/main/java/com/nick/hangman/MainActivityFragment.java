@@ -78,7 +78,7 @@ public class MainActivityFragment extends Fragment {
         testePictureButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
 
-                startActivity(new Intent(getContext(), PictureSelectionActivity.class));
+                startActivity(new Intent(getContext(), PictureManagementActivity.class));
 
             }
         });

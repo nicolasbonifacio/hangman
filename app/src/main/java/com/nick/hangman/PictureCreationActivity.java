@@ -27,7 +27,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class PictureSelectionActivity extends AppCompatActivity {
+public class PictureCreationActivity extends AppCompatActivity {
 
     private static final int SELECT_PHOTO = 100;
 
@@ -49,7 +49,7 @@ public class PictureSelectionActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_picture_selection);
+        setContentView(R.layout.activity_picture_creation);
 
         Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
         photoPickerIntent.setType("image/*");

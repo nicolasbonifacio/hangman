@@ -5,8 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.nick.hangman.PictureSelectionActivity">
+    tools:context=".PictureCreationActivity">
 
-    <include layout="@layout/content_picture_selection" />
+    <include layout="@layout/content_picture_creation" />
 
 </android.support.design.widget.CoordinatorLayout>
