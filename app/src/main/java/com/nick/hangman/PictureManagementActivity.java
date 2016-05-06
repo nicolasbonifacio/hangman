@@ -192,6 +192,16 @@ public class PictureManagementActivity extends AppCompatActivity {
             }
         });
 
+        Button selectSavedImageButton = (Button) findViewById(R.id.selectSavedImageButton);
+        assert selectSavedImageButton != null;
+        selectSavedImageButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+
+                startActivity(new Intent(getBaseContext(), SelectExistingImageActivity.class));
+
+            }
+        });
+
     }
 
     private boolean loadImageLastUsedFromDB() {

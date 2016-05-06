@@ -85,6 +85,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.nick.hangman.SelectionActivity" />
         </activity>
+        <activity
+            android:name=".SelectExistingImageActivity"
+            android:label="@string/title_activity_select_existing_image"
+            android:parentActivityName=".PictureManagementActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.nick.hangman.PictureManagementActivity" />
+        </activity>
     </application>
 
 </manifest>
