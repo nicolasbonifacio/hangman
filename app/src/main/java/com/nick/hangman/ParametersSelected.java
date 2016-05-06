@@ -31,6 +31,11 @@ public class ParametersSelected implements Serializable {
     private int taleScoreCategoryPathOrder;
     private int taleScoreCategoryIdNextCategory;
 
+    private int imageImageWidth;
+    private int imageImageHeight;
+    private String imageImagePath;
+    private String imageImageName;
+
     public int getPlayer1Id() {
         return player1Id;
     }
@@ -173,5 +178,37 @@ public class ParametersSelected implements Serializable {
 
     public void setTaleScoreCategoryIdNextCategory(int taleScoreCategoryIdNextCategory) {
         this.taleScoreCategoryIdNextCategory = taleScoreCategoryIdNextCategory;
+    }
+
+    public int getImageImageWidth() {
+        return imageImageWidth;
+    }
+
+    public void setImageImageWidth(int imageImageWidth) {
+        this.imageImageWidth = imageImageWidth;
+    }
+
+    public int getImageImageHeight() {
+        return imageImageHeight;
+    }
+
+    public void setImageImageHeight(int imageImageHeight) {
+        this.imageImageHeight = imageImageHeight;
+    }
+
+    public String getImageImagePath() {
+        return imageImagePath;
+    }
+
+    public void setImageImagePath(String imageImagePath) {
+        this.imageImagePath = imageImagePath;
+    }
+
+    public String getImageImageName() {
+        return imageImageName;
+    }
+
+    public void setImageImageName(String imageImageName) {
+        this.imageImageName = imageImageName;
     }
 }

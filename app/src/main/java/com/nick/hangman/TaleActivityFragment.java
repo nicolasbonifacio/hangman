@@ -125,6 +125,7 @@ public class TaleActivityFragment extends Fragment {
     private int mWidthPx;
     private ImageView mBtn;
     private ImageView mIconStars;
+    private ParametersSelected paramsSel;
 
 
 
@@ -148,6 +149,13 @@ public class TaleActivityFragment extends Fragment {
         }
 
         rootView = inflater.inflate(R.layout.fragment_tale, container, false);
+
+        paramsSel = new ParametersSelected();
+
+        Intent intent = getActivity().getIntent();
+        if (intent != null && intent.hasExtra("paramsSel")) {
+            paramsSel = (ParametersSelected) intent.getSerializableExtra("paramsSel");
+        }
 
         return rootView;
 
@@ -393,7 +401,7 @@ public class TaleActivityFragment extends Fragment {
 
     public void callGameScreen(int position) {
 
-        ParametersSelected paramsSel = new ParametersSelected();
+        //paramsSel = new ParametersSelected();
         paramsSel.setTaleScoreCategoryScore(mListTaleScoreCategory.get(position-1).getScore());
         paramsSel.setTaleScoreCategoryEnableScore(mListTaleScoreCategory.get(position-1).getEnableScore());
         paramsSel.setCategoryDescrCategory(mListTaleScoreCategory.get(position-1).getDescrCategory());

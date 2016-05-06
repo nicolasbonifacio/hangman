@@ -1,6 +1,10 @@
 package com.nick.hangman;
 
+import com.nick.hangman.Objects.ImageTable;
 import com.nick.hangman.Views.DragRectView;
+import com.nick.hangman.data.HangmanContract;
+
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -30,6 +34,10 @@ import java.io.InputStream;
 public class PictureCreationActivity extends AppCompatActivity {
 
     private static final int SELECT_PHOTO = 100;
+    private static final int IMAGE_LAST_USED_FLAG_FALSE = 0;
+    private static final int IMAGE_LAST_USED_FLAG_TRUE = 1;
+
+    private static final String COLUMN_IMAGE_LAST_USED_SELECTION = "last_used = ?";
 
     private Bitmap mBitmapImage;
 
@@ -183,8 +191,6 @@ public class PictureCreationActivity extends AppCompatActivity {
         assert imageLayout != null;
         imageLayout.addView(imageView, imageLayoutParams);
 
-
-
         DragRectView view = new DragRectView(this);
 
         imageLayout.addView(view, imageLayoutParams);
@@ -258,29 +264,6 @@ public class PictureCreationActivity extends AppCompatActivity {
     }
 
     private void cropImage(int left, int top, int right, int bottom) {
-/*
-        ImageView iv = (ImageView) findViewById(R.id.imageView2);
-        iv.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        iv.setAdjustViewBounds(false);
-        iv.setPadding(0, 0, 0, 0);
-        //Bitmap b = BitmapFactory.decodeResource(getResources(), R.drawable.up_image);
-
-        int lg_width = getResources().getDisplayMetrics().widthPixels;
-        int lg_height = 1000;
-        int img_width = mWidth;
-        int img_height = mHeight;
-
-        float ratioWidth = (float)lg_width / img_width;
-        float ratioHeight = (float)lg_height / img_height;
-
-        int cropRight = (int)((right * img_width) / lg_width);
-        int cropBottom = (int)((bottom * img_height) / lg_height);
-        int cropLeft = (int)(cropRight - ((right - left) / ratioWidth));
-        int cropTop = (int)(cropBottom - ((bottom - top) / ratioHeight));
-
-        BitmapDrawable d = new CropDrawable(mBitmapImage, cropLeft, cropTop, cropRight, cropBottom);
-        iv.setImageDrawable(d);
-*/
 
         FileOutputStream outStream = null;
         try {
@@ -294,13 +277,16 @@ public class PictureCreationActivity extends AppCompatActivity {
                     isSuccess = folder.mkdir();
                 }
 
+                String absolutePath = folder.getAbsolutePath();
+
                 long currentTime = System.currentTimeMillis();
-                String caminho = String.format(Environment.getExternalStorageDirectory() + File.separator +
-                        "HangmanTale" + File.separator + "Hangman_%d.jpg", currentTime);
 
-                outStream = new FileOutputStream(caminho);
+                String fileName = String.format("Hangman_%d.jpg", currentTime);
 
-                //Bitmap imageToSave = d.getBitmap();
+                String totalPath = String.format(Environment.getExternalStorageDirectory() + File.separator +
+                        "HangmanTale" + File.separator + fileName);
+
+                outStream = new FileOutputStream(totalPath);
 
                 if(mWidth > getResources().getDisplayMetrics().widthPixels) {
                     float ratio = (float)mWidth / getResources().getDisplayMetrics().widthPixels;
@@ -334,16 +320,42 @@ public class PictureCreationActivity extends AppCompatActivity {
                     imageToSave = Bitmap.createBitmap(mBitmapImage, left, top, (right - left), (bottom - top));
                 }
 
-                //Bitmap imageToSave = Bitmap.createBitmap(mBitmapImage, left, top, (right - left), (bottom - top));
                 imageToSave.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
 
                 outStream.close();
 
-                String newImageURL = MediaStore.Images.Media.insertImage(getContentResolver(), imageToSave, "Hangman_" + currentTime + ".jpg", "Hangman_" + currentTime + ".jpg");
+                //Update DB setting all images to 'not last used'
+                ContentValues imageValues = new ContentValues();
+                imageValues.put(HangmanContract.ImageEntry.COLUMN_LAST_USED, IMAGE_LAST_USED_FLAG_FALSE);
 
-                Toast.makeText(this, "Image created.", Toast.LENGTH_SHORT).show();
+                int qtd = getContentResolver().update(
+                        HangmanContract.ImageEntry.CONTENT_URI,
+                        imageValues,
+                        COLUMN_IMAGE_LAST_USED_SELECTION,
+                        new String[]{Integer.toString(IMAGE_LAST_USED_FLAG_TRUE)}
+                );
 
+                //Insert image info in DB
+                imageValues = new ContentValues();
+                imageValues.put(HangmanContract.ImageEntry.COLUMN_IMAGE_WIDTH, imageToSave.getWidth());
+                imageValues.put(HangmanContract.ImageEntry.COLUMN_IMAGE_HEIGHT, imageToSave.getHeight());
+                imageValues.put(HangmanContract.ImageEntry.COLUMN_IMAGE_PATH, absolutePath);
+                imageValues.put(HangmanContract.ImageEntry.COLUMN_IMAGE_NAME, fileName);
+                imageValues.put(HangmanContract.ImageEntry.COLUMN_LAST_USED, IMAGE_LAST_USED_FLAG_TRUE);
 
+                Uri insertedUri = getContentResolver().insert(
+                        HangmanContract.ImageEntry.CONTENT_URI,
+                        imageValues
+                );
+
+                //
+                ImageTable imageTable = new ImageTable();
+                imageTable.setImageWidth(imageToSave.getWidth());
+                imageTable.setImageHeight(imageToSave.getHeight());
+                imageTable.setImagePath(absolutePath);
+                imageTable.setImageName(fileName);
+
+                callTaleScreen(imageTable);
 
             }else {
                 Toast.makeText(this, getResources().getText(R.string.area_not_selected), Toast.LENGTH_SHORT).show();
@@ -503,6 +515,22 @@ public class PictureCreationActivity extends AppCompatActivity {
         Bitmap rotatedImg = Bitmap.createBitmap(img, 0, 0, img.getWidth(), img.getHeight(), matrix, true);
         img.recycle();
         return rotatedImg;
+    }
+
+    private void callTaleScreen(ImageTable imageTable) {
+
+        ParametersSelected paramsSel = new ParametersSelected();
+        paramsSel.setImageImageWidth(imageTable.getImageWidth());
+        paramsSel.setImageImageHeight(imageTable.getImageHeight());
+        paramsSel.setImageImagePath(imageTable.getImagePath());
+        paramsSel.setImageImageName(imageTable.getImageName());
+
+        Intent intent = new Intent(this, TaleActivity.class);
+
+        intent.putExtra("paramsSel", paramsSel);
+
+        startActivity(intent);
+
     }
 
 }

@@ -51,5 +51,13 @@
         android:layout_above="@+id/playButton"
         android:layout_centerHorizontal="true" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Base picture"
+        android:id="@+id/testeBasePictureButton"
+        android:layout_above="@+id/testePictureButton"
+        android:layout_centerHorizontal="true" />
+
 
 </RelativeLayout>

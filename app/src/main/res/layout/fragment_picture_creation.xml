@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@android:color/background_dark"
+    android:background="@color/colorBackground"
     tools:context=".PictureCreationActivityFragment"
     tools:showIn="@layout/activity_picture_creation">
 
@@ -14,8 +14,6 @@
         android:id="@+id/imageLayout">
 
     </RelativeLayout>
-
-
 
     <LinearLayout
         android:orientation="horizontal"

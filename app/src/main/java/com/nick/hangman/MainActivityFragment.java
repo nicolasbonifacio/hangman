@@ -79,7 +79,52 @@ public class MainActivityFragment extends Fragment {
             public void onClick(View view) {
 
                 startActivity(new Intent(getContext(), PictureManagementActivity.class));
+                //startActivity(new Intent(getContext(), PictureCreationActivity.class));
 
+            }
+        });
+
+        Button testeBasePictureButton = (Button)rootView.findViewById(R.id.testeBasePictureButton);
+        testeBasePictureButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+
+                ContentValues values = new ContentValues();
+                values.put(HangmanContract.ImageEntry.COLUMN_LAST_USED, 0);
+
+                int qtd = getContext().getContentResolver().update(
+                        HangmanContract.ImageEntry.CONTENT_URI,
+                        values,
+                        null,
+                        null
+                );
+
+                System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+                System.out.println(qtd);
+/*
+                values = new ContentValues();
+                values.put(HangmanContract.ImageEntry.COLUMN_LAST_USED, 1);
+
+                qtd = getContext().getContentResolver().update(
+                        HangmanContract.ImageEntry.CONTENT_URI,
+                        values,
+                        "_id = ?",
+                        new String[]{"2"}
+                );
+
+                System.out.println("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
+                System.out.println(qtd);
+*/
+
+/*
+                int qtd = getContext().getContentResolver().delete(
+                        HangmanContract.ImageEntry.CONTENT_URI,
+                        "_id in (?, ?, ?)",
+                        new String[]{"5", "6", "7"}
+                );
+
+                System.out.println("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
+                System.out.println(qtd);
+*/
             }
         });
 

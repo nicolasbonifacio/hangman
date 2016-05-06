@@ -36,6 +36,8 @@ public class HangmanProvider extends ContentProvider {
     static final int TALE_OVERALL = 800;
     static final int TALE_OVERALL_WITH_PLAYER_AND_CATEGORY = 801;
     static final int TALE_OVERALL_WITH_PLAYER = 802;
+    static final int IMAGE = 900;
+    static final int IMAGE_WITH_LAST_USED = 901;
 
     static final String WORD_GROUP_BY_FIELD = "WORD_USED";
 
@@ -143,6 +145,18 @@ public class HangmanProvider extends ContentProvider {
         sCountWordsUsageWithLanguageCategoryLevelQueryBuilder.setTables(HangmanContract.WordEntry.TABLE_NAME);
     }
 
+    private static final SQLiteQueryBuilder sImageQueryBuilder;
+    static {
+        sImageQueryBuilder = new SQLiteQueryBuilder();
+        sImageQueryBuilder.setTables(HangmanContract.ImageEntry.TABLE_NAME);
+    }
+
+    private static final SQLiteQueryBuilder sImageLastUsedQueryBuilder;
+    static {
+        sImageLastUsedQueryBuilder = new SQLiteQueryBuilder();
+        sImageLastUsedQueryBuilder.setTables(HangmanContract.ImageEntry.TABLE_NAME);
+    }
+
     //CATEGORY.LANGUAGE_ID = ?
     private static final String sCategoryLanguageSelection =
             HangmanContract.CategoryEntry.TABLE_NAME +
@@ -228,11 +242,18 @@ public class HangmanProvider extends ContentProvider {
             HangmanContract.TaleOverallEntry.TABLE_NAME +
                     "." + HangmanContract.TaleOverallEntry.COLUMN_LOC_KEY_PLAYER + " = ?";
 
+    //TALE_OVERALL.PLAYER_ID = ?
+    //TALE_OVERALL.CATEGORY_ID = ?
     private static final String sTaleOverallPlayerGroupBy =
             HangmanContract.TaleOverallEntry.TABLE_NAME +
                     "." + HangmanContract.TaleOverallEntry.COLUMN_LOC_KEY_PLAYER + ", " +
             HangmanContract.TaleOverallEntry.TABLE_NAME +
                     "." + HangmanContract.TaleOverallEntry.COLUMN_LOC_KEY_CATEGORY;
+
+    //IMAGE.LAST_USED = ?
+    private static final String sImageLastUsedSelection =
+            HangmanContract.ImageEntry.TABLE_NAME +
+                    "." + HangmanContract.ImageEntry.COLUMN_LAST_USED + " = ? ";
 
     private Cursor getCategoryByLanguage(
             Uri uri, String[] projection, String sortOrder) {
@@ -398,6 +419,20 @@ public class HangmanProvider extends ContentProvider {
         );
     }
 
+    private Cursor getImageByLastUsed(
+            Uri uri, String[] projection, String sortOrder) {
+        String lastUsed = HangmanContract.ImageEntry.getLastUsedFromUri(uri);
+
+        return sImageLastUsedQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+                projection,
+                sImageLastUsedSelection,
+                new String[]{lastUsed},
+                null,
+                null,
+                sortOrder
+        );
+    }
+
     static UriMatcher buildUriMatcher() {
 
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -422,6 +457,8 @@ public class HangmanProvider extends ContentProvider {
         matcher.addURI(authority, HangmanContract.PATH_TALE_OVERALL, TALE_OVERALL);
         matcher.addURI(authority, HangmanContract.PATH_TALE_OVERALL + "/#/#", TALE_OVERALL_WITH_PLAYER_AND_CATEGORY);
         matcher.addURI(authority, HangmanContract.PATH_TALE_OVERALL + "/#", TALE_OVERALL_WITH_PLAYER);
+        matcher.addURI(authority, HangmanContract.PATH_IMAGE, IMAGE);
+        matcher.addURI(authority, HangmanContract.PATH_IMAGE + "/#", IMAGE_WITH_LAST_USED);
 
         return matcher;
     }
@@ -477,6 +514,10 @@ public class HangmanProvider extends ContentProvider {
                 return HangmanContract.TaleOverallEntry.CONTENT_TYPE;
             case TALE_OVERALL_WITH_PLAYER:
                 return HangmanContract.TaleOverallEntry.CONTENT_TYPE;
+            case IMAGE:
+                return HangmanContract.ImageEntry.CONTENT_TYPE;
+            case IMAGE_WITH_LAST_USED:
+                return HangmanContract.ImageEntry.CONTENT_ITEM_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -541,6 +582,11 @@ public class HangmanProvider extends ContentProvider {
             // "LANGUAGE/#"
             case LANGUAGE_WITH_LAST_USED: {
                 retCursor = getLanguageByLastUsed(uri, projection, sortOrder);
+                break;
+            }
+            // "IMAGE/#"
+            case IMAGE_WITH_LAST_USED: {
+                retCursor = getImageByLastUsed(uri, projection, sortOrder);
                 break;
             }
             // "PLAYER"
@@ -647,6 +693,19 @@ public class HangmanProvider extends ContentProvider {
                 );
                 break;
             }
+            // "IMAGE"
+            case IMAGE: {
+                retCursor = mOpenHelper.getReadableDatabase().query(
+                        HangmanContract.ImageEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -725,6 +784,14 @@ public class HangmanProvider extends ContentProvider {
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;
             }
+            case IMAGE: {
+                long _id = db.insert(HangmanContract.ImageEntry.TABLE_NAME, null, values);
+                if ( _id > 0 )
+                    returnUri = HangmanContract.ImageEntry.buildImageUri(_id);
+                else
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                break;
+            }
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -771,6 +838,10 @@ public class HangmanProvider extends ContentProvider {
             case TALE_OVERALL:
                 rowsDeleted = db.delete(
                         HangmanContract.TaleOverallEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            case IMAGE:
+                rowsDeleted = db.delete(
+                        HangmanContract.ImageEntry.TABLE_NAME, selection, selectionArgs);
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -820,6 +891,10 @@ public class HangmanProvider extends ContentProvider {
                 break;
             case TALE_OVERALL:
                 rowsUpdated = db.update(HangmanContract.TaleOverallEntry.TABLE_NAME, values, selection,
+                        selectionArgs);
+                break;
+            case IMAGE:
+                rowsUpdated = db.update(HangmanContract.ImageEntry.TABLE_NAME, values, selection,
                         selectionArgs);
                 break;
             default:

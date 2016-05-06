@@ -6,10 +6,12 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,6 +29,8 @@ import android.widget.Toast;
 import com.nick.hangman.Objects.Word;
 import com.nick.hangman.data.HangmanContract;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -128,7 +132,11 @@ public class GameMainActivityFragment extends Fragment {
         if (intent != null && intent.hasExtra("paramsSel")) {
             paramsSel = (ParametersSelected) intent.getSerializableExtra("paramsSel");
 
-            mIsImageSelected = true;
+            if(paramsSel.getImageImageName() != null && !paramsSel.getImageImageName().equals("")) {
+                mIsImageSelected = true;
+            }else {
+                mIsImageSelected = false;
+            }
 
             int horizontalPadding = (int)getResources().getDimension(R.dimen.activity_horizontal_margin);
             int verticalPadding = (int)getResources().getDimension(R.dimen.activity_vertical_margin);
@@ -476,12 +484,13 @@ mWord.setWord("HOUSE OF CARDS");
 
             if(mIsImageSelected) {
 
-                int originalImageWidth = 137;
-                int originalImageHeight = 183;
-                float imageRatio = (float)originalImageHeight/originalImageWidth;
 
-                int imageWidth = (int)((IMAGE_FACE_BASE_HEIGHT_IN_DP * mDensity)/imageRatio);
-                int imageHeight = (int)(IMAGE_FACE_BASE_HEIGHT_IN_DP * mDensity);
+                int originalImageWidth = paramsSel.getImageImageWidth();
+                int originalImageHeight = paramsSel.getImageImageHeight();
+                float imageRatio = (float) originalImageHeight / originalImageWidth;
+
+                int imageWidth = (int) ((IMAGE_FACE_BASE_HEIGHT_IN_DP * mDensity) / imageRatio);
+                int imageHeight = (int) (IMAGE_FACE_BASE_HEIGHT_IN_DP * mDensity);
 
                 RelativeLayout gallowsLayout = (RelativeLayout) rootView.findViewById(R.id.gallowsLayout);
                 RelativeLayout.LayoutParams gallowsParams = new RelativeLayout.LayoutParams(
@@ -491,11 +500,18 @@ mWord.setWord("HOUSE OF CARDS");
 
                 mGallowsView.setImageDrawable(getResources().getDrawable(mUtils.getGallowsImageWithImage(mQtdError)));
 
-                ImageView imageHead = new ImageView(getContext());
-                imageHead.setImageDrawable(getResources().getDrawable(R.drawable.person_head));
+                //Uri imageUri = Uri.parse(paramsSel.getImageImageUri());
+                //Bitmap imageLastUsedBitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), imageUri);
 
-                imageHead.setX((int)((IMAGE_FACE_CENTER_IN_DP * mDensity)-(imageWidth / 2)));
-                imageHead.setY((int)(IMAGE_FACE_Y_IN_DP * mDensity)); //sempre tem que ser 23dp
+                File image = new File(paramsSel.getImageImagePath(), paramsSel.getImageImageName());
+                BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+                Bitmap imageLastUsedBitmap = BitmapFactory.decodeFile(image.getAbsolutePath(), bmOptions);
+
+                ImageView imageHead = new ImageView(getContext());
+                imageHead.setImageBitmap(imageLastUsedBitmap);
+
+                imageHead.setX((int) ((IMAGE_FACE_CENTER_IN_DP * mDensity) - (imageWidth / 2)));
+                imageHead.setY((int) (IMAGE_FACE_Y_IN_DP * mDensity)); //sempre tem que ser 23dp
 
                 gallowsLayout.addView(imageHead, gallowsParams);
 

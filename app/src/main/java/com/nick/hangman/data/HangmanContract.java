@@ -22,6 +22,7 @@ public class HangmanContract {
     public static final String PATH_WORD = "word";
     public static final String PATH_SCORE_MODEL = "score_model";
     public static final String PATH_TALE_OVERALL = "tale_overall";
+    public static final String PATH_IMAGE = "image";
 
     /* Inner class that defines the table contents of the player table */
     public static final class PlayerEntry implements BaseColumns {
@@ -345,6 +346,45 @@ public class HangmanContract {
 
         public static String getCategoryFromUri(Uri uri) {
             return uri.getPathSegments().get(2);
+        }
+
+    }
+
+    /* Inner class that defines the table contents of the player table */
+    public static final class ImageEntry implements BaseColumns {
+
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_IMAGE).build();
+
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_IMAGE;
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_IMAGE;
+
+        // Table name
+        public static final String TABLE_NAME = "image";
+
+        // Columns
+        public static final String COLUMN_IMAGE_WIDTH = "image_width";
+        public static final String COLUMN_IMAGE_HEIGHT = "image_height";
+        public static final String COLUMN_LAST_USED = "last_used";
+        public static final String COLUMN_IMAGE_PATH = "image_path";
+        public static final String COLUMN_IMAGE_NAME = "image_name";
+
+        public static Uri buildImageUri(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
+        public static String getLastUsedFromUri(Uri uri) {
+            return uri.getPathSegments().get(1);
+        }
+
+        public static String getNewIdFromUri(Uri uri) {
+            return uri.getPathSegments().get(1);
+        }
+
+        public static Uri buildImageLastUsed(int flag) {
+            return CONTENT_URI.buildUpon().appendPath(Integer.toString(flag)).build();
         }
 
     }

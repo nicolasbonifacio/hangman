@@ -22,14 +22,14 @@
     <string name="image_taken">Image created.</string>
     <string name="image_not_selected">Image invalid or not selected.</string>
     <string name="select_image_button">Select</string>
-    <string name="create_image_button">Done!</string>
+    <string name="create_image_button">Let\'s play!</string>
 
     <!-- Image management screen -->
     <string name="create_new_image_button">Create one!</string>
-    <string name="select_saved_image_button">Select</string>
+    <string name="select_saved_image_button">Select one!</string>
     <string name="use_image_button">Use it!</string>
     <string name="your_last_image_text">Your last image!!!</string>
-    <string name="avatar_text">The objective here is to create an image, with a face of someone, to use in you gallows. It can be some friend, family, or anyone else. So, what about creating one now? It\'s easy as 1, 2, 3. Begin by clicking on the \'Create one!\' button, and than select the chosen image from your gallery. After that, just slide your finger across the screen to create a square around the person\'s face, and click \'Done!\' when finished. You can slide your finger as many times as you want, until you have created the perfect square. Let\'s do it!\nIf you already have an image created, you can also click on \'Select\'.</string>
+    <string name="avatar_text">The objective here is to create an image, with a face of someone, to use in your gallows. It can be some friend, family, or anyone else. So, what about creating one now? It\'s easy as 1, 2, 3. Begin by clicking on the \'Create one!\' button, and than select the chosen image from your gallery. After that, just slide your finger across the screen to create a square around the person\'s face, and click \'Let\'s play!\' when finished. You can slide your finger as many times as you want, until you have created the perfect square. Let\'s do it!\nIf you already have an image created, you can also click on \'Select one!\'.</string>
 
     <!-- Game screen -->
     <string name="error_loading_word">Error loading word</string>
