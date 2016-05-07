@@ -48,6 +48,7 @@
     <string name="lose_game">You lose!!!</string>
     <string name="win_game">You win!!!</string>
     <string name="end_game">Game Finished</string>
+    <string name="share_title">Share Image</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

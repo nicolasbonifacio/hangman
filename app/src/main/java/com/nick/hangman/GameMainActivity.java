@@ -110,7 +110,7 @@ public class GameMainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             share.putExtra(Intent.EXTRA_STREAM, Uri.parse("file:///sdcard/HangmanTale/HangmanTale.jpg"));
-            startActivity(Intent.createChooser(share, "Share Image"));
+            startActivity(Intent.createChooser(share, getResources().getText(R.string.share_title)));
         }
         return super.onOptionsItemSelected(item);
     }
