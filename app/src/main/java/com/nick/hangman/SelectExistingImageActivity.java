@@ -269,6 +269,11 @@ public class SelectExistingImageActivity extends AppCompatActivity {
                                 new String[]{Integer.toString(mImageList.get(iPosition).getId())}
                         );
 
+                        File fileDelete = new File(mImageList.get(iPosition).getImagePath(), mImageList.get(iPosition).getImageName());
+                        if(fileDelete.exists()) {
+                            fileDelete.delete();
+                        }
+
                         Intent intent = getIntent();
                         finish();
                         startActivity(intent);

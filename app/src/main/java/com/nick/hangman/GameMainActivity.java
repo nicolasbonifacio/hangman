@@ -30,6 +30,7 @@ public class GameMainActivity extends AppCompatActivity {
     private AdView mAdView;
 
     View content;
+    private String mPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,8 +62,8 @@ public class GameMainActivity extends AppCompatActivity {
         View v = view.getRootView();
         v.setDrawingCacheEnabled(true);
         Bitmap b = v.getDrawingCache();
-        String extr = Environment.getExternalStorageDirectory().toString() + File.separator + "HangmanTale" + File.separator;
-        File myPath = new File(extr, "HangmanTale.jpg");
+        mPath = Environment.getExternalStorageDirectory().toString() + File.separator + "HangmanTale" + File.separator;
+        File myPath = new File(mPath, "HangmanTale_temp.jpg");
         FileOutputStream fos = null;
         try {
             fos = new FileOutputStream(myPath);
@@ -90,8 +91,8 @@ public class GameMainActivity extends AppCompatActivity {
 
             getScreen();
 
-            
-            File image = new File(Environment.getExternalStorageDirectory() + File.separator + "HangmanTale" + File.separator, "HangmanTale.jpg");
+
+            File image = new File(Environment.getExternalStorageDirectory() + File.separator + "HangmanTale" + File.separator, "HangmanTale_temp.jpg");
             BitmapFactory.Options bmOptions = new BitmapFactory.Options();
             Bitmap mBitmap = BitmapFactory.decodeFile(image.getAbsolutePath(), bmOptions);
 
@@ -100,7 +101,7 @@ public class GameMainActivity extends AppCompatActivity {
             share.setType("image/jpeg");
             ByteArrayOutputStream bytes = new ByteArrayOutputStream();
             icon.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-            File f = new File(Environment.getExternalStorageDirectory() + File.separator + "HangmanTale.jpg");
+            File f = new File(Environment.getExternalStorageDirectory() + File.separator + "HangmanTale" + File.separator + "HangmanTale.jpg");
             try {
                 f.createNewFile();
                 FileOutputStream fo = new FileOutputStream(f);
@@ -108,23 +109,22 @@ public class GameMainActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            share.putExtra(Intent.EXTRA_STREAM, Uri.parse("file:///sdcard/HangmanTale.jpg"));
+            share.putExtra(Intent.EXTRA_STREAM, Uri.parse("file:///sdcard/HangmanTale/HangmanTale.jpg"));
             startActivity(Intent.createChooser(share, "Share Image"));
         }
         return super.onOptionsItemSelected(item);
     }
-/*
-    private void finishCreatingMenu(MenuItem menuItem) {
-        // Retrieve the share menu item
-        menuItem.setIntent(createShareForecastIntent());
-    }
 
-    private Intent createShareForecastIntent() {
-        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-        shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, "bla bla bla");
-        return shareIntent;
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        File fileDelete = new File(mPath, "HangmanTale_temp.jpg");
+        if(fileDelete.exists()) {
+            fileDelete.delete();
+        }
+        fileDelete = new File(mPath, "HangmanTale.jpg");
+        if(fileDelete.exists()) {
+            fileDelete.delete();
+        }
     }
-*/
 }

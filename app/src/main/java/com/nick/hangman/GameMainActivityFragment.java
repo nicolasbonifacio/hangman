@@ -402,7 +402,7 @@ public class GameMainActivityFragment extends Fragment {
 
             mTotalCharacters = 0;
 
-mWord.setWord("HOUSE OF CARDS");
+mWord.setWord("A B");
             mWord.setWord(mWord.getWord().replace("   ", " "));
             mWord.setWord(mWord.getWord().replace("  ", " "));
 
