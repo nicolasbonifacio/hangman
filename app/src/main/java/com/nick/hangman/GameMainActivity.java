@@ -57,7 +57,15 @@ public class GameMainActivity extends AppCompatActivity {
         return true;
     }
 
-    private void getScreen() {
+    public void getScreen() {
+
+        File folder = new File(Environment.getExternalStorageDirectory() +
+                File.separator + "HangmanTale");
+
+        if (!folder.exists()) {
+            folder.mkdir();
+        }
+
         View view = content;
         View v = view.getRootView();
         v.setDrawingCacheEnabled(true);
@@ -73,10 +81,8 @@ public class GameMainActivity extends AppCompatActivity {
             MediaStore.Images.Media.insertImage( getContentResolver(), b,
                     "Screen", "screen");
         } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }

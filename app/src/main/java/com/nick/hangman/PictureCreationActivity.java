@@ -63,7 +63,7 @@ public class PictureCreationActivity extends AppCompatActivity {
         photoPickerIntent.setType("image/*");
         startActivityForResult(photoPickerIntent, SELECT_PHOTO);
 
-        Button selectImageButton = (Button) findViewById(R.id.selectImageButton);
+        ImageView selectImageButton = (ImageView) findViewById(R.id.selectImageButton);
         assert selectImageButton != null;
         selectImageButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -83,7 +83,7 @@ public class PictureCreationActivity extends AppCompatActivity {
         mRight = 0;
         mBottom = 0;
 
-        Button createImageButton = ((Button) findViewById(R.id.createImageButton));
+        ImageView createImageButton = ((ImageView) findViewById(R.id.createImageButton));
         assert createImageButton != null;
         createImageButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {

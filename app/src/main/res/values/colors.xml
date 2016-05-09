@@ -11,13 +11,16 @@
     <color name="colorBackground">#E0F2F1</color>
 
     <!-- Teal 500 -->
-    <color name="colorButtonDisabled">#009688</color>
+    <color name="colorButtonDisabled">#B2DFDB</color>
 
     <!-- Grey 500 -->
     <color name="colorDivisionGameScreen">#9E9E9E</color>
 
     <!-- Grey 300 -->
     <color name="colorBaseProgressBar">#E0E0E0</color>
+
+    <color name="colorShareDialog">#009688</color>
+    <color name="colorWordDialog">#009688</color>
 
 
 

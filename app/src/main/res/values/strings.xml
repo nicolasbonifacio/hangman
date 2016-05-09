@@ -10,7 +10,7 @@
     <string name="interstitial_ad_unit_id">ca-app-pub-3940256099942544/1033173712</string>
 
     <string name="content_authority">com.nick.hangman</string>
-    <string name="title_activity_game_main">GameMainActivity</string>
+    <string name="title_activity_game_main">Hangman Tale</string>
 
     <!-- Selection screen -->
     <string name="category_not_selected">Select category</string>
@@ -25,11 +25,8 @@
     <string name="create_image_button">Let\'s play!</string>
 
     <!-- Image management screen -->
-    <string name="create_new_image_button">Create one!</string>
-    <string name="select_saved_image_button">Select one!</string>
-    <string name="use_image_button">Use it!</string>
     <string name="your_last_image_text">Your last image!!!</string>
-    <string name="avatar_text">The objective here is to create an image, with a face of someone, to use in your gallows. It can be some friend, family, or anyone else. So, what about creating one now? It\'s easy as 1, 2, 3. Begin by clicking on the \'Create one!\' button, and than select the chosen image from your gallery. After that, just slide your finger across the screen to create a square around the person\'s face, and click \'Let\'s play!\' when finished. You can slide your finger as many times as you want, until you have created the perfect square. Let\'s do it!\nIf you already have an image created, you can also click on \'Select one!\'.</string>
+    <string name="avatar_text">The objective here is to create an image, with a face of someone, to use in your gallows. It can be some friend, family, or anyone else. So, what about creating one now? It\'s easy as 1, 2, 3. Begin by clicking on the \'Create\' button, and than select the chosen image from your gallery. After that, just slide your finger across the screen to create a square around the person\'s face, and click \'Let\'s play!\' when finished. You can slide your finger as many times as you want, until you have created the perfect square. Let\'s do it!\nIf you already have an image created, you can also click on \'Select\'.</string>
 
     <!-- Image selection screen -->
     <string name="delete_image_dialog_title">Delete Image</string>
@@ -50,12 +47,17 @@
     <string name="end_game">Game Finished</string>
     <string name="share_title">Share Image</string>
 
+    <!-- Game screen dialog -->
+    <string name="continue_dialog_button">Continue</string>
+    <string name="win_game_dialog_text">You got it!!!</string>
+    <string name="loose_game_dialog_text">Sorry, not this time</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_tale">TaleActivity</string>
-    <string name="title_activity_picture_selection">PictureSelectionActivity</string>
-    <string name="title_activity_picture_managment">PictureManagmentActivity</string>
-    <string name="title_activity_select_existing_image">SelectExistingImageActivity</string>
+    <string name="title_activity_tale">Hangman Tale</string>
+    <string name="title_activity_picture_selection">Hangman Tale</string>
+    <string name="title_activity_picture_managment">Hangman Tale</string>
+    <string name="title_activity_select_existing_image">Hangman Tale</string>
 
 
 </resources>

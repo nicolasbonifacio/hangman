@@ -25,4 +25,30 @@
     <dimen name="game_details_same_subject_vertical_padding">4dp</dimen>
     <dimen name="game_details_different_subject_vertical_padding">8dp</dimen>
 
+    <!-- Game dialog -->
+    <dimen name="share_dialog_bar_height">32dp</dimen>
+    <dimen name="share_dialog_padding_top">4dp</dimen>
+    <dimen name="share_dialog_padding_right">8dp</dimen>
+    <dimen name="image_stars_dialog_size">32dp</dimen>
+    <dimen name="end_game_dialog_msg_padding_top">8dp</dimen>
+    <dimen name="end_game_dialog_msg_padding_bottom">16dp</dimen>
+    <dimen name="dialog_padding_bottom">16dp</dimen>
+    <dimen name="word_dialog_msg_padding_top">16dp</dimen>
+    <dimen name="word_dialog_msg_padding_bottom">16dp</dimen>
+    <dimen name="continue_game_dialog_button">36dp</dimen>
+    <dimen name="use_it_picture_button">36dp</dimen>
+    <dimen name="create_picture_button_height">36dp</dimen>
+    <dimen name="select_picture_button_height">36dp</dimen>
+    <dimen name="create_picture_button_width">184dp</dimen>
+    <dimen name="select_picture_button_width">184dp</dimen>
+    <dimen name="change_picture_button_height">36dp</dimen>
+    <dimen name="lets_play_picture_button_height">36dp</dimen>
+    <dimen name="change_picture_button_width">184dp</dimen>
+    <dimen name="lets_play_picture_button_width">184dp</dimen>
+
+    <dimen name="win_game_dialog_text_size">22sp</dimen>
+    <dimen name="loose_game_dialog_text_size">22sp</dimen>
+    <dimen name="word_dialog_text_size">16sp</dimen>
+
+
 </resources>

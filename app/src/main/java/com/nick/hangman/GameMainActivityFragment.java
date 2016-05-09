@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -26,6 +27,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -35,7 +37,10 @@ import android.widget.Toast;
 import com.nick.hangman.Objects.Word;
 import com.nick.hangman.data.HangmanContract;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -62,6 +67,10 @@ public class GameMainActivityFragment extends Fragment {
     private static final int IMAGE_FACE_CENTER_IN_DP = 101;
     private static final int IMAGE_FACE_BASE_HEIGHT_IN_DP = 62;
     private static final int IMAGE_FACE_Y_IN_DP = 23;
+    public static final float PERC_WIDTH_DIALOG = 0.7f; //70%
+    public static final float PERC_WIDTH_SHARE_DIALOG = 0.3f; //almost 50% (of dialog width)
+    private static final int SHARE_ICON_DIALOG_ID = 998;
+    public static final float PERC_STARS_DIALOG_WIDTH = 0.6f; //60%
 
     private static final String WORD_SORT_ORDER = "RANDOM() LIMIT 1";
 
@@ -120,8 +129,11 @@ public class GameMainActivityFragment extends Fragment {
     private boolean mGameWon;
     private int mTotalCharacters;
     private float mDensity;
+    private float mScaledDensity;
     private int mCharacterHeight;
     private boolean mIsImageSelected;
+    private int widthPx;
+    private int heightPx;
 
     private Utils mUtils;
 
@@ -146,9 +158,10 @@ public class GameMainActivityFragment extends Fragment {
 
             int horizontalPadding = (int)getResources().getDimension(R.dimen.activity_horizontal_margin);
             int verticalPadding = (int)getResources().getDimension(R.dimen.activity_vertical_margin);
-            int widthPx = getContext().getResources().getDisplayMetrics().widthPixels;
-            int heightPx = getContext().getResources().getDisplayMetrics().heightPixels;
+            widthPx = getContext().getResources().getDisplayMetrics().widthPixels;
+            heightPx = getContext().getResources().getDisplayMetrics().heightPixels;
             mDensity = getContext().getResources().getDisplayMetrics().density;
+            mScaledDensity = getContext().getResources().getDisplayMetrics().scaledDensity;
 
             //TextView player1ScoreView = (TextView) rootView.findViewById(R.id.player1GameScoreValueTextView);
             TextView categoryDescrView = (TextView) rootView.findViewById(R.id.categoryGameDescrTextView);
@@ -227,7 +240,7 @@ public class GameMainActivityFragment extends Fragment {
                     mGallowsView.setMinimumHeight(gallowsHeight);
                 }
 
-//                float scaledDensity = getContext().getResources().getDisplayMetrics().scaledDensity;
+//
 //                int c = getContext().getResources().getDisplayMetrics().densityDpi;
 //                float xdpi = getContext().getResources().getDisplayMetrics().xdpi;
 //                float ydpi = getContext().getResources().getDisplayMetrics().ydpi;
@@ -264,6 +277,7 @@ public class GameMainActivityFragment extends Fragment {
 
                             btn1.setEnabled(false);
                             btn1.setBackgroundColor(getResources().getColor(R.color.colorButtonDisabled));
+                            //btn1.setVisibility(View.INVISIBLE);
                             handleGuess(FIRST_KEYPAD_LINE_CHARACTERS[btn1.getId() - 2001]);
 
                         }
@@ -292,7 +306,8 @@ public class GameMainActivityFragment extends Fragment {
                         public void onClick(View view) {
 
                             btn2.setEnabled(false);
-                            btn2.setBackgroundColor(getResources().getColor(R.color.colorButtonDisabled));
+                            //btn2.setBackgroundColor(getResources().getColor(R.color.colorButtonDisabled));
+                            //btn2.setVisibility(View.INVISIBLE);
                             handleGuess(SECOND_KEYPAD_LINE_CHARACTERS[btn2.getId() - 3001]);
 
                         }
@@ -321,7 +336,8 @@ public class GameMainActivityFragment extends Fragment {
                         public void onClick(View view) {
 
                             btn3.setEnabled(false);
-                            btn3.setBackgroundColor(getResources().getColor(R.color.colorButtonDisabled));
+                            //btn3.setBackgroundColor(getResources().getColor(R.color.colorButtonDisabled));
+                            btn3.setVisibility(View.INVISIBLE);
                             handleGuess(THIRD_KEYPAD_LINE_CHARACTERS[btn3.getId() - 4001]);
 
                         }
@@ -402,7 +418,7 @@ public class GameMainActivityFragment extends Fragment {
 
             mTotalCharacters = 0;
 
-mWord.setWord("A B");
+mWord.setWord("A");
             mWord.setWord(mWord.getWord().replace("   ", " "));
             mWord.setWord(mWord.getWord().replace("  ", " "));
 
@@ -524,13 +540,10 @@ mWord.setWord("A B");
                 RelativeLayout gallowsLayout = (RelativeLayout) rootView.findViewById(R.id.gallowsLayout);
                 RelativeLayout.LayoutParams gallowsParams = new RelativeLayout.LayoutParams(
                         imageWidth,
-                        imageHeight // sempre tem que ser 61dp
+                        imageHeight //61dp
                 );
 
                 mGallowsView.setImageDrawable(getResources().getDrawable(mUtils.getGallowsImageWithImage(mQtdError)));
-
-                //Uri imageUri = Uri.parse(paramsSel.getImageImageUri());
-                //Bitmap imageLastUsedBitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), imageUri);
 
                 File image = new File(paramsSel.getImageImagePath(), paramsSel.getImageImageName());
                 BitmapFactory.Options bmOptions = new BitmapFactory.Options();
@@ -576,26 +589,8 @@ mWord.setWord("A B");
 
     private void setNewWord() {
 
-        // Clear keypad
-        Button btn;
-
-        for (int i = 2001; i <= FIRST_KEYPAD_LINE_CHARACTERS.length + 2000; i++) {
-            btn = (Button) rootView.findViewById(i);
-            btn.setEnabled(true);
-            btn.setBackgroundColor(Color.parseColor("#d6d7d7"));
-        }
-
-        for (int i = 3001; i <= SECOND_KEYPAD_LINE_CHARACTERS.length + 3000; i++) {
-            btn = (Button) rootView.findViewById(i);
-            btn.setEnabled(true);
-            btn.setBackgroundColor(Color.parseColor("#d6d7d7"));
-        }
-
-        for (int i = 4001; i <= THIRD_KEYPAD_LINE_CHARACTERS.length + 4000; i++) {
-            btn = (Button) rootView.findViewById(i);
-            btn.setEnabled(true);
-            btn.setBackgroundColor(Color.parseColor("#d6d7d7"));
-        }
+        //Restore keypad
+        enableKeypad();
 
         //Clear word
         TextView dash;
@@ -610,28 +605,102 @@ mWord.setWord("A B");
 
         dialog.setContentView(R.layout.custom_dialog);
 
-        TextView endGameView = (TextView) dialog.findViewById(R.id.endGameTextView);
-        TextView wordSelectedView = (TextView) dialog.findViewById(R.id.wordSelected);
-        TextView numStars = (TextView) dialog.findViewById(R.id.numStars);
+        //Main dialog layout
+        LinearLayout dialogLayout = (LinearLayout) dialog.findViewById(R.id.dialogLayout);
+        FrameLayout.LayoutParams dialogParams = new FrameLayout.LayoutParams(
+                (int)(widthPx * PERC_WIDTH_DIALOG),
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+        dialogLayout.setLayoutParams(dialogParams);
 
-        wordSelectedView.setText(mWord.getWord());
+        //Dialog's 'toolbar'
+        LinearLayout imageShareDialogLayout = (LinearLayout) dialog.findViewById(R.id.imageShareDialogLayout);
+        LinearLayout.LayoutParams imageShareDialogParams = new LinearLayout.LayoutParams(
+                (int)((widthPx * PERC_WIDTH_DIALOG) * PERC_WIDTH_SHARE_DIALOG),
+                getResources().getDimensionPixelSize(R.dimen.share_dialog_bar_height)
+        );
+
+        ImageView imageShareDialogView = new ImageView(getContext());
+        imageShareDialogView.setImageDrawable(getResources().getDrawable(R.drawable.share_dialog));
+        imageShareDialogView.setPadding(
+                0,
+                getResources().getDimensionPixelSize(R.dimen.share_dialog_padding_top),
+                getResources().getDimensionPixelSize(R.dimen.share_dialog_padding_right),
+                0);
+        imageShareDialogView.setId(SHARE_ICON_DIALOG_ID);
+
+        imageShareDialogLayout.addView(imageShareDialogView, imageShareDialogParams);
+
+        final ImageView imageShareDialogViewListen = ((ImageView) dialog.findViewById(SHARE_ICON_DIALOG_ID));
+        imageShareDialogViewListen.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                //Share screen
+                testeShare();
+            }
+        });
 
         int qtdStars = loadPointsAndStarsFromScoreModel(mQtdError);
-        numStars.setText(Integer.toString(qtdStars));
 
-        final Button btnNewGame = ((Button) dialog.findViewById(R.id.newGame));
-        btnNewGame.setOnClickListener(new View.OnClickListener() {
+        TextView endGameDialogView = (TextView) dialog.findViewById(R.id.endGameDialogView);
+        endGameDialogView.setPadding(
+                0,
+                getResources().getDimensionPixelSize(R.dimen.end_game_dialog_msg_padding_top),
+                0,
+                getResources().getDimensionPixelSize(R.dimen.end_game_dialog_msg_padding_bottom));
+
+        if(qtdStars > 0) {
+            endGameDialogView.setText(getResources().getString(R.string.win_game_dialog_text));
+            endGameDialogView.setTextSize(getResources().getDimension(R.dimen.win_game_dialog_text_size) / mScaledDensity);
+        }else {
+            endGameDialogView.setText(getResources().getString(R.string.loose_game_dialog_text));
+            endGameDialogView.setTextSize(getResources().getDimension(R.dimen.loose_game_dialog_text_size) / mScaledDensity);
+        }
+
+        FrameLayout imageStarsDialogLayout = (FrameLayout) dialog.findViewById(R.id.imageStarsDialogLayout);
+        LinearLayout.LayoutParams imageStarsDialogParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                getResources().getDimensionPixelSize(R.dimen.image_stars_dialog_size)
+        );
+
+        ImageView imageStarsDialogView = new ImageView(getContext());
+        imageStarsDialogView.setImageDrawable(getResources().getDrawable(mUtils.getDialogIconStars(qtdStars)));
+        imageStarsDialogLayout.addView(imageStarsDialogView, imageStarsDialogParams);
+
+        TextView wordSelectedDialogView = (TextView) dialog.findViewById(R.id.wordSelectedDialogView);
+        String wordScreen = mWord.getWord().replace(" ", "\n");
+        wordSelectedDialogView.setText(wordScreen);
+        wordSelectedDialogView.setTextColor(getResources().getColor(R.color.colorWordDialog));
+        wordSelectedDialogView.setTypeface(wordSelectedDialogView.getTypeface(), Typeface.BOLD);
+        wordSelectedDialogView.setTextSize(getResources().getDimension(R.dimen.word_dialog_text_size) / mScaledDensity);
+        wordSelectedDialogView.setPadding(
+                0,
+                getResources().getDimensionPixelSize(R.dimen.word_dialog_msg_padding_top),
+                0,
+                getResources().getDimensionPixelSize(R.dimen.word_dialog_msg_padding_top)
+        );
+
+        ImageView continueGameDialogButton = (ImageView) dialog.findViewById(R.id.continueGameDialogButton);
+        continueGameDialogButton.setImageDrawable(getResources().getDrawable(R.drawable.button_dialog_continue_green_en));
+
+//heightPx
+        //TextView endGameView = (TextView) dialog.findViewById(R.id.endGameTextView);
+        //TextView wordSelectedView = (TextView) dialog.findViewById(R.id.wordSelected);
+        //TextView numStars = (TextView) dialog.findViewById(R.id.numStars);
+
+        //wordSelectedView.setText(mWord.getWord());
+
+
+        //numStars.setText(Integer.toString(qtdStars));
+
+        final ImageView btnContinue = ((ImageView) dialog.findViewById(R.id.continueGameDialogButton));
+        btnContinue.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 dialog.cancel();
                 getActivity().finish();
             }
         });
 
-        if(gameWon) {
-            endGameView.setText(getResources().getString(R.string.win_game));
-        }else {
-            endGameView.setText(getResources().getString(R.string.lose_game));
-        }
+        disableKeypad();
 
         dialog.show();
     }
@@ -722,6 +791,101 @@ mWord.setWord("A B");
                 "_id = ?",
                 new String[]{id}
         );
+
+    }
+
+    private void disableKeypad() {
+        Button btn;
+
+        for (int i = 2001; i <= FIRST_KEYPAD_LINE_CHARACTERS.length + 2000; i++) {
+            btn = (Button) rootView.findViewById(i);
+            btn.setEnabled(false);
+        }
+
+        for (int i = 3001; i <= SECOND_KEYPAD_LINE_CHARACTERS.length + 3000; i++) {
+            btn = (Button) rootView.findViewById(i);
+            btn.setEnabled(false);
+        }
+
+        for (int i = 4001; i <= THIRD_KEYPAD_LINE_CHARACTERS.length + 4000; i++) {
+            btn = (Button) rootView.findViewById(i);
+            btn.setEnabled(false);
+        }
+    }
+
+    private void enableKeypad() {
+        Button btn;
+
+        for (int i = 2001; i <= FIRST_KEYPAD_LINE_CHARACTERS.length + 2000; i++) {
+            btn = (Button) rootView.findViewById(i);
+            btn.setEnabled(true);
+            btn.setVisibility(View.VISIBLE);
+        }
+
+        for (int i = 3001; i <= SECOND_KEYPAD_LINE_CHARACTERS.length + 3000; i++) {
+            btn = (Button) rootView.findViewById(i);
+            btn.setEnabled(true);
+            btn.setVisibility(View.VISIBLE);
+        }
+
+        for (int i = 4001; i <= THIRD_KEYPAD_LINE_CHARACTERS.length + 4000; i++) {
+            btn = (Button) rootView.findViewById(i);
+            btn.setEnabled(true);
+            btn.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void testeShare() {
+
+        View content = rootView.findViewById(R.id.gallowsLayout);
+
+        File folder = new File(Environment.getExternalStorageDirectory() +
+                File.separator + "HangmanTale");
+
+        if (!folder.exists()) {
+            folder.mkdir();
+        }
+
+        View view = content;
+        View v = view.getRootView();
+        v.setDrawingCacheEnabled(true);
+        Bitmap b = v.getDrawingCache();
+        String mPath = Environment.getExternalStorageDirectory().toString() + File.separator + "HangmanTale" + File.separator;
+        File myPath = new File(mPath, "HangmanTale_temp.jpg");
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(myPath);
+            b.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            fos.flush();
+            fos.close();
+            MediaStore.Images.Media.insertImage( getContext().getContentResolver(), b,
+                    "Screen", "screen");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        File image = new File(Environment.getExternalStorageDirectory() + File.separator + "HangmanTale" + File.separator, "HangmanTale_temp.jpg");
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        Bitmap mBitmap = BitmapFactory.decodeFile(image.getAbsolutePath(), bmOptions);
+
+        Bitmap icon = mBitmap;
+        Intent share = new Intent(Intent.ACTION_SEND);
+        share.setType("image/jpeg");
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        icon.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        File f = new File(Environment.getExternalStorageDirectory() + File.separator + "HangmanTale" + File.separator + "HangmanTale.jpg");
+        try {
+            f.createNewFile();
+            FileOutputStream fo = new FileOutputStream(f);
+            fo.write(bytes.toByteArray());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        share.putExtra(Intent.EXTRA_STREAM, Uri.parse("file:///sdcard/HangmanTale/HangmanTale.jpg"));
+        startActivity(Intent.createChooser(share, getResources().getText(R.string.share_title)));
 
     }
 

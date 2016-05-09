@@ -194,7 +194,7 @@ public class TaleActivityFragment extends Fragment {
             mTaleLayout.setBackgroundColor(getResources().getColor(R.color.colorBackground));
 
             mUtils = new Utils();
-/////////////////////////////////// aspecto da tela
+
             mWidthPx = getContext().getResources().getDisplayMetrics().widthPixels;
             mPercentage = 0;
 
@@ -271,11 +271,6 @@ public class TaleActivityFragment extends Fragment {
         r.addView(mIconStars, params2);
         mHorizontalLayout.addView(r);
 
-
-
-        //horizontalLayout.addView(categoryName);
-        //horizontalLayout.addView(btn);
-        //horizontalLayout.addView(iconStars);
         mHorizontalLayout.setRotation(180);
         mTaleLayout.addView(mHorizontalLayout, params);
 

@@ -40,6 +40,7 @@ public class PictureManagementActivity extends AppCompatActivity {
     private static final float IMAGE_PERC_HEIGHT = 0.3f; //30%
     private static final int AVATAR_WIDTH = 216;
     private static final int AVATAR_HEIGHT = 219;
+    private static final int SHARE_ICON_DIALOG_ID = 999;
 
     private static final String[] IMAGE_COLUMNS = {
             HangmanContract.ImageEntry.TABLE_NAME + "." + HangmanContract.ImageEntry._ID,
@@ -75,6 +76,12 @@ public class PictureManagementActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
 
         mScaledDensity = getResources().getDisplayMetrics().scaledDensity;
         mDensity = getResources().getDisplayMetrics().density;
@@ -114,6 +121,9 @@ public class PictureManagementActivity extends AppCompatActivity {
                 imageScreenHeight
         );
 
+        assert imageLastUsedLayout != null;
+        imageLastUsedLayout.removeAllViews();
+
         LinearLayout.LayoutParams wrapContentImageLastUsedParams = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
@@ -145,13 +155,18 @@ public class PictureManagementActivity extends AppCompatActivity {
 
             imageLastUsedLayout.addView(imageLastUsedText, wrapContentImageLastUsedParams);
 
-            Button useIt = new Button(this);
-            useIt.setId(999);
-            useIt.setText(getResources().getText(R.string.use_image_button));
+            LinearLayout.LayoutParams useItParams = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    getResources().getDimensionPixelSize(R.dimen.use_it_picture_button)
+            );
 
-            imageLastUsedLayout.addView(useIt, wrapContentImageLastUsedParams);
+            ImageView useIt = new ImageView(this);
+            useIt.setId(SHARE_ICON_DIALOG_ID);
+            useIt.setImageDrawable(getResources().getDrawable(R.drawable.button_picture_use_it_green_en));
 
-            Button useIt1 = (Button) findViewById(useIt.getId());
+            imageLastUsedLayout.addView(useIt, useItParams);
+
+            ImageView useIt1 = (ImageView) findViewById(useIt.getId());
             assert useIt1 != null;
             useIt1.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
@@ -182,7 +197,7 @@ public class PictureManagementActivity extends AppCompatActivity {
 
         }
 
-        Button createNewImageButton = (Button) findViewById(R.id.createNewImageButton);
+        ImageView createNewImageButton = (ImageView) findViewById(R.id.createNewImageButton);
         assert createNewImageButton != null;
         createNewImageButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -192,7 +207,7 @@ public class PictureManagementActivity extends AppCompatActivity {
             }
         });
 
-        Button selectSavedImageButton = (Button) findViewById(R.id.selectSavedImageButton);
+        ImageView selectSavedImageButton = (ImageView) findViewById(R.id.selectSavedImageButton);
         assert selectSavedImageButton != null;
         selectSavedImageButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -201,7 +216,6 @@ public class PictureManagementActivity extends AppCompatActivity {
 
             }
         });
-
     }
 
     private boolean loadImageLastUsedFromDB() {

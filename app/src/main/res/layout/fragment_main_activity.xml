@@ -5,10 +5,10 @@
     tools:context="com.nick.hangman.MainActivityFragment"
     tools:showIn="@layout/activity_main">
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Play"
+    <ImageView
+        android:layout_width="184dp"
+        android:layout_height="36dp"
+        android:src="@drawable/button_start_play_green_en"
         android:id="@+id/playButton"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"

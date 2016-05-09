@@ -2,41 +2,52 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:id="@+id/dialogLayout"
     android:orientation="vertical" >
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:id="@+id/endGameTextView" />
+        android:id="@+id/imageShareDialogLayout"
+        android:orientation="horizontal"
+        android:gravity="right"
+        android:background="@color/colorShareDialog">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:id="@+id/wordSelected" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:id="@+id/numStars" />
+    </LinearLayout>
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="10dp">
+        android:gravity="center"
+        android:paddingBottom="@dimen/dialog_padding_bottom"
+        android:orientation="vertical">
 
-
-        <Button
-            android:id="@+id/newGame"
-            android:layout_marginTop="15dp"
-            android:layout_weight="1"
-            android:layout_width="fill_parent"
+        <TextView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="New Game" />
+            android:gravity="center"
+            android:id="@+id/endGameDialogView" />
 
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:id="@+id/imageStarsDialogLayout" >
+
+        </FrameLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:id="@+id/wordSelectedDialogView" />
+
+        <ImageView
+            android:id="@+id/continueGameDialogButton"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/continue_game_dialog_button"
+            android:gravity="center" />
 
     </LinearLayout>
 

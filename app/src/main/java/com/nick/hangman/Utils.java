@@ -285,4 +285,24 @@ public class Utils {
         return imageCode;
 
     }
+
+    public int getDialogIconStars(int numStars) {
+
+        int iconCode;
+
+        switch (numStars) {
+            case 0: iconCode = R.drawable.img_0_stars_end_game;
+                break;
+            case 1: iconCode = R.drawable.img_1_star_end_game;
+                break;
+            case 2: iconCode = R.drawable.img_2_stars_end_game;
+                break;
+            case 3: iconCode = R.drawable.img_3_stars_end_game;
+                break;
+            default: iconCode = R.drawable.img_0_stars_end_game;
+        }
+
+        return iconCode;
+    }
+
 }
