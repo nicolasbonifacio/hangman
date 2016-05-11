@@ -1,5 +1,6 @@
 package com.nick.hangman;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -15,5 +16,6 @@ public class StartActivity extends AppCompatActivity {
         setContentView(R.layout.activity_start);
 
     }
+
 
 }
