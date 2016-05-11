@@ -21,19 +21,49 @@
         android:layout_height="50dp"
         android:gravity="center">
 
-        <ImageView
-            android:layout_width="@dimen/change_picture_button_width"
-            android:layout_height="@dimen/change_picture_button_height"
-            android:layout_gravity="center"
-            android:src="@drawable/button_picture_change_green_en"
-            android:id="@+id/selectImageButton" />
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true">
 
-        <ImageView
-            android:layout_width="@dimen/lets_play_picture_button_width"
-            android:layout_height="@dimen/lets_play_picture_button_height"
-            android:layout_gravity="center"
-            android:src="@drawable/button_picture_lets_play_green_en"
-            android:id="@+id/createImageButton" />
+            <ImageView
+                android:layout_width="@dimen/change_picture_button_width"
+                android:layout_height="@dimen/change_picture_button_height"
+                android:layout_gravity="center"
+                android:src="@drawable/button_picture_change_blue_en"
+                android:id="@+id/selectImageButton" />
+
+            <ImageView
+                android:layout_width="@dimen/change_picture_button_width_pressed"
+                android:layout_height="@dimen/change_picture_button_height_pressed"
+                android:layout_gravity="center"
+                android:src="@drawable/button_picture_change_blue_en_pressed"
+                android:id="@+id/selectImageButtonPressed" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true">
+
+            <ImageView
+                android:layout_width="@dimen/lets_play_picture_button_width"
+                android:layout_height="@dimen/lets_play_picture_button_height"
+                android:layout_gravity="center"
+                android:src="@drawable/button_picture_lets_play_blue_en"
+                android:id="@+id/createImageButton" />
+
+            <ImageView
+                android:layout_width="@dimen/lets_play_picture_button_width_pressed"
+                android:layout_height="@dimen/lets_play_picture_button_height_pressed"
+                android:layout_gravity="center"
+                android:src="@drawable/button_picture_lets_play_blue_en_pressed"
+                android:id="@+id/createImageButtonPressed" />
+
+        </FrameLayout>
 
     </LinearLayout>
 

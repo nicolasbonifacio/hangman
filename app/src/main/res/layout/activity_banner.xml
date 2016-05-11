@@ -5,7 +5,7 @@
     android:id="@+id/bannerLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#E0F2F1">
+    android:background="@color/colorBackground">
 
     <com.google.android.gms.ads.AdView
         android:id="@+id/adView"

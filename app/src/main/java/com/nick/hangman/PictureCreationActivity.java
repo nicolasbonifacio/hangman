@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -63,18 +64,37 @@ public class PictureCreationActivity extends AppCompatActivity {
         photoPickerIntent.setType("image/*");
         startActivityForResult(photoPickerIntent, SELECT_PHOTO);
 
-        ImageView selectImageButton = (ImageView) findViewById(R.id.selectImageButton);
-        assert selectImageButton != null;
-        selectImageButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                mLeft = 0;
-                mTop = 0;
-                mRight = 0;
-                mBottom = 0;
+        final ImageView selectImageButtonPressed = (ImageView) findViewById(R.id.selectImageButtonPressed);
+        assert selectImageButtonPressed != null;
+        selectImageButtonPressed.setVisibility(View.INVISIBLE);
 
-                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-                photoPickerIntent.setType("image/*");
-                startActivityForResult(photoPickerIntent, SELECT_PHOTO);
+        final ImageView selectImageButton = (ImageView) findViewById(R.id.selectImageButton);
+        assert selectImageButton != null;
+        selectImageButton.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        selectImageButton.setVisibility(View.INVISIBLE);
+                        selectImageButtonPressed.setVisibility(View.VISIBLE);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        selectImageButton.setVisibility(View.VISIBLE);
+                        selectImageButtonPressed.setVisibility(View.INVISIBLE);
+
+                        mLeft = 0;
+                        mTop = 0;
+                        mRight = 0;
+                        mBottom = 0;
+
+                        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+                        photoPickerIntent.setType("image/*");
+                        startActivityForResult(photoPickerIntent, SELECT_PHOTO);
+
+                        break;
+                    default:
+                        break;
+                }
+                return true;
             }
         });
 
@@ -83,19 +103,35 @@ public class PictureCreationActivity extends AppCompatActivity {
         mRight = 0;
         mBottom = 0;
 
-        ImageView createImageButton = ((ImageView) findViewById(R.id.createImageButton));
-        assert createImageButton != null;
-        createImageButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
+        final ImageView createImageButtonPressed = ((ImageView) findViewById(R.id.createImageButtonPressed));
+        assert createImageButtonPressed != null;
+        createImageButtonPressed.setVisibility(View.INVISIBLE);
 
-                if(mRight > 0 && mBottom > 0) {
-                    cropImage(mLeft, mTop, mRight, mBottom);
-                }else {
-                    Toast.makeText(getBaseContext(), getResources().getText(R.string.area_not_selected), Toast.LENGTH_SHORT).show();
+        final ImageView createImageButton = ((ImageView) findViewById(R.id.createImageButton));
+        assert createImageButton != null;
+
+        createImageButton.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        createImageButton.setVisibility(View.INVISIBLE);
+                        createImageButtonPressed.setVisibility(View.VISIBLE);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        createImageButton.setVisibility(View.VISIBLE);
+                        createImageButtonPressed.setVisibility(View.INVISIBLE);
+                        if(mRight > 0 && mBottom > 0) {
+                            cropImage(mLeft, mTop, mRight, mBottom);
+                        }else {
+                            Toast.makeText(getBaseContext(), getResources().getText(R.string.area_not_selected), Toast.LENGTH_SHORT).show();
+                        }
+                        break;
+                    default:
+                        break;
                 }
+                return true;
             }
         });
-
 
     }
 

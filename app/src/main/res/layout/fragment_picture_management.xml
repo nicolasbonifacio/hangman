@@ -32,19 +32,49 @@
         android:layout_height="50dp"
         android:gravity="center">
 
-        <ImageView
-            android:layout_width="@dimen/create_picture_button_width"
-            android:layout_height="@dimen/create_picture_button_height"
-            android:layout_gravity="center"
-            android:src="@drawable/button_picture_create_green_en"
-            android:id="@+id/createNewImageButton" />
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true">
 
-        <ImageView
-            android:layout_width="@dimen/select_picture_button_width"
-            android:layout_height="@dimen/select_picture_button_height"
-            android:layout_gravity="center"
-            android:src="@drawable/button_picture_select_green_en"
-            android:id="@+id/selectSavedImageButton" />
+            <ImageView
+                android:layout_width="@dimen/create_picture_button_width"
+                android:layout_height="@dimen/create_picture_button_height"
+                android:layout_gravity="center"
+                android:src="@drawable/button_picture_create_blue_en"
+                android:id="@+id/createNewImageButton" />
+
+            <ImageView
+                android:layout_width="@dimen/create_picture_button_width_pressed"
+                android:layout_height="@dimen/create_picture_button_height_pressed"
+                android:layout_gravity="center"
+                android:src="@drawable/button_picture_create_blue_en_pressed"
+                android:id="@+id/createNewImageButtonPressed" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true">
+
+            <ImageView
+                android:layout_width="@dimen/select_picture_button_width"
+                android:layout_height="@dimen/select_picture_button_height"
+                android:layout_gravity="center"
+                android:src="@drawable/button_picture_select_blue_en"
+                android:id="@+id/selectSavedImageButton" />
+
+            <ImageView
+                android:layout_width="@dimen/select_picture_button_width_pressed"
+                android:layout_height="@dimen/select_picture_button_height_pressed"
+                android:layout_gravity="center"
+                android:src="@drawable/button_picture_select_blue_en_pressed"
+                android:id="@+id/selectSavedImageButtonPressed" />
+
+        </FrameLayout>
 
     </LinearLayout>
 

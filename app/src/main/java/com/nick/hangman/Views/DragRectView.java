@@ -60,9 +60,6 @@ public class DragRectView extends View {
         mRectPaint.setStyle(Paint.Style.STROKE);
         mRectPaint.setStrokeWidth(5); // TODO: should take from resources
 
-        //mTextPaint = new TextPaint();
-        //mTextPaint.setColor(getContext().getResources().getColor(android.R.color.holo_green_light));
-        //mTextPaint.setTextSize(20);
     }
 
     @Override

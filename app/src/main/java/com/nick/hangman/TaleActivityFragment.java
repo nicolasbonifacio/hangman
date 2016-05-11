@@ -207,15 +207,15 @@ public class TaleActivityFragment extends Fragment {
                     afterFirstLoad(i);
                 }
             }
-
+/*
             ImageView teste;
             teste = (ImageView) rootView.findViewById(13);
-            teste.setBackgroundColor(Color.parseColor("#83db63"));
+            teste.setBackgroundColor(Color.parseColor("#2962FF"));
             teste = (ImageView) rootView.findViewById(14);
-            teste.setBackgroundColor(Color.parseColor("#83db63"));
+            teste.setBackgroundColor(Color.parseColor("#2962FF"));
             teste = (ImageView) rootView.findViewById(15);
-            teste.setBackgroundColor(Color.parseColor("#83db63"));
-
+            teste.setBackgroundColor(Color.parseColor("#2962FF"));
+*/
 
         }
 
@@ -274,21 +274,46 @@ public class TaleActivityFragment extends Fragment {
         mHorizontalLayout.setRotation(180);
         mTaleLayout.addView(mHorizontalLayout, params);
 
+        int percCompleted = (int)((getResources().getDimensionPixelSize(R.dimen.path_layout_base_height) * mPercentage) / 100);
+        if(percCompleted > getResources().getDimensionPixelSize(R.dimen.path_layout_base_height)) {
+            percCompleted = getResources().getDimensionPixelSize(R.dimen.path_layout_base_height);
+        }
+
+        FrameLayout pathLayout = new FrameLayout(getContext());
+        pathLayout.setId(spaceIds);
+        LinearLayout.LayoutParams pathLayoutParamsBase = new LinearLayout.LayoutParams(
+                getResources().getDimensionPixelSize(R.dimen.path_layout_width),
+                getResources().getDimensionPixelSize(R.dimen.path_layout_base_height)
+        );
+
+        LinearLayout.LayoutParams pathLayoutParamsCompleted = new LinearLayout.LayoutParams(
+                getResources().getDimensionPixelSize(R.dimen.path_layout_width),
+                percCompleted
+        );
+
         mPath[i - 1][0] = i;
+        //Layout
         mPath[i - 1][1] = spaceIds;
-        mPath[i - 1][2] = 5;
+        spaceIds++;
 
         ImageView space;
-        for (int j = 0; j < 5; j++) {
-            space = new ImageView(getContext());
-            space.setId(spaceIds);
-            space.setMinimumWidth(10);
-            space.setMinimumHeight(100);
-            space.setBackgroundColor(Color.parseColor("#b2acac"));
-            mTaleLayout.addView(space, params);
+        space = new ImageView(getContext());
+        //space.setId(spaceIds);
+        space.setBackgroundColor(Color.parseColor("#b2acac"));
 
-            spaceIds++;
-        }
+        pathLayout.addView(space, pathLayoutParamsBase);
+
+        space = new ImageView(getContext());
+        space.setId(spaceIds);
+        space.setBackgroundColor(Color.parseColor("#2962FF"));
+
+        pathLayout.addView(space, pathLayoutParamsCompleted);
+
+        //ImageView
+        mPath[i - 1][2] = spaceIds;
+        spaceIds++;
+
+        mTaleLayout.addView(pathLayout, params);
 
         //Tale list listener
         final int id_ = mBtn.getId();
@@ -296,7 +321,11 @@ public class TaleActivityFragment extends Fragment {
         btn1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
 
-                callGameScreen(id_);
+                if (mListTaleScoreCategory.get(id_ - 1).getEnabled() == 0) {
+                    Toast.makeText(getContext(), "Complete previous levels to release", Toast.LENGTH_SHORT).show();
+                }else {
+                    callGameScreen(id_);
+                }
             }
         });
     }
@@ -304,18 +333,37 @@ public class TaleActivityFragment extends Fragment {
     private void afterFirstLoad(int i) {
         mBtn = (ImageView) rootView.findViewById(i);
         if (mListTaleScoreCategory.get(i - 1).getEnabled() == 0) {
-            mBtn.setEnabled(false);
+            //mBtn.setEnabled(false);
         } else {
             mBtn.setEnabled(true);
+            mIconStars = (ImageView) rootView.findViewById(i+5000);
+            loadImagesOnScreen(i);
+
+            int newPercCompleted = (int)((getResources().getDimensionPixelSize(R.dimen.path_layout_base_height) * mPercentage) / 100);
+            FrameLayout pathLayout = (FrameLayout) rootView.findViewById(mPath[i - 1][1]);
+            LinearLayout.LayoutParams pathLayoutParamsBase = new LinearLayout.LayoutParams(
+                    getResources().getDimensionPixelSize(R.dimen.path_layout_width),
+                    newPercCompleted
+            );
+            //pathLayout.setLayoutParams(pathLayoutParamsBase);
+
+            ImageView spaceToUpdate = (ImageView) pathLayout.getChildAt(1);
+            pathLayout.removeViewAt(1);
+            pathLayout.addView(spaceToUpdate, pathLayoutParamsBase);
+/*
+            ImageView space = (ImageView) rootView.findViewById(mPath[i - 1][2]);
+            space
+*/
+
         }
-        mIconStars = (ImageView) rootView.findViewById(i+5000);
-        loadImagesOnScreen(i);
+
     }
 
     private void loadImagesOnScreen(int i) {
         if (mListTaleScoreCategory.get(i - 1).getEnabled() == 0) {
-            mBtn.setEnabled(false);
+            mBtn.setEnabled(true);
             mBtn.setImageDrawable(getResources().getDrawable(mUtils.getButtonCode(BUTTON_DISABLED_FLAG)));
+            mPercentage = 0;
         } else {
             mBtn.setEnabled(true);
             mPercentage = (int)(mListTaleScoreCategory.get(i-1).getScore() * 100) / mListTaleScoreCategory.get(i-1).getEnableScore();

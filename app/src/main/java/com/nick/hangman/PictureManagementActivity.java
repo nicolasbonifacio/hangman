@@ -10,9 +10,11 @@ import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import android.net.Uri;
@@ -40,7 +42,8 @@ public class PictureManagementActivity extends AppCompatActivity {
     private static final float IMAGE_PERC_HEIGHT = 0.3f; //30%
     private static final int AVATAR_WIDTH = 216;
     private static final int AVATAR_HEIGHT = 219;
-    private static final int SHARE_ICON_DIALOG_ID = 999;
+    private static final int USET_IT_DIALOG_ID = 999;
+    private static final int USET_IT_DIALOG_ID_PRESSED = 996;
 
     private static final String[] IMAGE_COLUMNS = {
             HangmanContract.ImageEntry.TABLE_NAME + "." + HangmanContract.ImageEntry._ID,
@@ -157,24 +160,52 @@ public class PictureManagementActivity extends AppCompatActivity {
 
             LinearLayout.LayoutParams useItParams = new LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.WRAP_CONTENT,
-                    getResources().getDimensionPixelSize(R.dimen.use_it_picture_button)
+                    ViewGroup.LayoutParams.WRAP_CONTENT
             );
 
-            ImageView useIt = new ImageView(this);
-            useIt.setId(SHARE_ICON_DIALOG_ID);
-            useIt.setImageDrawable(getResources().getDrawable(R.drawable.button_picture_use_it_green_en));
+            FrameLayout useItLayout = new FrameLayout(this);
+            FrameLayout.LayoutParams useItLayoutParams = new FrameLayout.LayoutParams(
+                    getResources().getDimensionPixelSize(R.dimen.use_it_picture_button_width),
+                    getResources().getDimensionPixelSize(R.dimen.use_it_picture_button_height)
+            );
 
-            imageLastUsedLayout.addView(useIt, useItParams);
+            FrameLayout.LayoutParams useItLayoutParamsPressed = new FrameLayout.LayoutParams(
+                    getResources().getDimensionPixelSize(R.dimen.use_it_picture_button_width_pressed),
+                    getResources().getDimensionPixelSize(R.dimen.use_it_picture_button_height_pressed)
+            );
 
-            ImageView useIt1 = (ImageView) findViewById(useIt.getId());
-            assert useIt1 != null;
-            useIt1.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View view) {
+            final ImageView useItPressed = new ImageView(this);
+            useItPressed.setId(USET_IT_DIALOG_ID_PRESSED);
+            useItPressed.setImageDrawable(getResources().getDrawable(R.drawable.button_picture_use_it_blue_en_pressed));
+            useItPressed.setVisibility(View.INVISIBLE);
 
-                    callTaleScreen();
+            final ImageView useIt = new ImageView(this);
+            useIt.setId(USET_IT_DIALOG_ID);
+            useIt.setImageDrawable(getResources().getDrawable(R.drawable.button_picture_use_it_blue_en));
 
+            useItLayout.addView(useIt, useItLayoutParams);
+            useItLayout.addView(useItPressed, useItLayoutParamsPressed);
+
+            useIt.setOnTouchListener(new View.OnTouchListener() {
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    switch (motionEvent.getAction()) {
+                        case MotionEvent.ACTION_DOWN:
+                            useIt.setVisibility(View.INVISIBLE);
+                            useItPressed.setVisibility(View.VISIBLE);
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            useIt.setVisibility(View.VISIBLE);
+                            useItPressed.setVisibility(View.INVISIBLE);
+                            callTaleScreen();
+                            break;
+                        default:
+                            break;
+                    }
+                    return true;
                 }
             });
+
+            imageLastUsedLayout.addView(useItLayout, useItParams);
 
         }else {
             //Load text with instructions to create an image, on screen
@@ -197,25 +228,56 @@ public class PictureManagementActivity extends AppCompatActivity {
 
         }
 
-        ImageView createNewImageButton = (ImageView) findViewById(R.id.createNewImageButton);
+        final ImageView createNewImageButtonPressed = (ImageView) findViewById(R.id.createNewImageButtonPressed);
+        assert createNewImageButtonPressed != null;
+        createNewImageButtonPressed.setVisibility(View.INVISIBLE);
+
+        final ImageView createNewImageButton = (ImageView) findViewById(R.id.createNewImageButton);
         assert createNewImageButton != null;
-        createNewImageButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-
-                startActivity(new Intent(getBaseContext(), PictureCreationActivity.class));
-
+        createNewImageButton.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        createNewImageButton.setVisibility(View.INVISIBLE);
+                        createNewImageButtonPressed.setVisibility(View.VISIBLE);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        createNewImageButton.setVisibility(View.VISIBLE);
+                        createNewImageButtonPressed.setVisibility(View.INVISIBLE);
+                        startActivity(new Intent(getBaseContext(), PictureCreationActivity.class));
+                        break;
+                    default:
+                        break;
+                }
+                return true;
             }
         });
 
-        ImageView selectSavedImageButton = (ImageView) findViewById(R.id.selectSavedImageButton);
+        final ImageView selectSavedImageButtonPressed = (ImageView) findViewById(R.id.selectSavedImageButtonPressed);
+        assert selectSavedImageButtonPressed != null;
+        selectSavedImageButtonPressed.setVisibility(View.INVISIBLE);
+
+        final ImageView selectSavedImageButton = (ImageView) findViewById(R.id.selectSavedImageButton);
         assert selectSavedImageButton != null;
-        selectSavedImageButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-
-                startActivity(new Intent(getBaseContext(), SelectExistingImageActivity.class));
-
+        selectSavedImageButton.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        selectSavedImageButton.setVisibility(View.INVISIBLE);
+                        selectSavedImageButtonPressed.setVisibility(View.VISIBLE);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        selectSavedImageButton.setVisibility(View.VISIBLE);
+                        selectSavedImageButtonPressed.setVisibility(View.INVISIBLE);
+                        startActivity(new Intent(getBaseContext(), SelectExistingImageActivity.class));
+                        break;
+                    default:
+                        break;
+                }
+                return true;
             }
         });
+
     }
 
     private boolean loadImageLastUsedFromDB() {

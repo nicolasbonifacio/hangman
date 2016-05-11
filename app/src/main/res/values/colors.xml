@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Teal 500 -->
-    <color name="colorPrimary">#009688</color>
-    <!-- Teal 700 -->
-    <color name="colorPrimaryDark">#00796B</color>
+    <!-- Blue 500 -->
+    <color name="colorPrimary">#2196F3</color>
+    <!-- Blue 700 -->
+    <color name="colorPrimaryDark">#1976D2</color>
 
     <color name="colorAccent">#FF4081</color>
 
-    <!-- Teal 50 -->
-    <color name="colorBackground">#E0F2F1</color>
+    <!-- Blue 50 -->
+    <color name="colorBackground">#E3F2FD</color>
 
-    <!-- Teal 500 -->
-    <color name="colorButtonDisabled">#B2DFDB</color>
+    <!-- Blue 100 -->
+    <color name="colorButtonDisabled">#BBDEFB</color>
 
     <!-- Grey 500 -->
     <color name="colorDivisionGameScreen">#9E9E9E</color>
@@ -19,8 +19,13 @@
     <!-- Grey 300 -->
     <color name="colorBaseProgressBar">#E0E0E0</color>
 
-    <color name="colorShareDialog">#009688</color>
-    <color name="colorWordDialog">#009688</color>
+    <!-- Blue 500 -->
+    <color name="colorShareDialog">#2196F3</color>
+    <color name="colorWordDialog">#2196F3</color>
+
+    <!-- Blue 500 -->
+    <color name="textPlayRobot">#FFFFFF</color>
+    <color name="textPlayImage">#FFFFFF</color>
 
 
 

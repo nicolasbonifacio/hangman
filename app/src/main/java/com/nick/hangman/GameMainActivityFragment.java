@@ -23,6 +23,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -277,7 +278,6 @@ public class GameMainActivityFragment extends Fragment {
 
                             btn1.setEnabled(false);
                             btn1.setBackgroundColor(getResources().getColor(R.color.colorButtonDisabled));
-                            //btn1.setVisibility(View.INVISIBLE);
                             handleGuess(FIRST_KEYPAD_LINE_CHARACTERS[btn1.getId() - 2001]);
 
                         }
@@ -306,8 +306,7 @@ public class GameMainActivityFragment extends Fragment {
                         public void onClick(View view) {
 
                             btn2.setEnabled(false);
-                            //btn2.setBackgroundColor(getResources().getColor(R.color.colorButtonDisabled));
-                            //btn2.setVisibility(View.INVISIBLE);
+                            btn2.setBackgroundColor(getResources().getColor(R.color.colorButtonDisabled));
                             handleGuess(SECOND_KEYPAD_LINE_CHARACTERS[btn2.getId() - 3001]);
 
                         }
@@ -336,8 +335,7 @@ public class GameMainActivityFragment extends Fragment {
                         public void onClick(View view) {
 
                             btn3.setEnabled(false);
-                            //btn3.setBackgroundColor(getResources().getColor(R.color.colorButtonDisabled));
-                            btn3.setVisibility(View.INVISIBLE);
+                            btn3.setBackgroundColor(getResources().getColor(R.color.colorButtonDisabled));
                             handleGuess(THIRD_KEYPAD_LINE_CHARACTERS[btn3.getId() - 4001]);
 
                         }
@@ -679,24 +677,30 @@ mWord.setWord("A");
                 getResources().getDimensionPixelSize(R.dimen.word_dialog_msg_padding_top)
         );
 
-        ImageView continueGameDialogButton = (ImageView) dialog.findViewById(R.id.continueGameDialogButton);
-        continueGameDialogButton.setImageDrawable(getResources().getDrawable(R.drawable.button_dialog_continue_green_en));
+        final ImageView continueGameDialogButtonPressed = ((ImageView) dialog.findViewById(R.id.continueGameDialogButtonPressed));
+        continueGameDialogButtonPressed.setImageDrawable(getResources().getDrawable(R.drawable.button_dialog_continue_blue_en_pressed));
+        continueGameDialogButtonPressed.setVisibility(View.INVISIBLE);
 
-//heightPx
-        //TextView endGameView = (TextView) dialog.findViewById(R.id.endGameTextView);
-        //TextView wordSelectedView = (TextView) dialog.findViewById(R.id.wordSelected);
-        //TextView numStars = (TextView) dialog.findViewById(R.id.numStars);
+        final ImageView continueGameDialogButton = ((ImageView) dialog.findViewById(R.id.continueGameDialogButton));
+        continueGameDialogButton.setImageDrawable(getResources().getDrawable(R.drawable.button_dialog_continue_blue_en));
 
-        //wordSelectedView.setText(mWord.getWord());
-
-
-        //numStars.setText(Integer.toString(qtdStars));
-
-        final ImageView btnContinue = ((ImageView) dialog.findViewById(R.id.continueGameDialogButton));
-        btnContinue.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                dialog.cancel();
-                getActivity().finish();
+        continueGameDialogButton.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        continueGameDialogButton.setVisibility(View.INVISIBLE);
+                        continueGameDialogButtonPressed.setVisibility(View.VISIBLE);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        continueGameDialogButton.setVisibility(View.VISIBLE);
+                        continueGameDialogButtonPressed.setVisibility(View.INVISIBLE);
+                        dialog.cancel();
+                        getActivity().finish();
+                        break;
+                    default:
+                        break;
+                }
+                return true;
             }
         });
 

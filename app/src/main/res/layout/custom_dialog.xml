@@ -43,11 +43,25 @@
             android:gravity="center"
             android:id="@+id/wordSelectedDialogView" />
 
-        <ImageView
-            android:id="@+id/continueGameDialogButton"
+        <FrameLayout
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/continue_game_dialog_button"
-            android:gravity="center" />
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true">
+
+            <ImageView
+                android:id="@+id/continueGameDialogButton"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/continue_game_dialog_button"
+                android:gravity="center" />
+
+            <ImageView
+                android:id="@+id/continueGameDialogButtonPressed"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/continue_game_dialog_button_pressed"
+                android:gravity="center" />
+
+        </FrameLayout>
 
     </LinearLayout>
 
