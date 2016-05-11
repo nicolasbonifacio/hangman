@@ -62,6 +62,8 @@
     <string name="title_activity_picture_selection">Hangman Tale</string>
     <string name="title_activity_picture_managment">Hangman Tale</string>
     <string name="title_activity_select_existing_image">Hangman Tale</string>
+    <string name="title_activity_start">StartActivity</string>
+    <string name="title_activity_splash">SplashActivity</string>
 
 
 </resources>

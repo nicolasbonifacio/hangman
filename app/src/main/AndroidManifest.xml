@@ -29,11 +29,11 @@
         <activity
             android:name=".SelectionActivity"
             android:label="@string/title_activity_selection"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName=".StartActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.nick.hangman.MainActivity" />
+                android:value="com.nick.hangman.StartActivity" />
         </activity>
 
         <provider
@@ -45,20 +45,20 @@
         <activity
             android:name=".GameMainActivity"
             android:label="@string/title_activity_game_main"
-            android:parentActivityName=".SelectionActivity"
+            android:parentActivityName=".TaleActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.nick.hangman.SelectionActivity" />
+                android:value="com.nick.hangman.TaleActivity" />
         </activity>
         <activity
             android:name=".TaleActivity"
             android:label="@string/title_activity_tale"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName=".StartActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.nick.hangman.MainActivity" />
+                android:value="com.nick.hangman.StartActivity" />
         </activity>
 
         <!-- Activity for ads -->
@@ -70,20 +70,20 @@
         <activity
             android:name=".PictureCreationActivity"
             android:label="@string/title_activity_picture_selection"
-            android:parentActivityName=".SelectionActivity"
+            android:parentActivityName=".PictureManagementActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.nick.hangman.SelectionActivity" />
+                android:value="com.nick.hangman.PictureManagementActivity" />
         </activity>
         <activity
             android:name=".PictureManagementActivity"
             android:label="@string/title_activity_picture_managment"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName=".StartActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.nick.hangman.MainActivity" />
+                android:value="com.nick.hangman.StartActivity" />
         </activity>
         <activity
             android:name=".SelectExistingImageActivity"
@@ -93,6 +93,15 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.nick.hangman.PictureManagementActivity" />
+        </activity>
+        <activity
+            android:name=".StartActivity"
+            android:label="@string/title_activity_start"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.nick.hangman.MainActivity" />
         </activity>
     </application>
 
