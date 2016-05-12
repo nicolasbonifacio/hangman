@@ -55,6 +55,8 @@ public class TaleActivityFragment extends Fragment {
     private static final int WORD_NOT_USED_FLAG = 0;
     private static final int BUTTON_DISABLED_FLAG = -1;
 
+    private static final int ALL_CATEGORIES_BUTTON_ID = 995;
+
     private static final String WORD_COUNT_USAGE_SORT_ORDER_SELECTION =
             HangmanContract.WordEntry.TABLE_NAME +
                     "." + HangmanContract.WordEntry.COLUMN_LOC_KEY_LANGUAGE + " = ? AND " +
@@ -200,22 +202,51 @@ public class TaleActivityFragment extends Fragment {
 
             for (int i = 1; i <= mListTaleScoreCategory.size(); i++) {
                 if(firstLoad) {
-
                     firstLoad(i);
-
                 }else {
                     afterFirstLoad(i);
                 }
             }
-/*
-            ImageView teste;
-            teste = (ImageView) rootView.findViewById(13);
-            teste.setBackgroundColor(Color.parseColor("#2962FF"));
-            teste = (ImageView) rootView.findViewById(14);
-            teste.setBackgroundColor(Color.parseColor("#2962FF"));
-            teste = (ImageView) rootView.findViewById(15);
-            teste.setBackgroundColor(Color.parseColor("#2962FF"));
-*/
+
+            if(firstLoad) {
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT);
+
+                LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(
+                        mWidthPx/3,
+                        ViewGroup.LayoutParams.WRAP_CONTENT);
+
+
+                mHorizontalLayout = new LinearLayout(getContext());
+                mHorizontalLayout.setOrientation(LinearLayout.HORIZONTAL);
+                mHorizontalLayout.setGravity(Gravity.CENTER_VERTICAL);
+
+                ImageView allCategoriesButton = new ImageView(getContext());
+                allCategoriesButton.setImageDrawable(getResources().getDrawable(R.drawable.button_all_categories));
+                allCategoriesButton.setId(ALL_CATEGORIES_BUTTON_ID);
+
+                allCategoriesButton.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View view) {
+
+                        //Consulta com todas as categorias
+                        Toast.makeText(getContext(), "Todas as categorias", Toast.LENGTH_SHORT).show();
+
+                    }
+                });
+
+                FrameLayout r = new FrameLayout(getContext());
+                r.setMinimumWidth(0);
+                //r.setGravity(Gravity.CENTER);
+                r.addView(allCategoriesButton, params2);
+
+                mHorizontalLayout.setRotation(180);
+
+                mHorizontalLayout.addView(r);
+                mTaleLayout.addView(mHorizontalLayout, params);
+
+
+            }
 
         }
 
@@ -332,9 +363,8 @@ public class TaleActivityFragment extends Fragment {
 
     private void afterFirstLoad(int i) {
         mBtn = (ImageView) rootView.findViewById(i);
-        if (mListTaleScoreCategory.get(i - 1).getEnabled() == 0) {
-            //mBtn.setEnabled(false);
-        } else {
+        if (mListTaleScoreCategory.get(i - 1).getEnabled() != 0) {
+
             mBtn.setEnabled(true);
             mIconStars = (ImageView) rootView.findViewById(i+5000);
             loadImagesOnScreen(i);
@@ -345,18 +375,12 @@ public class TaleActivityFragment extends Fragment {
                     getResources().getDimensionPixelSize(R.dimen.path_layout_width),
                     newPercCompleted
             );
-            //pathLayout.setLayoutParams(pathLayoutParamsBase);
 
             ImageView spaceToUpdate = (ImageView) pathLayout.getChildAt(1);
             pathLayout.removeViewAt(1);
             pathLayout.addView(spaceToUpdate, pathLayoutParamsBase);
-/*
-            ImageView space = (ImageView) rootView.findViewById(mPath[i - 1][2]);
-            space
-*/
 
         }
-
     }
 
     private void loadImagesOnScreen(int i) {
