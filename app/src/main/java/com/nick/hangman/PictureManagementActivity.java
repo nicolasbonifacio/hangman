@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -66,10 +67,14 @@ public class PictureManagementActivity extends AppCompatActivity {
 
     private ImageTable mImageTable;
 
+    private MediaPlayer buttonSound;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_picture_management);
+
+        buttonSound = MediaPlayer.create(this, R.raw.button_sound);
 
         mAdView = (AdView) findViewById(R.id.adView);
         mAdView.setAdListener(new ToastAdListener(this));
@@ -196,6 +201,7 @@ public class PictureManagementActivity extends AppCompatActivity {
                         case MotionEvent.ACTION_UP:
                             useIt.setVisibility(View.VISIBLE);
                             useItPressed.setVisibility(View.INVISIBLE);
+                            buttonSound.start();
                             callTaleScreen();
                             break;
                         default:
@@ -244,6 +250,7 @@ public class PictureManagementActivity extends AppCompatActivity {
                     case MotionEvent.ACTION_UP:
                         createNewImageButton.setVisibility(View.VISIBLE);
                         createNewImageButtonPressed.setVisibility(View.INVISIBLE);
+                        buttonSound.start();
                         startActivity(new Intent(getBaseContext(), PictureCreationActivity.class));
                         break;
                     default:
@@ -269,6 +276,7 @@ public class PictureManagementActivity extends AppCompatActivity {
                     case MotionEvent.ACTION_UP:
                         selectSavedImageButton.setVisibility(View.VISIBLE);
                         selectSavedImageButtonPressed.setVisibility(View.INVISIBLE);
+                        buttonSound.start();
                         startActivity(new Intent(getBaseContext(), SelectExistingImageActivity.class));
                         break;
                     default:

@@ -16,7 +16,7 @@
     <!-- Tale screen -->
     <dimen name="path_layout_base_height">92dp</dimen>
     <dimen name="path_layout_width">3dp</dimen>
-
+    <dimen name="category_button_pressed_layout_reduction">12dp</dimen>
 
     <!-- Progress bar -->
     <dimen name="base_progress_bar_height">16dp</dimen>

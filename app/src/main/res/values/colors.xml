@@ -27,6 +27,10 @@
     <color name="textPlayRobot">#FFFFFF</color>
     <color name="textPlayImage">#FFFFFF</color>
 
+    <color name="tale_path_uncompleted">#b2acac</color>
+    <color name="tale_path_completed">#2962FF</color>
+
+
 
 
 </resources>

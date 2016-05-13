@@ -12,6 +12,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.Rect;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -55,10 +56,14 @@ public class PictureCreationActivity extends AppCompatActivity {
     private float ratioWidth;
     private float ratioHeight;
 
+    private MediaPlayer buttonSound;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_picture_creation);
+
+        buttonSound = MediaPlayer.create(this, R.raw.button_sound);
 
         Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
         photoPickerIntent.setType("image/*");
@@ -85,6 +90,8 @@ public class PictureCreationActivity extends AppCompatActivity {
                         mTop = 0;
                         mRight = 0;
                         mBottom = 0;
+
+                        buttonSound.start();
 
                         Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
                         photoPickerIntent.setType("image/*");
@@ -120,6 +127,7 @@ public class PictureCreationActivity extends AppCompatActivity {
                     case MotionEvent.ACTION_UP:
                         createImageButton.setVisibility(View.VISIBLE);
                         createImageButtonPressed.setVisibility(View.INVISIBLE);
+                        buttonSound.start();
                         if(mRight > 0 && mBottom > 0) {
                             cropImage(mLeft, mTop, mRight, mBottom);
                         }else {
@@ -406,83 +414,6 @@ public class PictureCreationActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-/*
-    private Bitmap decodeUri(Uri selectedImage) throws FileNotFoundException {
-
-        // Decode image size
-        BitmapFactory.Options o = new BitmapFactory.Options();
-        o.inJustDecodeBounds = true;
-        BitmapFactory.decodeStream(getContentResolver().openInputStream(selectedImage), null, o);
-
-
-        // The new size we want to scale to
-        final int REQUIRED_SIZE = 140;
-        int scale = 1;
-        // Find the correct scale value. It should be the power of 2.
-        //int width_tmp = o.outWidth, height_tmp = o.outHeight;
-        int width_tmp = o.outWidth, height_tmp = o.outHeight;
-
-        int celWidth = getResources().getDisplayMetrics().widthPixels;
-        int celHeight = (int)(getResources().getDisplayMetrics().heightPixels - (100*getResources().getDisplayMetrics().density));
-
-        if((height_tmp < celHeight) && (width_tmp < celWidth)) {
-            ratioWidth = (float)celWidth / width_tmp;
-            ratioHeight = (float)celHeight / height_tmp;
-            if(ratioWidth >= ratioHeight) {
-                //Image and cel have the same height
-                mWidth = (celHeight * width_tmp) / height_tmp;
-                mHeight = celHeight;
-                useRatioHeight = true;
-            }else {
-                //Image and cel have the same width
-                mWidth = celWidth;
-                mHeight = (celWidth * height_tmp) / width_tmp;
-                useRatioWidth = true;
-            }
-
-        }else {
-
-
-            float ratioWidthReduct = (float)width_tmp / celWidth;
-            float ratioHeightReduct = (float)height_tmp / celHeight;
-
-            while (true) {
-                if (width_tmp < celWidth
-                        && height_tmp < celHeight) {
-                    break;
-                }
-                width_tmp /= 2;
-                height_tmp /= 2;
-                scale *= 2;
-
-
-
-//                if(ratioWidthReduct > ratioHeightReduct) {
-                    //width equal
-//                    mWidth = celWidth;
-//                    mHeight = (celWidth * height_tmp) / width_tmp;
-
-//                }else {
-                    //height equal
-//                    mWidth = (celHeight * width_tmp) / height_tmp;
-//                    mHeight = celHeight;
-
-//                }
-
-
-
-            }
-            mWidth = width_tmp;
-            mHeight = height_tmp;
-        }
-
-        // Decode with inSampleSize
-        BitmapFactory.Options o2 = new BitmapFactory.Options();
-        o2.inSampleSize = scale;
-        return BitmapFactory.decodeStream(getContentResolver().openInputStream(selectedImage), null, o2);
-
-    }
-*/
 
     public static Bitmap handleBitmapBigger(Context context, Uri selectedImage, final int orientation)
             throws IOException {

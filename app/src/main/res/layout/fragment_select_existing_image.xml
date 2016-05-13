@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/colorBackground"
     tools:context="com.nick.hangman.SelectExistingImageActivityFragment"
     tools:showIn="@layout/activity_select_existing_image">
 
@@ -18,15 +19,6 @@
             android:horizontalSpacing="1dp"
             android:stretchMode="columnWidth"
             android:id="@+id/selectExistingImageView" />
-
-    </FrameLayout>
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_alignParentBottom="true">
-
-        <include layout="@layout/activity_banner" />
 
     </FrameLayout>
 

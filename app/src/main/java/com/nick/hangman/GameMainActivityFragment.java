@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -71,7 +72,9 @@ public class GameMainActivityFragment extends Fragment {
     public static final float PERC_WIDTH_DIALOG = 0.7f; //70%
     public static final float PERC_WIDTH_SHARE_DIALOG = 0.3f; //almost 50% (of dialog width)
     private static final int SHARE_ICON_DIALOG_ID = 998;
+    private static final int SHARE_ICON_DIALOG_PRESSED_ID = 994;
     public static final float PERC_STARS_DIALOG_WIDTH = 0.6f; //60%
+    private static final int ALL_CATEGORIES_ID = 0;
 
     private static final String WORD_SORT_ORDER = "RANDOM() LIMIT 1";
 
@@ -103,6 +106,12 @@ public class GameMainActivityFragment extends Fragment {
                     "." + HangmanContract.WordEntry.COLUMN_LOC_KEY_LANGUAGE + " = ? AND " +
                     HangmanContract.WordEntry.TABLE_NAME +
                     "." + HangmanContract.WordEntry.COLUMN_LOC_KEY_CATEGORY + " = ? AND " +
+                    HangmanContract.WordEntry.TABLE_NAME +
+                    "." + HangmanContract.WordEntry.COLUMN_WORD_USED + " = ?";
+
+    private static final String sWordLanguageAllCategoriesSelection =
+            HangmanContract.WordEntry.TABLE_NAME +
+                    "." + HangmanContract.WordEntry.COLUMN_LOC_KEY_LANGUAGE + " = ? AND " +
                     HangmanContract.WordEntry.TABLE_NAME +
                     "." + HangmanContract.WordEntry.COLUMN_WORD_USED + " = ?";
 
@@ -138,6 +147,9 @@ public class GameMainActivityFragment extends Fragment {
 
     private Utils mUtils;
 
+    private MediaPlayer keypadSound;
+    private MediaPlayer buttonSound;
+
     public GameMainActivityFragment() {
     }
 
@@ -145,6 +157,9 @@ public class GameMainActivityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_game_main, container, false);
+
+        keypadSound = MediaPlayer.create(getContext(), R.raw.keypad_sound);
+        buttonSound = MediaPlayer.create(getContext(), R.raw.button_sound);
 
         Intent intent = getActivity().getIntent();
 
@@ -278,6 +293,7 @@ public class GameMainActivityFragment extends Fragment {
 
                             btn1.setEnabled(false);
                             btn1.setBackgroundColor(getResources().getColor(R.color.colorButtonDisabled));
+                            keypadSound.start();
                             handleGuess(FIRST_KEYPAD_LINE_CHARACTERS[btn1.getId() - 2001]);
 
                         }
@@ -307,6 +323,7 @@ public class GameMainActivityFragment extends Fragment {
 
                             btn2.setEnabled(false);
                             btn2.setBackgroundColor(getResources().getColor(R.color.colorButtonDisabled));
+                            keypadSound.start();
                             handleGuess(SECOND_KEYPAD_LINE_CHARACTERS[btn2.getId() - 3001]);
 
                         }
@@ -336,6 +353,7 @@ public class GameMainActivityFragment extends Fragment {
 
                             btn3.setEnabled(false);
                             btn3.setBackgroundColor(getResources().getColor(R.color.colorButtonDisabled));
+                            keypadSound.start();
                             handleGuess(THIRD_KEYPAD_LINE_CHARACTERS[btn3.getId() - 4001]);
 
                         }
@@ -379,7 +397,7 @@ public class GameMainActivityFragment extends Fragment {
     }
 
     private boolean loadWordNotUsed() {
-
+/*
         if(paramsSel.getLevelId() == 0) {
             //All levels released
             String sLanguage = Integer.toString(paramsSel.getLanguageId());
@@ -394,13 +412,27 @@ public class GameMainActivityFragment extends Fragment {
 
         }else {
             //Sets a specific level
+*/
+        if(paramsSel.getCategoryId() != ALL_CATEGORIES_ID) {
             mUri = HangmanContract.WordEntry.buildWordWithLanguageCategoryLevel(paramsSel.getLanguageId(),
                     paramsSel.getCategoryId(),
                     WORD_NOT_USED_FLAG,
                     paramsSel.getLevelId());
 
             mCursor = getContext().getContentResolver().query(mUri, WORD_COLUMNS, null, null, WORD_SORT_ORDER);
+        }else {
+
+            String sLanguage = Integer.toString(paramsSel.getLanguageId());
+            String sWordNotUsed = Integer.toString(WORD_NOT_USED_FLAG);
+
+            mCursor = getContext().getContentResolver().query(HangmanContract.WordEntry.CONTENT_URI,
+                    WORD_COLUMNS,
+                    sWordLanguageAllCategoriesSelection, //selection
+                    new String[]{sLanguage, sWordNotUsed}, //selection args
+                    null);
+
         }
+//        }
 
         if(mCursor != null && mCursor.moveToFirst()) {
 
@@ -416,7 +448,7 @@ public class GameMainActivityFragment extends Fragment {
 
             mTotalCharacters = 0;
 
-mWord.setWord("A");
+//mWord.setWord("A");
             mWord.setWord(mWord.getWord().replace("   ", " "));
             mWord.setWord(mWord.getWord().replace("  ", " "));
 
@@ -618,6 +650,8 @@ mWord.setWord("A");
                 getResources().getDimensionPixelSize(R.dimen.share_dialog_bar_height)
         );
 
+        FrameLayout imageShareDialogFrame = new FrameLayout(getContext());
+
         ImageView imageShareDialogView = new ImageView(getContext());
         imageShareDialogView.setImageDrawable(getResources().getDrawable(R.drawable.share_dialog));
         imageShareDialogView.setPadding(
@@ -627,13 +661,41 @@ mWord.setWord("A");
                 0);
         imageShareDialogView.setId(SHARE_ICON_DIALOG_ID);
 
-        imageShareDialogLayout.addView(imageShareDialogView, imageShareDialogParams);
+        ImageView imageShareDialogViewPressed = new ImageView(getContext());
+        imageShareDialogViewPressed.setImageDrawable(getResources().getDrawable(R.drawable.share_dialog_pressed));
+        imageShareDialogViewPressed.setPadding(
+                0,
+                getResources().getDimensionPixelSize(R.dimen.share_dialog_padding_top),
+                getResources().getDimensionPixelSize(R.dimen.share_dialog_padding_right),
+                0);
+        imageShareDialogViewPressed.setId(SHARE_ICON_DIALOG_PRESSED_ID);
+        imageShareDialogViewPressed.setVisibility(View.INVISIBLE);
+
+        imageShareDialogFrame.addView(imageShareDialogView);
+        imageShareDialogFrame.addView(imageShareDialogViewPressed);
+
+        imageShareDialogLayout.addView(imageShareDialogFrame, imageShareDialogParams);
+
+        final ImageView imageShareDialogViewListenPressed = ((ImageView) dialog.findViewById(SHARE_ICON_DIALOG_PRESSED_ID));
 
         final ImageView imageShareDialogViewListen = ((ImageView) dialog.findViewById(SHARE_ICON_DIALOG_ID));
-        imageShareDialogViewListen.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                //Share screen
-                testeShare();
+        imageShareDialogViewListen.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        imageShareDialogViewListen.setVisibility(View.INVISIBLE);
+                        imageShareDialogViewListenPressed.setVisibility(View.VISIBLE);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        imageShareDialogViewListen.setVisibility(View.VISIBLE);
+                        imageShareDialogViewListenPressed.setVisibility(View.INVISIBLE);
+                        buttonSound.start();
+                        shareScreen();
+                        break;
+                    default:
+                        break;
+                }
+                return true;
             }
         });
 
@@ -694,6 +756,7 @@ mWord.setWord("A");
                     case MotionEvent.ACTION_UP:
                         continueGameDialogButton.setVisibility(View.VISIBLE);
                         continueGameDialogButtonPressed.setVisibility(View.INVISIBLE);
+                        buttonSound.start();
                         dialog.cancel();
                         getActivity().finish();
                         break;
@@ -706,16 +769,19 @@ mWord.setWord("A");
 
         disableKeypad();
 
+        dialog.setCanceledOnTouchOutside(false);
+
         dialog.show();
     }
 
     private int loadPointsAndStarsFromScoreModel(int numErrors) {
-        mUri = HangmanContract.ScoreModelEntry.buildScoreModelWithCategoryNumErrors(paramsSel.getCategoryId(), numErrors);
-
-        mCursor = getContext().getContentResolver().query(mUri, SCORE_MODEL_COLUMNS, null, null, null);
 
         int qtdStars = 0;
         int qtdPoints = 0;
+
+        mUri = HangmanContract.ScoreModelEntry.buildScoreModelWithCategoryNumErrors(paramsSel.getCategoryId(), numErrors);
+
+        mCursor = getContext().getContentResolver().query(mUri, SCORE_MODEL_COLUMNS, null, null, null);
 
         if(mCursor != null && mCursor.moveToFirst()) {
 
@@ -735,8 +801,9 @@ mWord.setWord("A");
 
             mCursor.close();
 
-            updatePlayerScore(qtdPoints);
-
+            if(paramsSel.getCategoryId() != 0) {
+                updatePlayerScore(qtdPoints);
+            }
         }
 
         updateWordUsed(mWord.getId());
@@ -839,7 +906,7 @@ mWord.setWord("A");
         }
     }
 
-    private void testeShare() {
+    private void shareScreen() {
 
         View content = rootView.findViewById(R.id.gallowsLayout);
 

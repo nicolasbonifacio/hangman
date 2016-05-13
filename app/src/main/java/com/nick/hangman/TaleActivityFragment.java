@@ -8,8 +8,10 @@ import android.database.Cursor;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -18,6 +20,7 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -47,15 +50,25 @@ public class TaleActivityFragment extends Fragment {
 
     private static final int LANGUAGE_LAST_USED_FLAG = 1;
     private static final int TALE_PLAYER_FLAG = 1;
+    private static final int LEVEL_FLAG = 1; //Just one level
+    /*
     private static final int LEVEL_EASY = 1;
     private static final int LEVEL_MEDIUM = 2;
     private static final int LEVEL_HARD = 3;
     private static final int ALL_LEVELS = 0;
-
+*/
     private static final int WORD_NOT_USED_FLAG = 0;
     private static final int BUTTON_DISABLED_FLAG = -1;
 
     private static final int ALL_CATEGORIES_BUTTON_ID = 995;
+
+    private static final int ALL_CATEGORIES_SCORE = 0;
+    private static final String ALL_CATEGORIES_DESCR = "All Categories";
+    private static final int ALL_CATEGORIES_ENABLED = 1;
+    private static final int ALL_CATEGORIES_ENABLE_SCORE = 0;
+    private static final int ALL_CATEGORIES_ID = 0;
+    private static final int ALL_CATEGORIES_PATH_ORDER = 0;
+    private static final int ALL_CATEGORIES_PERC_LEVEL_COMPLETED = 100;
 
     private static final String WORD_COUNT_USAGE_SORT_ORDER_SELECTION =
             HangmanContract.WordEntry.TABLE_NAME +
@@ -90,6 +103,21 @@ public class TaleActivityFragment extends Fragment {
             "round(sum(" + HangmanContract.TaleOverallEntry.TABLE_NAME + "." + HangmanContract.TaleOverallEntry.COLUMN_NUM_STARS + ")/count(*),3)"
     };
 
+    private static final String[] WORD_COLUMNS = {
+            HangmanContract.WordEntry.TABLE_NAME + "." + HangmanContract.WordEntry._ID,
+            HangmanContract.WordEntry.COLUMN_WORD
+    };
+
+    private static final String sWordLanguageCategorySelection =
+            HangmanContract.WordEntry.TABLE_NAME +
+                    "." + HangmanContract.WordEntry.COLUMN_LOC_KEY_LANGUAGE + " = ? AND " +
+                    HangmanContract.WordEntry.TABLE_NAME +
+                    "." + HangmanContract.WordEntry.COLUMN_WORD_USED + " = ?";
+
+    //WORD columns
+    public static final int COL_WORD_ID = 0;
+    public static final int COL_WORD_WORD = 1;
+
     //TALE_SCORE_CATEGORY_COLUMNS columns
     public static final int COL_TALE_SCORE_CATEGORY_ID = 0;
     public static final int COL_TALE_SCORE_CATEGORY_PLAYER_SCORE = 1;
@@ -107,9 +135,8 @@ public class TaleActivityFragment extends Fragment {
     public static final int COL_TALE_OVERALL_CATEGORY_ID = 0;
     public static final int COL_TALE_OVERALL_NUM_STARS_AVERAGE = 1;
 
-    public static final int WIDTH_BUTTON_CATEGORY_PERCENTAGE = 65;
     public static final int WIDTH_ICON_STARS_PERCENTAGE = 45;
-    public static final int PADDING_TEXT_LEFT_PERCENTAGE = 15;
+    public static final int PADDING_TEXT_LEFT_PERCENTAGE = 0;
 
     private View rootView;
     private Uri mUri;
@@ -126,10 +153,11 @@ public class TaleActivityFragment extends Fragment {
     private int mPercentage;
     private int mWidthPx;
     private ImageView mBtn;
+    private ImageView mBtnPressed;
     private ImageView mIconStars;
     private ParametersSelected paramsSel;
 
-
+    private MediaPlayer buttonSound;
 
     //////////////////////
     private int spaceIds;
@@ -144,6 +172,8 @@ public class TaleActivityFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        buttonSound = MediaPlayer.create(getContext(), R.raw.button_sound);
 
         Bundle arguments = getArguments();
         if (arguments != null) {
@@ -209,35 +239,49 @@ public class TaleActivityFragment extends Fragment {
             }
 
             if(firstLoad) {
+
+                int buttonAllCategoriesWidth = 0;
+                int buttonAllCategoriesHeight = 0;
+                float buttonAllCategoriesRatio = 0;
+                try {
+                    buttonAllCategoriesWidth = getResources().getDrawable(R.drawable.button_all_categories).getIntrinsicWidth();
+                    buttonAllCategoriesHeight = getResources().getDrawable(R.drawable.button_all_categories).getIntrinsicHeight();
+                }catch(NullPointerException e) {
+                    e.printStackTrace();
+                }
+                if(buttonAllCategoriesHeight > 0) {
+                    buttonAllCategoriesRatio = (float)buttonAllCategoriesWidth / buttonAllCategoriesHeight;
+                }
+
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT);
 
                 LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(
-                        mWidthPx/3,
-                        ViewGroup.LayoutParams.WRAP_CONTENT);
-
+                        (int)((mWidthPx / 3)),
+                        (int)((mWidthPx / 3) / buttonAllCategoriesRatio)
+                );
+                LinearLayout.LayoutParams params3 = new LinearLayout.LayoutParams(
+                        (int)((mWidthPx / 3) - getResources().getDimension(R.dimen.category_button_pressed_layout_reduction)),
+                        (int)(((mWidthPx / 3) / buttonAllCategoriesRatio) - getResources().getDimension(R.dimen.category_button_pressed_layout_reduction))
+                );
+                params3.gravity = Gravity.CENTER;
 
                 mHorizontalLayout = new LinearLayout(getContext());
                 mHorizontalLayout.setOrientation(LinearLayout.HORIZONTAL);
                 mHorizontalLayout.setGravity(Gravity.CENTER_VERTICAL);
 
+                ImageView allCategoriesButtonPressed = new ImageView(getContext());
+                allCategoriesButtonPressed.setImageDrawable(getResources().getDrawable(R.drawable.button_all_categories_pressed));
+
                 ImageView allCategoriesButton = new ImageView(getContext());
                 allCategoriesButton.setImageDrawable(getResources().getDrawable(R.drawable.button_all_categories));
                 allCategoriesButton.setId(ALL_CATEGORIES_BUTTON_ID);
 
-                allCategoriesButton.setOnClickListener(new View.OnClickListener() {
-                    public void onClick(View view) {
-
-                        //Consulta com todas as categorias
-                        Toast.makeText(getContext(), "Todas as categorias", Toast.LENGTH_SHORT).show();
-
-                    }
-                });
-
                 FrameLayout r = new FrameLayout(getContext());
                 r.setMinimumWidth(0);
                 //r.setGravity(Gravity.CENTER);
+                r.addView(allCategoriesButtonPressed, params3);
                 r.addView(allCategoriesButton, params2);
 
                 mHorizontalLayout.setRotation(180);
@@ -245,8 +289,37 @@ public class TaleActivityFragment extends Fragment {
                 mHorizontalLayout.addView(r);
                 mTaleLayout.addView(mHorizontalLayout, params);
 
+                final ImageView allCategoriesButtonListener = (ImageView) rootView.findViewById(ALL_CATEGORIES_BUTTON_ID);
+                allCategoriesButtonListener.setOnTouchListener(new View.OnTouchListener() {
+                    public boolean onTouch(View view, MotionEvent motionEvent) {
+                        switch (motionEvent.getAction()) {
+                            case MotionEvent.ACTION_DOWN:
+                                allCategoriesButtonListener.setVisibility(View.INVISIBLE);
+                                break;
+                            case MotionEvent.ACTION_UP:
+                                allCategoriesButtonListener.setVisibility(View.VISIBLE);
+                                buttonSound.start();
+                                callGameScreen(mListTaleScoreCategory.size());
+                                break;
+                            default:
+                                break;
+                        }
+                        return true;
+                    }
+                });
 
             }
+
+            TaleScoreCategory taleScoreCategory = new TaleScoreCategory();
+            taleScoreCategory.setId(mListTaleScoreCategory.size() + 1);
+            taleScoreCategory.setScore(ALL_CATEGORIES_SCORE);
+            taleScoreCategory.setDescrCategory(ALL_CATEGORIES_DESCR);
+            taleScoreCategory.setEnabled(ALL_CATEGORIES_ENABLED);
+            taleScoreCategory.setEnableScore(ALL_CATEGORIES_ENABLE_SCORE);
+            taleScoreCategory.setCategoryId(ALL_CATEGORIES_ID);
+            taleScoreCategory.setPathOrder(ALL_CATEGORIES_PATH_ORDER);
+
+            mListTaleScoreCategory.add(taleScoreCategory);
 
         }
 
@@ -264,6 +337,7 @@ public class TaleActivityFragment extends Fragment {
         //Category image button
         mBtn = new ImageView(getContext());
         mBtn.setId(i);
+        mBtnPressed = new ImageView(getContext());
 
         //Icon stars image
         mIconStars = new ImageView(getContext());
@@ -277,7 +351,12 @@ public class TaleActivityFragment extends Fragment {
         String text = mListTaleScoreCategory.get(i - 1).getDescrCategory();
         text = text.replace(" ", "\r\n");
         categoryName.setText(text);
-        categoryName.setPadding((int)(((mWidthPx/3)*PADDING_TEXT_LEFT_PERCENTAGE)/100), 0, 0, 0);  //15% of a third of the screen width
+        categoryName.setPadding(
+                (int)(((mWidthPx/3)*PADDING_TEXT_LEFT_PERCENTAGE)/100),
+                0,
+                0,
+                0
+        );  //0% of a third of the screen width
         categoryName.setGravity(Gravity.LEFT);
 
         LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(
@@ -290,11 +369,20 @@ public class TaleActivityFragment extends Fragment {
         r.addView(categoryName, params2);
         mHorizontalLayout.addView(r);
 
-        r = new RelativeLayout(getContext());
-        r.setMinimumWidth(0);
-        r.setGravity(Gravity.CENTER);
-        r.addView(mBtn, params2);
-        mHorizontalLayout.addView(r);
+        FrameLayout frame = new FrameLayout(getContext());
+        FrameLayout.LayoutParams paramsFrame = new FrameLayout.LayoutParams(
+                mWidthPx/4,
+                mWidthPx/4
+        );
+        FrameLayout.LayoutParams params3 = new FrameLayout.LayoutParams(
+                (int)((mWidthPx/4)-getResources().getDimensionPixelSize((R.dimen.category_button_pressed_layout_reduction))),
+                (int)((mWidthPx/4)-getResources().getDimensionPixelSize((R.dimen.category_button_pressed_layout_reduction)))
+        );
+        params3.gravity = Gravity.CENTER;
+        frame.addView(mBtnPressed, params3);
+        frame.addView(mBtn);
+
+        mHorizontalLayout.addView(frame, paramsFrame);
 
         r = new RelativeLayout(getContext());
         r.setMinimumWidth(0);
@@ -330,13 +418,13 @@ public class TaleActivityFragment extends Fragment {
         ImageView space;
         space = new ImageView(getContext());
         //space.setId(spaceIds);
-        space.setBackgroundColor(Color.parseColor("#b2acac"));
+        space.setBackgroundColor(getResources().getColor(R.color.tale_path_uncompleted));
 
         pathLayout.addView(space, pathLayoutParamsBase);
 
         space = new ImageView(getContext());
         space.setId(spaceIds);
-        space.setBackgroundColor(Color.parseColor("#2962FF"));
+        space.setBackgroundColor(getResources().getColor(R.color.tale_path_completed));
 
         pathLayout.addView(space, pathLayoutParamsCompleted);
 
@@ -349,16 +437,32 @@ public class TaleActivityFragment extends Fragment {
         //Tale list listener
         final int id_ = mBtn.getId();
         final ImageView btn1 = ((ImageView) rootView.findViewById(id_));
-        btn1.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-
-                if (mListTaleScoreCategory.get(id_ - 1).getEnabled() == 0) {
-                    Toast.makeText(getContext(), "Complete previous levels to release", Toast.LENGTH_SHORT).show();
-                }else {
-                    callGameScreen(id_);
+        btn1.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        btn1.setVisibility(View.INVISIBLE);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        btn1.setVisibility(View.VISIBLE);
+                        buttonSound.start();
+                        if (mListTaleScoreCategory.get(id_ - 1).getEnabled() == 0) {
+                            Toast.makeText(
+                                    getContext(),
+                                    getResources().getString(R.string.category_unlocked),
+                                    Toast.LENGTH_SHORT)
+                                    .show();
+                        }else {
+                            callGameScreen(id_);
+                        }
+                        break;
+                    default:
+                        break;
                 }
+                return true;
             }
         });
+
     }
 
     private void afterFirstLoad(int i) {
@@ -393,12 +497,15 @@ public class TaleActivityFragment extends Fragment {
             mPercentage = (int)(mListTaleScoreCategory.get(i-1).getScore() * 100) / mListTaleScoreCategory.get(i-1).getEnableScore();
             mBtn.setImageDrawable(getResources().getDrawable(mUtils.getButtonCode(mPercentage)));
         }
-        mBtn.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        mBtn.setAdjustViewBounds(true);
+
         mBtn.setPadding(0, 0, 0, 0);
 
-        mBtn.setMaxWidth((int)(((mWidthPx/3)*WIDTH_BUTTON_CATEGORY_PERCENTAGE)/100)); //65% of a third of the screen width
-        mBtn.setMaxHeight((int)(((mWidthPx/3)*WIDTH_BUTTON_CATEGORY_PERCENTAGE)/100)); //65% of a third of the screen width
+        mBtnPressed.setPadding(0, 0, 0, 0);
+        if(mListTaleScoreCategory.get(i - 1).getEnabled() == 0) {
+            mBtnPressed.setImageDrawable(getResources().getDrawable(R.drawable.button_pressed));
+        }else {
+            mBtnPressed.setImageDrawable(getResources().getDrawable(R.drawable.button_pressed_enabled));
+        }
 
         //Category activated and there is at least one entry in the table TALE_OVERALL
         if(mListTaleScoreCategory.get(i - 1).getEnabled() == 1 && mListTaleOverall != null) {
@@ -476,9 +583,13 @@ public class TaleActivityFragment extends Fragment {
         paramsSel.setPlayer1Id(TALE_PLAYER_FLAG);
 
         //% of level completed
-        int percLevel = (int)(paramsSel.getTaleScoreCategoryScore()*100)/paramsSel.getTaleScoreCategoryEnableScore();
-        paramsSel.setLevelPercCompleted(percLevel);
-
+        if(paramsSel.getTaleScoreCategoryEnableScore() > 0) {
+            int percLevel = (int) (paramsSel.getTaleScoreCategoryScore() * 100) / paramsSel.getTaleScoreCategoryEnableScore();
+            paramsSel.setLevelPercCompleted(percLevel);
+        }else {
+            paramsSel.setLevelPercCompleted(ALL_CATEGORIES_PERC_LEVEL_COMPLETED);
+        }
+/*
         int third = (int)(paramsSel.getTaleScoreCategoryEnableScore()/3);
         if(paramsSel.getTaleScoreCategoryScore() < third) {
             //Easy
@@ -493,24 +604,27 @@ public class TaleActivityFragment extends Fragment {
             //Level already completed
             paramsSel.setLevelId(ALL_LEVELS);
         }
+*/
+        paramsSel.setLevelId(LEVEL_FLAG);
 
         paramsSel.setLanguageId(LANGUAGE_LAST_USED_FLAG);
         paramsSel.setTaleScoreCategoryId(mListTaleScoreCategory.get(position-1).getId());
         paramsSel.setTaleScoreCategoryPathOrder(mListTaleScoreCategory.get(position-1).getPathOrder());
 
-        if(mListTaleScoreCategory.get(position) != null) {
-            paramsSel.setTaleScoreCategoryIdNextCategory(mListTaleScoreCategory.get(position).getId());
-        }else {
-            paramsSel.setTaleScoreCategoryIdNextCategory(paramsSel.getTaleScoreCategoryId()+1);
+        if(paramsSel.getCategoryId() != 0) {
+            if (mListTaleScoreCategory.get(position) != null) {
+                paramsSel.setTaleScoreCategoryIdNextCategory(mListTaleScoreCategory.get(position).getId());
+            } else {
+                paramsSel.setTaleScoreCategoryIdNextCategory(paramsSel.getTaleScoreCategoryId() + 1);
+            }
         }
-
-        if(paramsSel.getLevelId() == ALL_LEVELS) {
-            validateQtdWordsAvailable(paramsSel, LEVEL_EASY);
-            validateQtdWordsAvailable(paramsSel, LEVEL_MEDIUM);
-            validateQtdWordsAvailable(paramsSel, LEVEL_HARD);
-        }else {
-            validateQtdWordsAvailable(paramsSel, paramsSel.getLevelId());
-        }
+//        if(paramsSel.getLevelId() == ALL_LEVELS) {
+//            validateQtdWordsAvailable(paramsSel, LEVEL_EASY);
+//            validateQtdWordsAvailable(paramsSel, LEVEL_MEDIUM);
+//            validateQtdWordsAvailable(paramsSel, LEVEL_HARD);
+//        }else {
+        validateQtdWordsAvailable(paramsSel, paramsSel.getLevelId());
+//        }
 
         Intent intent = new Intent(getActivity(), GameMainActivity.class);
 
@@ -521,11 +635,19 @@ public class TaleActivityFragment extends Fragment {
 
     private void validateQtdWordsAvailable(ParametersSelected params, int level) {
 
-        mUri = HangmanContract.WordEntry.buildCountWordsUsageWithLanguageCategoryLevel(params.getLanguageId(),
-                params.getCategoryId(), level);
+        if(params.getCategoryId() != 0) {
+            mUri = HangmanContract.WordEntry.buildCountWordsUsageWithLanguageCategoryLevel(params.getLanguageId(),
+                    params.getCategoryId(), level);
 
-        mCursor = getContext().getContentResolver().query(mUri, WORD_COUNT_USAGE_COLUMNS, null, null, WORD_COUNT_USAGE_SORT_ORDER);
-
+            mCursor = getContext().getContentResolver().query(mUri, WORD_COUNT_USAGE_COLUMNS, null, null, WORD_COUNT_USAGE_SORT_ORDER);
+        }else {
+            mCursor = getContext().getContentResolver().query(HangmanContract.WordEntry.CONTENT_URI,
+                    WORD_COUNT_USAGE_COLUMNS,
+                    "language_id = ? group by word_used",
+                    new String[]{Integer.toString(params.getLanguageId())},
+                    WORD_COUNT_USAGE_SORT_ORDER
+            );
+        }
         Integer[][] wordUsage = new Integer[2][2];
 
         if(mCursor != null && mCursor.moveToFirst()) {
@@ -550,15 +672,25 @@ public class TaleActivityFragment extends Fragment {
                         ContentValues values = new ContentValues();
                         values.put(HangmanContract.WordEntry.COLUMN_WORD_USED, WORD_NOT_USED_FLAG);
 
-                        int qtdRws = getContext().getContentResolver().update(
-                                HangmanContract.WordEntry.CONTENT_URI,
-                                values,
-                                "language_id = ? and category_id = ? and level_id = ?",
-                                new String[]{Integer.toString(params.getLanguageId())
-                                        , Integer.toString(params.getCategoryId())
-                                        , Integer.toString(level)}
-                        );
-
+                        int qtdRws = 0;
+                        if(params.getCategoryId() > 0) {
+                            qtdRws = getContext().getContentResolver().update(
+                                    HangmanContract.WordEntry.CONTENT_URI,
+                                    values,
+                                    "language_id = ? and category_id = ? and level_id = ?",
+                                    new String[]{Integer.toString(params.getLanguageId())
+                                            , Integer.toString(params.getCategoryId())
+                                            , Integer.toString(level)}
+                            );
+                        }else {
+                            qtdRws = getContext().getContentResolver().update(
+                                    HangmanContract.WordEntry.CONTENT_URI,
+                                    values,
+                                    "language_id = ? and level_id = ?",
+                                    new String[]{Integer.toString(params.getLanguageId())
+                                            , Integer.toString(level)}
+                            );
+                        }
                     }
                 }
             }

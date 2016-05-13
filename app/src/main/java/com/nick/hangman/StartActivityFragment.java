@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
+import android.media.MediaPlayer;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,6 +24,8 @@ public class StartActivityFragment extends Fragment {
 
     View rootView;
 
+    private MediaPlayer buttonSound;
+
     private static final float IMAGE_PLAY_RATIO = 1.428f;
 
     public StartActivityFragment() {
@@ -32,6 +35,8 @@ public class StartActivityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_start, container, false);
+
+        buttonSound = MediaPlayer.create(getContext(), R.raw.button_sound);
 
         createStructure();
 
@@ -127,7 +132,7 @@ public class StartActivityFragment extends Fragment {
                     case MotionEvent.ACTION_UP:
                         playButton.setVisibility(View.VISIBLE);
                         playButtonPressed.setVisibility(View.INVISIBLE);
-
+                        buttonSound.start();
                         startActivity(new Intent(getContext(), TaleActivity.class));
 
                         break;
@@ -152,6 +157,7 @@ public class StartActivityFragment extends Fragment {
                     case MotionEvent.ACTION_UP:
                         playImageButton.setVisibility(View.VISIBLE);
                         playImageButtonPressed.setVisibility(View.INVISIBLE);
+                        buttonSound.start();
                         startActivity(new Intent(getContext(), PictureManagementActivity.class));
                         break;
                     default:

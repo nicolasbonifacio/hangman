@@ -56,6 +56,9 @@
     <string name="win_game_dialog_text">You got it!!!</string>
     <string name="loose_game_dialog_text">Sorry, not this time</string>
 
+    <!-- Tale screen -->
+    <string name="category_unlocked">Complete previous categories to release</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_tale">Hangman Tale</string>
