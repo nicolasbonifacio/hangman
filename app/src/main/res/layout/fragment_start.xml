@@ -41,56 +41,6 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal">
-
-        <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingTop="@dimen/buttons_play_padding_vertical">
-
-            <ImageView
-                android:layout_width="184dp"
-                android:layout_height="36dp"
-                android:src="@drawable/button_start_play_blue_en"
-                android:id="@+id/playRobotButton"
-                android:layout_gravity="center" />
-
-            <ImageView
-                android:layout_width="176dp"
-                android:layout_height="33dp"
-                android:src="@drawable/button_start_play_blue_pressed"
-                android:id="@+id/playRobotButtonPressed"
-                android:layout_gravity="center" />
-
-        </FrameLayout>
-
-        <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingTop="@dimen/buttons_play_padding_vertical">
-
-            <ImageView
-                android:layout_width="184dp"
-                android:layout_height="36dp"
-                android:src="@drawable/button_start_play_blue_en"
-                android:id="@+id/playButton"
-                android:layout_gravity="center" />
-
-            <ImageView
-                android:layout_width="176dp"
-                android:layout_height="33dp"
-                android:src="@drawable/button_start_play_blue_pressed"
-                android:id="@+id/playButtonPressed"
-                android:layout_gravity="center" />
-
-        </FrameLayout>
-
-    </LinearLayout>
-
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

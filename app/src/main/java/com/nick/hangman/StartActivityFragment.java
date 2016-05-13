@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -27,6 +28,9 @@ public class StartActivityFragment extends Fragment {
     private MediaPlayer buttonSound;
 
     private static final float IMAGE_PLAY_RATIO = 1.428f;
+
+    private static final int IMAGE_PLAY_ROBOT_ID = 994;
+    private static final int IMAGE_PLAY_IMAGE_ID = 993;
 
     public StartActivityFragment() {
     }
@@ -94,7 +98,7 @@ public class StartActivityFragment extends Fragment {
         );
 
         ImageView imgPlayImage = new ImageView(getContext());
-        imgPlayImage.setImageDrawable(getResources().getDrawable(R.drawable.img_play_robot));
+        imgPlayImage.setImageDrawable(getResources().getDrawable(R.drawable.img_play_image));
         imgPlayImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
         imgPlayImage.setAdjustViewBounds(true);
         imgPlayImage.setPadding(
@@ -103,9 +107,23 @@ public class StartActivityFragment extends Fragment {
                 getResources().getDimensionPixelSize(R.dimen.image_play_padding_horizontal),
                 0
         );
+        imgPlayImage.setId(IMAGE_PLAY_IMAGE_ID);
+
+        ImageView imgPlayImageNoShadow = new ImageView(getContext());
+        imgPlayImageNoShadow.setImageDrawable(getResources().getDrawable(R.drawable.img_play_image_no_shadow));
+        imgPlayImageNoShadow.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        imgPlayImageNoShadow.setAdjustViewBounds(true);
+        imgPlayImageNoShadow.setPadding(
+                getResources().getDimensionPixelSize(R.dimen.image_play_padding_horizontal),
+                0,
+                0,
+                0
+        );
+
+
 
         ImageView imgPlayRobot = new ImageView(getContext());
-        imgPlayRobot.setImageDrawable(getResources().getDrawable(R.drawable.img_play_image));
+        imgPlayRobot.setImageDrawable(getResources().getDrawable(R.drawable.img_play_robot));
         imgPlayRobot.setScaleType(ImageView.ScaleType.FIT_CENTER);
         imgPlayRobot.setAdjustViewBounds(true);
         imgPlayRobot.setPadding(
@@ -114,27 +132,52 @@ public class StartActivityFragment extends Fragment {
                 0,
                 0
         );
+        imgPlayRobot.setId(IMAGE_PLAY_ROBOT_ID);
 
-        imagePlayLayout.addView(imgPlayImage, imagePlayLayoutParams);
-        imagePlayLayout.addView(imgPlayRobot, imagePlayLayoutParams);
+        ImageView imgPlayRobotNoShadow = new ImageView(getContext());
+        imgPlayRobotNoShadow.setImageDrawable(getResources().getDrawable(R.drawable.img_play_robot_no_shadow));
+        imgPlayRobotNoShadow.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        imgPlayRobotNoShadow.setAdjustViewBounds(true);
+        imgPlayRobotNoShadow.setPadding(
+                getResources().getDimensionPixelSize(R.dimen.image_play_padding_horizontal),
+                0,
+                0,
+                0
+        );
 
-        final ImageView playButtonPressed = (ImageView)rootView.findViewById(R.id.playRobotButtonPressed);
-        playButtonPressed.setVisibility(View.INVISIBLE);
+        FrameLayout imagePlayFrameLayout = new FrameLayout(getContext());
+        FrameLayout.LayoutParams imagePlayRobotLayoutParamsNoShadow = new FrameLayout.LayoutParams(
+                imagePlayWidth - getResources().getDimensionPixelSize(R.dimen.images_play_no_shadow_reduction),
+                imagePlayHeight - getResources().getDimensionPixelSize(R.dimen.images_play_no_shadow_reduction)
+        );
+        imagePlayRobotLayoutParamsNoShadow.gravity = Gravity.CENTER;
 
-        final ImageView playButton = (ImageView)rootView.findViewById(R.id.playRobotButton);
-        playButton.setOnTouchListener(new View.OnTouchListener() {
+        FrameLayout.LayoutParams imagePlayImageLayoutParamsNoShadow = new FrameLayout.LayoutParams(
+                imagePlayWidth - getResources().getDimensionPixelSize(R.dimen.images_play_no_shadow_reduction),
+                imagePlayHeight - getResources().getDimensionPixelSize(R.dimen.images_play_no_shadow_reduction)
+        );
+        imagePlayImageLayoutParamsNoShadow.gravity = Gravity.CENTER_VERTICAL;
+
+        imagePlayFrameLayout.addView(imgPlayRobotNoShadow, imagePlayRobotLayoutParamsNoShadow);
+        imagePlayFrameLayout.addView(imgPlayRobot);
+        imagePlayLayout.addView(imagePlayFrameLayout, imagePlayLayoutParams);
+
+        imagePlayFrameLayout = new FrameLayout(getContext());
+        imagePlayFrameLayout.addView(imgPlayImageNoShadow, imagePlayImageLayoutParamsNoShadow);
+        imagePlayFrameLayout.addView(imgPlayImage);
+        imagePlayLayout.addView(imagePlayFrameLayout, imagePlayLayoutParams);
+
+        final ImageView playButtonRobotListener = (ImageView)rootView.findViewById(IMAGE_PLAY_ROBOT_ID);
+        playButtonRobotListener.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 switch (motionEvent.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        playButton.setVisibility(View.INVISIBLE);
-                        playButtonPressed.setVisibility(View.VISIBLE);
+                        playButtonRobotListener.setVisibility(View.INVISIBLE);
                         break;
                     case MotionEvent.ACTION_UP:
-                        playButton.setVisibility(View.VISIBLE);
-                        playButtonPressed.setVisibility(View.INVISIBLE);
+                        playButtonRobotListener.setVisibility(View.VISIBLE);
                         buttonSound.start();
                         startActivity(new Intent(getContext(), TaleActivity.class));
-
                         break;
                     default:
                         break;
@@ -143,20 +186,15 @@ public class StartActivityFragment extends Fragment {
             }
         });
 
-        final ImageView playImageButtonPressed = (ImageView)rootView.findViewById(R.id.playButtonPressed);
-        playImageButtonPressed.setVisibility(View.INVISIBLE);
-
-        final ImageView playImageButton = (ImageView)rootView.findViewById(R.id.playButton);
-        playImageButton.setOnTouchListener(new View.OnTouchListener() {
+        final ImageView playButtonImageListener = (ImageView)rootView.findViewById(IMAGE_PLAY_IMAGE_ID);
+        playButtonImageListener.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 switch (motionEvent.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        playImageButton.setVisibility(View.INVISIBLE);
-                        playImageButtonPressed.setVisibility(View.VISIBLE);
+                        playButtonImageListener.setVisibility(View.INVISIBLE);
                         break;
                     case MotionEvent.ACTION_UP:
-                        playImageButton.setVisibility(View.VISIBLE);
-                        playImageButtonPressed.setVisibility(View.INVISIBLE);
+                        playButtonImageListener.setVisibility(View.VISIBLE);
                         buttonSound.start();
                         startActivity(new Intent(getContext(), PictureManagementActivity.class));
                         break;

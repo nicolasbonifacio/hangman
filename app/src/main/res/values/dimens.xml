@@ -10,6 +10,7 @@
     <dimen name="image_play_padding_horizontal">8dp</dimen>
     <dimen name="text_play_padding_horizontal">8dp</dimen>
     <dimen name="buttons_play_padding_vertical">16dp</dimen>
+    <dimen name="images_play_no_shadow_reduction">24dp</dimen>
     <dimen name="text_play_robot_size">18sp</dimen>
     <dimen name="text_play_image_size">18sp</dimen>
 

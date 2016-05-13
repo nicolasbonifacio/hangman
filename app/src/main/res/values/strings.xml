@@ -12,9 +12,9 @@
     <string name="content_authority">com.nick.hangman</string>
     <string name="title_activity_game_main">Hangman Tale</string>
 
-    <!-- Main screen -->
-    <string name="textPlayRobot">Play with Mr. Ugly Robot!</string>
-    <string name="textPlayImage">Create your own image for playing!</string>
+    <!-- Start screen -->
+    <string name="textPlayRobot">Click below to play with Mr. Ugly Robot!</string>
+    <string name="textPlayImage">Click below to create your own image for playing!</string>
 
     <!-- Selection screen -->
     <string name="category_not_selected">Select category</string>
