@@ -1,6 +1,7 @@
 package com.nick.hangman;
 
 import android.content.Intent;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -28,7 +29,9 @@ public class TaleActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        
+
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
+
     }
 
     @Override

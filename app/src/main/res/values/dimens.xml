@@ -35,6 +35,28 @@
 
     <!-- Picture management dimensions -->
     <dimen name="image_padding">16dp</dimen>
+    <dimen name="use_it_picture_button_height">56dp</dimen>
+    <dimen name="use_it_picture_button_width">172dp</dimen>
+    <dimen name="use_it_picture_button_height_pressed">33dp</dimen>
+    <dimen name="use_it_picture_button_width_pressed">172dp</dimen>
+    <dimen name="create_picture_button_height">56dp</dimen>
+    <dimen name="create_picture_button_width">172dp</dimen>
+
+    <dimen name="select_picture_button_width">172dp</dimen>
+    <dimen name="select_picture_button_height">56dp</dimen>
+
+    <dimen name="create_picture_button_height_pressed">33dp</dimen>
+    <dimen name="select_picture_button_height_pressed">33dp</dimen>
+    <dimen name="create_picture_button_width_pressed">172dp</dimen>
+    <dimen name="select_picture_button_width_pressed">172dp</dimen>
+    <dimen name="change_picture_button_height">56dp</dimen>
+    <dimen name="lets_play_picture_button_height">56dp</dimen>
+    <dimen name="change_picture_button_width">172dp</dimen>
+    <dimen name="lets_play_picture_button_width">172dp</dimen>
+    <dimen name="change_picture_button_height_pressed">33dp</dimen>
+    <dimen name="lets_play_picture_button_height_pressed">33dp</dimen>
+    <dimen name="change_picture_button_width_pressed">172dp</dimen>
+    <dimen name="lets_play_picture_button_width_pressed">172dp</dimen>
 
     <!-- Game details padding -->
     <dimen name="game_details_same_subject_vertical_padding">4dp</dimen>
@@ -50,28 +72,8 @@
     <dimen name="dialog_padding_bottom">16dp</dimen>
     <dimen name="word_dialog_msg_padding_top">16dp</dimen>
     <dimen name="word_dialog_msg_padding_bottom">16dp</dimen>
-    <dimen name="continue_game_dialog_button">36dp</dimen>
+    <dimen name="continue_game_dialog_button">56dp</dimen>
     <dimen name="continue_game_dialog_button_pressed">33dp</dimen>
-    <dimen name="use_it_picture_button_height">36dp</dimen>
-    <dimen name="use_it_picture_button_width">184dp</dimen>
-    <dimen name="use_it_picture_button_height_pressed">33dp</dimen>
-    <dimen name="use_it_picture_button_width_pressed">176dp</dimen>
-    <dimen name="create_picture_button_height">36dp</dimen>
-    <dimen name="select_picture_button_height">36dp</dimen>
-    <dimen name="create_picture_button_width">184dp</dimen>
-    <dimen name="select_picture_button_width">184dp</dimen>
-    <dimen name="create_picture_button_height_pressed">33dp</dimen>
-    <dimen name="select_picture_button_height_pressed">33dp</dimen>
-    <dimen name="create_picture_button_width_pressed">176dp</dimen>
-    <dimen name="select_picture_button_width_pressed">176dp</dimen>
-    <dimen name="change_picture_button_height">36dp</dimen>
-    <dimen name="lets_play_picture_button_height">36dp</dimen>
-    <dimen name="change_picture_button_width">184dp</dimen>
-    <dimen name="lets_play_picture_button_width">184dp</dimen>
-    <dimen name="change_picture_button_height_pressed">33dp</dimen>
-    <dimen name="lets_play_picture_button_height_pressed">33dp</dimen>
-    <dimen name="change_picture_button_width_pressed">176dp</dimen>
-    <dimen name="lets_play_picture_button_width_pressed">176dp</dimen>
 
     <dimen name="win_game_dialog_text_size">22sp</dimen>
     <dimen name="loose_game_dialog_text_size">22sp</dimen>

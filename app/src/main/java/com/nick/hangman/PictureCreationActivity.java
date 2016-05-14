@@ -12,6 +12,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.Rect;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -62,6 +63,8 @@ public class PictureCreationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_picture_creation);
+
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
         buttonSound = MediaPlayer.create(this, R.raw.button_sound);
 
@@ -499,5 +502,4 @@ public class PictureCreationActivity extends AppCompatActivity {
         startActivity(intent);
 
     }
-
 }

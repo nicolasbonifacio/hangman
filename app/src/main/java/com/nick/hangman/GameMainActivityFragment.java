@@ -429,7 +429,7 @@ public class GameMainActivityFragment extends Fragment {
                     WORD_COLUMNS,
                     sWordLanguageAllCategoriesSelection, //selection
                     new String[]{sLanguage, sWordNotUsed}, //selection args
-                    null);
+                    WORD_SORT_ORDER);
 
         }
 //        }
@@ -958,6 +958,13 @@ public class GameMainActivityFragment extends Fragment {
         share.putExtra(Intent.EXTRA_STREAM, Uri.parse("file:///sdcard/HangmanTale/HangmanTale.jpg"));
         startActivity(Intent.createChooser(share, getResources().getText(R.string.share_title)));
 
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        keypadSound.stop();
+        buttonSound.stop();
     }
 
 }

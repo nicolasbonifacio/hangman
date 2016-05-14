@@ -3,6 +3,7 @@ package com.nick.hangman;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -25,6 +26,8 @@ public class MainActivity extends AppCompatActivity {
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);    // Removes notification bar
 
         setContentView(R.layout.activity_main);
+
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
         // Start timer and launch main activity
         IntentLauncher launcher = new IntentLauncher();

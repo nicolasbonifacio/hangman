@@ -154,6 +154,8 @@ public class TaleActivityFragment extends Fragment {
     private int mWidthPx;
     private ImageView mBtn;
     private ImageView mBtnPressed;
+    private ImageView mAllCategoriesButton;
+    private ImageView mAllCategoriesButtonPressed;
     private ImageView mIconStars;
     private ParametersSelected paramsSel;
 
@@ -202,6 +204,8 @@ public class TaleActivityFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
+        buttonSound = MediaPlayer.create(getContext(), R.raw.button_sound);
+
         //Verify if it's the first time passing by that screen. If it is, creates the structures.
         //Otherwise, just reload them.
         boolean firstLoad;
@@ -220,7 +224,8 @@ public class TaleActivityFragment extends Fragment {
 
         if(mListTaleScoreCategory != null) {
 
-            spaceIds = mListTaleScoreCategory.size()+1;
+            //spaceIds = mListTaleScoreCategory.size()+1;
+            spaceIds = (mListTaleScoreCategory.size() * 2) + 1;
 
             mTaleLayout = (LinearLayout) rootView.findViewById(R.id.taleLayout);
             mTaleLayout.setBackgroundColor(getResources().getColor(R.color.colorBackground));
@@ -239,6 +244,9 @@ public class TaleActivityFragment extends Fragment {
             }
 
             if(firstLoad) {
+
+                mAllCategoriesButton = new ImageView(getContext());
+                mAllCategoriesButtonPressed = new ImageView(getContext());
 
                 int buttonAllCategoriesWidth = 0;
                 int buttonAllCategoriesHeight = 0;
@@ -271,18 +279,20 @@ public class TaleActivityFragment extends Fragment {
                 mHorizontalLayout.setOrientation(LinearLayout.HORIZONTAL);
                 mHorizontalLayout.setGravity(Gravity.CENTER_VERTICAL);
 
-                ImageView allCategoriesButtonPressed = new ImageView(getContext());
-                allCategoriesButtonPressed.setImageDrawable(getResources().getDrawable(R.drawable.button_all_categories_pressed));
-
-                ImageView allCategoriesButton = new ImageView(getContext());
-                allCategoriesButton.setImageDrawable(getResources().getDrawable(R.drawable.button_all_categories));
-                allCategoriesButton.setId(ALL_CATEGORIES_BUTTON_ID);
+                if(mListTaleScoreCategory.get(mListTaleScoreCategory.size()-2).getScore() >= mListTaleScoreCategory.get(mListTaleScoreCategory.size()-2).getEnableScore()) {
+                    mAllCategoriesButton.setImageDrawable(getResources().getDrawable(R.drawable.button_all_categories));
+                    mAllCategoriesButtonPressed.setImageDrawable(getResources().getDrawable(R.drawable.button_all_categories_pressed));
+                }else {
+                    mAllCategoriesButton.setImageDrawable(getResources().getDrawable(R.drawable.button_all_categories_disabled));
+                    mAllCategoriesButtonPressed.setImageDrawable(getResources().getDrawable(R.drawable.button_all_categories_pressed_disabled));
+                }
+                mAllCategoriesButton.setId(ALL_CATEGORIES_BUTTON_ID);
 
                 FrameLayout r = new FrameLayout(getContext());
                 r.setMinimumWidth(0);
                 //r.setGravity(Gravity.CENTER);
-                r.addView(allCategoriesButtonPressed, params3);
-                r.addView(allCategoriesButton, params2);
+                r.addView(mAllCategoriesButtonPressed, params3);
+                r.addView(mAllCategoriesButton, params2);
 
                 mHorizontalLayout.setRotation(180);
 
@@ -299,9 +309,18 @@ public class TaleActivityFragment extends Fragment {
                             case MotionEvent.ACTION_UP:
                                 allCategoriesButtonListener.setVisibility(View.VISIBLE);
                                 buttonSound.start();
-                                callGameScreen(mListTaleScoreCategory.size());
+                                if(mListTaleScoreCategory.get(mListTaleScoreCategory.size()-2).getScore() >= mListTaleScoreCategory.get(mListTaleScoreCategory.size()-2).getEnableScore()) {
+                                    callGameScreen(mListTaleScoreCategory.size());
+                                }else {
+                                    Toast.makeText(
+                                            getContext(),
+                                            getResources().getString(R.string.category_unlocked),
+                                            Toast.LENGTH_SHORT)
+                                            .show();
+                                }
                                 break;
                             default:
+                                allCategoriesButtonListener.setVisibility(View.VISIBLE);
                                 break;
                         }
                         return true;
@@ -321,6 +340,14 @@ public class TaleActivityFragment extends Fragment {
 
             mListTaleScoreCategory.add(taleScoreCategory);
 
+            if(mListTaleScoreCategory.get(mListTaleScoreCategory.size()-2).getScore() >= mListTaleScoreCategory.get(mListTaleScoreCategory.size()-2).getEnableScore()) {
+                mAllCategoriesButton.setImageDrawable(getResources().getDrawable(R.drawable.button_all_categories));
+                mAllCategoriesButtonPressed.setImageDrawable(getResources().getDrawable(R.drawable.button_all_categories_pressed));
+            }else {
+                mAllCategoriesButton.setImageDrawable(getResources().getDrawable(R.drawable.button_all_categories_disabled));
+                mAllCategoriesButtonPressed.setImageDrawable(getResources().getDrawable(R.drawable.button_all_categories_pressed_disabled));
+            }
+
         }
 
     }
@@ -338,6 +365,7 @@ public class TaleActivityFragment extends Fragment {
         mBtn = new ImageView(getContext());
         mBtn.setId(i);
         mBtnPressed = new ImageView(getContext());
+        mBtnPressed.setId(i + mListTaleScoreCategory.size());
 
         //Icon stars image
         mIconStars = new ImageView(getContext());
@@ -457,6 +485,7 @@ public class TaleActivityFragment extends Fragment {
                         }
                         break;
                     default:
+                        btn1.setVisibility(View.VISIBLE);
                         break;
                 }
                 return true;
@@ -467,6 +496,8 @@ public class TaleActivityFragment extends Fragment {
 
     private void afterFirstLoad(int i) {
         mBtn = (ImageView) rootView.findViewById(i);
+        mBtnPressed = (ImageView) rootView.findViewById(i + mListTaleScoreCategory.size());
+
         if (mListTaleScoreCategory.get(i - 1).getEnabled() != 0) {
 
             mBtn.setEnabled(true);
@@ -719,6 +750,12 @@ public class TaleActivityFragment extends Fragment {
             mCursor.close();
 
         }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        buttonSound.stop();
     }
 
 }

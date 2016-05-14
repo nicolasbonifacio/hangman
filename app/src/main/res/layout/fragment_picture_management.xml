@@ -49,6 +49,7 @@
                 android:layout_width="@dimen/create_picture_button_width_pressed"
                 android:layout_height="@dimen/create_picture_button_height_pressed"
                 android:layout_gravity="center"
+                android:paddingBottom="4dp"
                 android:src="@drawable/button_picture_create_blue_en_pressed"
                 android:id="@+id/createNewImageButtonPressed" />
 
@@ -71,6 +72,7 @@
                 android:layout_width="@dimen/select_picture_button_width_pressed"
                 android:layout_height="@dimen/select_picture_button_height_pressed"
                 android:layout_gravity="center"
+                android:paddingBottom="4dp"
                 android:src="@drawable/button_picture_select_blue_en_pressed"
                 android:id="@+id/selectSavedImageButtonPressed" />
 

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
@@ -74,6 +75,8 @@ public class PictureManagementActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_picture_management);
 
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
+
         buttonSound = MediaPlayer.create(this, R.raw.button_sound);
 
         mAdView = (AdView) findViewById(R.id.adView);
@@ -90,6 +93,8 @@ public class PictureManagementActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        buttonSound = MediaPlayer.create(this, R.raw.button_sound);
 
         mScaledDensity = getResources().getDisplayMetrics().scaledDensity;
         mDensity = getResources().getDisplayMetrics().density;
@@ -173,11 +178,13 @@ public class PictureManagementActivity extends AppCompatActivity {
                     getResources().getDimensionPixelSize(R.dimen.use_it_picture_button_width),
                     getResources().getDimensionPixelSize(R.dimen.use_it_picture_button_height)
             );
+            useItLayoutParams.gravity = Gravity.CENTER;
 
             FrameLayout.LayoutParams useItLayoutParamsPressed = new FrameLayout.LayoutParams(
                     getResources().getDimensionPixelSize(R.dimen.use_it_picture_button_width_pressed),
                     getResources().getDimensionPixelSize(R.dimen.use_it_picture_button_height_pressed)
             );
+            useItLayoutParamsPressed.gravity = Gravity.CENTER;
 
             final ImageView useItPressed = new ImageView(this);
             useItPressed.setId(USET_IT_DIALOG_ID_PRESSED);
@@ -327,5 +334,4 @@ public class PictureManagementActivity extends AppCompatActivity {
         startActivity(intent);
 
     }
-
 }

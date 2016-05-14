@@ -38,6 +38,7 @@
                 android:layout_width="@dimen/change_picture_button_width_pressed"
                 android:layout_height="@dimen/change_picture_button_height_pressed"
                 android:layout_gravity="center"
+                android:paddingBottom="4dp"
                 android:src="@drawable/button_picture_change_blue_en_pressed"
                 android:id="@+id/selectImageButtonPressed" />
 
@@ -60,6 +61,7 @@
                 android:layout_width="@dimen/lets_play_picture_button_width_pressed"
                 android:layout_height="@dimen/lets_play_picture_button_height_pressed"
                 android:layout_gravity="center"
+                android:paddingBottom="4dp"
                 android:src="@drawable/button_picture_lets_play_blue_en_pressed"
                 android:id="@+id/createImageButtonPressed" />
 

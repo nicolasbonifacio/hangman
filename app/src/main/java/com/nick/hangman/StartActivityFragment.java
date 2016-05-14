@@ -65,8 +65,8 @@ public class StartActivityFragment extends Fragment {
         TextView textPlayRobot = new TextView(getContext());
         textPlayRobot.setText(getResources().getString(R.string.textPlayRobot));
         textPlayRobot.setTextSize(getResources().getDimension(R.dimen.text_play_robot_size) / scaledDensity);
-        textPlayRobot.setTextColor(getResources().getColor(R.color.textPlayRobot));
-        textPlayRobot.setTypeface(Typeface.DEFAULT_BOLD);
+        //textPlayRobot.setTextColor(getResources().getColor(R.color.textPlayRobot));
+        //textPlayRobot.setTypeface(Typeface.DEFAULT_BOLD);
         textPlayRobot.setPadding(
                 getResources().getDimensionPixelSize(R.dimen.text_play_padding_horizontal),
                 0,
@@ -78,8 +78,8 @@ public class StartActivityFragment extends Fragment {
         TextView textPlayImage = new TextView(getContext());
         textPlayImage.setText(getResources().getString(R.string.textPlayImage));
         textPlayImage.setTextSize(getResources().getDimension(R.dimen.text_play_image_size) / scaledDensity);
-        textPlayImage.setTextColor(getResources().getColor(R.color.textPlayImage));
-        textPlayImage.setTypeface(Typeface.DEFAULT_BOLD);
+        //textPlayImage.setTextColor(getResources().getColor(R.color.textPlayImage));
+        //textPlayImage.setTypeface(Typeface.DEFAULT_BOLD);
         textPlayImage.setPadding(
                 0,
                 0,
@@ -206,5 +206,4 @@ public class StartActivityFragment extends Fragment {
         });
 
     }
-
 }
