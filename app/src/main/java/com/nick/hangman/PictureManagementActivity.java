@@ -1,6 +1,8 @@
 package com.nick.hangman;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -65,6 +67,10 @@ public class PictureManagementActivity extends AppCompatActivity {
     public static final int COL_IMAGE_IMAGE_HEIGHT = 2;
     public static final int COL_IMAGE_IMAGE_PATH = 3;
     public static final int COL_IMAGE_IMAGE_NAME = 4;
+
+    public static final String SOUND_ON_OFF_PREFS = "soundOnOffPrefs";
+    private static final int SOUND_ON_OFF_NOT_DEFINED_FLAG = -1;
+    private static final int SOUND_ON_FLAG = 1;
 
     private ImageTable mImageTable;
 
@@ -208,7 +214,9 @@ public class PictureManagementActivity extends AppCompatActivity {
                         case MotionEvent.ACTION_UP:
                             useIt.setVisibility(View.VISIBLE);
                             useItPressed.setVisibility(View.INVISIBLE);
-                            buttonSound.start();
+                            if(getSoundStatus() == SOUND_ON_FLAG) {
+                                buttonSound.start();
+                            }
                             callTaleScreen();
                             break;
                         default:
@@ -257,7 +265,9 @@ public class PictureManagementActivity extends AppCompatActivity {
                     case MotionEvent.ACTION_UP:
                         createNewImageButton.setVisibility(View.VISIBLE);
                         createNewImageButtonPressed.setVisibility(View.INVISIBLE);
-                        buttonSound.start();
+                        if(getSoundStatus() == SOUND_ON_FLAG) {
+                            buttonSound.start();
+                        }
                         startActivity(new Intent(getBaseContext(), PictureCreationActivity.class));
                         break;
                     default:
@@ -283,7 +293,9 @@ public class PictureManagementActivity extends AppCompatActivity {
                     case MotionEvent.ACTION_UP:
                         selectSavedImageButton.setVisibility(View.VISIBLE);
                         selectSavedImageButtonPressed.setVisibility(View.INVISIBLE);
-                        buttonSound.start();
+                        if(getSoundStatus() == SOUND_ON_FLAG) {
+                            buttonSound.start();
+                        }
                         startActivity(new Intent(getBaseContext(), SelectExistingImageActivity.class));
                         break;
                     default:
@@ -334,4 +346,17 @@ public class PictureManagementActivity extends AppCompatActivity {
         startActivity(intent);
 
     }
+
+    private int getSoundStatus() {
+        SharedPreferences.Editor editor = getSharedPreferences(SOUND_ON_OFF_PREFS, Context.MODE_PRIVATE).edit();
+        SharedPreferences prefs = getSharedPreferences(SOUND_ON_OFF_PREFS, Context.MODE_PRIVATE);
+        int restoredPref = prefs.getInt("soundOnOff", SOUND_ON_OFF_NOT_DEFINED_FLAG);
+        if (restoredPref == SOUND_ON_OFF_NOT_DEFINED_FLAG) {
+            editor.putInt("soundOnOff", SOUND_ON_FLAG);
+            editor.commit();
+            restoredPref = SOUND_ON_FLAG;
+        }
+        return restoredPref;
+    }
+
 }

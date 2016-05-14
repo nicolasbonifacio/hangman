@@ -37,14 +37,47 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/imagePlayLayout"
+        android:layout_weight="1"
         android:gravity="center_horizontal">
 
     </LinearLayout>
 
-    <ImageView
+    <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/waitIcon"
-        android:layout_gravity="center_horizontal" />
+        android:layout_gravity="bottom|left">
+
+        <ImageView
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:id="@+id/noSoundIconPressed"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
+            android:visibility="invisible"
+            android:src="@drawable/no_sound_icon_pressed" />
+
+        <ImageView
+            android:layout_width="68dp"
+            android:layout_height="68dp"
+            android:id="@+id/noSoundIcon"
+            android:visibility="invisible"
+            android:src="@drawable/no_sound_icon" />
+
+        <ImageView
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:id="@+id/soundIconPressed"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
+            android:visibility="invisible"
+            android:src="@drawable/sound_icon_pressed" />
+
+        <ImageView
+            android:layout_width="68dp"
+            android:layout_height="68dp"
+            android:id="@+id/soundIcon"
+            android:src="@drawable/sound_icon" />
+
+    </FrameLayout>
 
 </LinearLayout>

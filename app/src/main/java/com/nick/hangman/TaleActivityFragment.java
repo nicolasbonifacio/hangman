@@ -2,7 +2,9 @@ package com.nick.hangman;
 
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Canvas;
@@ -69,6 +71,10 @@ public class TaleActivityFragment extends Fragment {
     private static final int ALL_CATEGORIES_ID = 0;
     private static final int ALL_CATEGORIES_PATH_ORDER = 0;
     private static final int ALL_CATEGORIES_PERC_LEVEL_COMPLETED = 100;
+
+    public static final String SOUND_ON_OFF_PREFS = "soundOnOffPrefs";
+    private static final int SOUND_ON_OFF_NOT_DEFINED_FLAG = -1;
+    private static final int SOUND_ON_FLAG = 1;
 
     private static final String WORD_COUNT_USAGE_SORT_ORDER_SELECTION =
             HangmanContract.WordEntry.TABLE_NAME +
@@ -308,7 +314,9 @@ public class TaleActivityFragment extends Fragment {
                                 break;
                             case MotionEvent.ACTION_UP:
                                 allCategoriesButtonListener.setVisibility(View.VISIBLE);
-                                buttonSound.start();
+                                if(getSoundStatus() == SOUND_ON_FLAG) {
+                                    buttonSound.start();
+                                }
                                 if(mListTaleScoreCategory.get(mListTaleScoreCategory.size()-2).getScore() >= mListTaleScoreCategory.get(mListTaleScoreCategory.size()-2).getEnableScore()) {
                                     callGameScreen(mListTaleScoreCategory.size());
                                 }else {
@@ -473,7 +481,9 @@ public class TaleActivityFragment extends Fragment {
                         break;
                     case MotionEvent.ACTION_UP:
                         btn1.setVisibility(View.VISIBLE);
-                        buttonSound.start();
+                        if(getSoundStatus() == SOUND_ON_FLAG) {
+                            buttonSound.start();
+                        }
                         if (mListTaleScoreCategory.get(id_ - 1).getEnabled() == 0) {
                             Toast.makeText(
                                     getContext(),
@@ -750,6 +760,18 @@ public class TaleActivityFragment extends Fragment {
             mCursor.close();
 
         }
+    }
+
+    private int getSoundStatus() {
+        SharedPreferences.Editor editor = getContext().getSharedPreferences(SOUND_ON_OFF_PREFS, Context.MODE_PRIVATE).edit();
+        SharedPreferences prefs = getContext().getSharedPreferences(SOUND_ON_OFF_PREFS, Context.MODE_PRIVATE);
+        int restoredPref = prefs.getInt("soundOnOff", SOUND_ON_OFF_NOT_DEFINED_FLAG);
+        if (restoredPref == SOUND_ON_OFF_NOT_DEFINED_FLAG) {
+            editor.putInt("soundOnOff", SOUND_ON_FLAG);
+            editor.commit();
+            restoredPref = SOUND_ON_FLAG;
+        }
+        return restoredPref;
     }
 
     @Override

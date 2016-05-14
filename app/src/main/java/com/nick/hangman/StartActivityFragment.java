@@ -1,7 +1,9 @@
 package com.nick.hangman;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
 import android.media.MediaPlayer;
@@ -31,6 +33,11 @@ public class StartActivityFragment extends Fragment {
 
     private static final int IMAGE_PLAY_ROBOT_ID = 994;
     private static final int IMAGE_PLAY_IMAGE_ID = 993;
+
+    public static final String SOUND_ON_OFF_PREFS = "soundOnOffPrefs";
+    private static final int SOUND_ON_OFF_NOT_DEFINED_FLAG = -1;
+    private static final int SOUND_ON_FLAG = 1;
+    private static final int SOUND_OFF_FLAG = 0;
 
     public StartActivityFragment() {
     }
@@ -176,7 +183,9 @@ public class StartActivityFragment extends Fragment {
                         break;
                     case MotionEvent.ACTION_UP:
                         playButtonRobotListener.setVisibility(View.VISIBLE);
-                        buttonSound.start();
+                        if(getSoundStatus() == SOUND_ON_FLAG) {
+                            buttonSound.start();
+                        }
                         startActivity(new Intent(getContext(), TaleActivity.class));
                         break;
                     default:
@@ -195,7 +204,9 @@ public class StartActivityFragment extends Fragment {
                         break;
                     case MotionEvent.ACTION_UP:
                         playButtonImageListener.setVisibility(View.VISIBLE);
-                        buttonSound.start();
+                        if(getSoundStatus() == SOUND_ON_FLAG) {
+                            buttonSound.start();
+                        }
                         startActivity(new Intent(getContext(), PictureManagementActivity.class));
                         break;
                     default:
@@ -205,5 +216,93 @@ public class StartActivityFragment extends Fragment {
             }
         });
 
+        //Sound icon
+        int restoredPref = getSoundStatus();
+
+        final ImageView noSoundIcon = (ImageView) rootView.findViewById(R.id.noSoundIcon);
+        final ImageView noSoundIconPressed = (ImageView) rootView.findViewById(R.id.noSoundIconPressed);
+        final ImageView soundIcon = (ImageView) rootView.findViewById(R.id.soundIcon);
+        final ImageView soundIconPressed = (ImageView) rootView.findViewById(R.id.soundIconPressed);
+
+        if(restoredPref == SOUND_OFF_FLAG) {
+            //Sound off
+            noSoundIcon.setVisibility(View.VISIBLE);
+            noSoundIconPressed.setVisibility(View.INVISIBLE);
+            soundIcon.setVisibility(View.INVISIBLE);
+            soundIconPressed.setVisibility(View.INVISIBLE);
+        }else {
+            //Sound on
+            noSoundIcon.setVisibility(View.INVISIBLE);
+            noSoundIconPressed.setVisibility(View.INVISIBLE);
+            soundIconPressed.setVisibility(View.INVISIBLE);
+            soundIcon.setVisibility(View.VISIBLE);
+        }
+
+        //No sound is activated and user wants to activate sound
+        noSoundIcon.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        noSoundIcon.setVisibility(View.INVISIBLE);
+                        noSoundIconPressed.setVisibility(View.VISIBLE);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        soundIcon.setVisibility(View.VISIBLE);
+                        noSoundIconPressed.setVisibility(View.INVISIBLE);
+                        if(getSoundStatus() == SOUND_ON_FLAG) {
+                            buttonSound.start();
+                        }
+                        setSoundStatus(SOUND_ON_FLAG);
+                        break;
+                    default:
+                        break;
+                }
+                return true;
+            }
+        });
+
+        //The sound is activated and user wants to deactivate it
+        soundIcon.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        soundIcon.setVisibility(View.INVISIBLE);
+                        soundIconPressed.setVisibility(View.VISIBLE);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        noSoundIcon.setVisibility(View.VISIBLE);
+                        soundIconPressed.setVisibility(View.INVISIBLE);
+                        if(getSoundStatus() == SOUND_ON_FLAG) {
+                            buttonSound.start();
+                        }
+                        setSoundStatus(SOUND_OFF_FLAG);
+                        break;
+                    default:
+                        break;
+                }
+                return true;
+            }
+        });
+
+
     }
+
+    private int getSoundStatus() {
+        SharedPreferences.Editor editor = getContext().getSharedPreferences(SOUND_ON_OFF_PREFS, Context.MODE_PRIVATE).edit();
+        SharedPreferences prefs = getContext().getSharedPreferences(SOUND_ON_OFF_PREFS, Context.MODE_PRIVATE);
+        int restoredPref = prefs.getInt("soundOnOff", SOUND_ON_OFF_NOT_DEFINED_FLAG);
+        if (restoredPref == SOUND_ON_OFF_NOT_DEFINED_FLAG) {
+            editor.putInt("soundOnOff", SOUND_ON_FLAG);
+            editor.commit();
+            restoredPref = SOUND_ON_FLAG;
+        }
+        return restoredPref;
+    }
+
+    private void setSoundStatus(int soundStatus) {
+        SharedPreferences.Editor editor = getContext().getSharedPreferences(SOUND_ON_OFF_PREFS, Context.MODE_PRIVATE).edit();
+        editor.putInt("soundOnOff", soundStatus);
+        editor.commit();
+    }
+
 }

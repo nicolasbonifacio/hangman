@@ -7,6 +7,7 @@ import com.nick.hangman.data.HangmanContract;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -41,6 +42,10 @@ public class PictureCreationActivity extends AppCompatActivity {
     private static final int IMAGE_LAST_USED_FLAG_TRUE = 1;
 
     private static final String COLUMN_IMAGE_LAST_USED_SELECTION = "last_used = ?";
+
+    public static final String SOUND_ON_OFF_PREFS = "soundOnOffPrefs";
+    private static final int SOUND_ON_OFF_NOT_DEFINED_FLAG = -1;
+    private static final int SOUND_ON_FLAG = 1;
 
     private Bitmap mBitmapImage;
 
@@ -94,7 +99,9 @@ public class PictureCreationActivity extends AppCompatActivity {
                         mRight = 0;
                         mBottom = 0;
 
-                        buttonSound.start();
+                        if(getSoundStatus() == SOUND_ON_FLAG) {
+                            buttonSound.start();
+                        }
 
                         Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
                         photoPickerIntent.setType("image/*");
@@ -130,7 +137,9 @@ public class PictureCreationActivity extends AppCompatActivity {
                     case MotionEvent.ACTION_UP:
                         createImageButton.setVisibility(View.VISIBLE);
                         createImageButtonPressed.setVisibility(View.INVISIBLE);
-                        buttonSound.start();
+                        if(getSoundStatus() == SOUND_ON_FLAG) {
+                            buttonSound.start();
+                        }
                         if(mRight > 0 && mBottom > 0) {
                             cropImage(mLeft, mTop, mRight, mBottom);
                         }else {
@@ -357,6 +366,12 @@ public class PictureCreationActivity extends AppCompatActivity {
                 if((left + (right - left)) > mWidth) {
                     right = mWidth;
                 }
+                if(top < 0) {
+                    top = 0;
+                }
+                if(left < 0) {
+                    left = 0;
+                }
 
                 Bitmap imageToSave;
                 if(useRatioWidth) {
@@ -502,4 +517,17 @@ public class PictureCreationActivity extends AppCompatActivity {
         startActivity(intent);
 
     }
+
+    private int getSoundStatus() {
+        SharedPreferences.Editor editor = getSharedPreferences(SOUND_ON_OFF_PREFS, Context.MODE_PRIVATE).edit();
+        SharedPreferences prefs = getSharedPreferences(SOUND_ON_OFF_PREFS, Context.MODE_PRIVATE);
+        int restoredPref = prefs.getInt("soundOnOff", SOUND_ON_OFF_NOT_DEFINED_FLAG);
+        if (restoredPref == SOUND_ON_OFF_NOT_DEFINED_FLAG) {
+            editor.putInt("soundOnOff", SOUND_ON_FLAG);
+            editor.commit();
+            restoredPref = SOUND_ON_FLAG;
+        }
+        return restoredPref;
+    }
+
 }

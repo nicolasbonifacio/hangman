@@ -2,7 +2,9 @@ package com.nick.hangman;
 
 import android.app.Dialog;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -122,6 +124,10 @@ public class GameMainActivityFragment extends Fragment {
     //SCORE_MODEL columns
     public static final int COL_SCORE_MODEL_POINTS = 0;
     public static final int COL_SCORE_MODEL_QTD_STARS = 1;
+
+    public static final String SOUND_ON_OFF_PREFS = "soundOnOffPrefs";
+    private static final int SOUND_ON_OFF_NOT_DEFINED_FLAG = -1;
+    private static final int SOUND_ON_FLAG = 1;
 
     private Uri mUri;
     private Cursor mCursor;
@@ -293,7 +299,9 @@ public class GameMainActivityFragment extends Fragment {
 
                             btn1.setEnabled(false);
                             btn1.setBackgroundColor(getResources().getColor(R.color.colorButtonDisabled));
-                            keypadSound.start();
+                            if(getSoundStatus() == SOUND_ON_FLAG) {
+                                keypadSound.start();
+                            }
                             handleGuess(FIRST_KEYPAD_LINE_CHARACTERS[btn1.getId() - 2001]);
 
                         }
@@ -323,7 +331,9 @@ public class GameMainActivityFragment extends Fragment {
 
                             btn2.setEnabled(false);
                             btn2.setBackgroundColor(getResources().getColor(R.color.colorButtonDisabled));
-                            keypadSound.start();
+                            if(getSoundStatus() == SOUND_ON_FLAG) {
+                                keypadSound.start();
+                            }
                             handleGuess(SECOND_KEYPAD_LINE_CHARACTERS[btn2.getId() - 3001]);
 
                         }
@@ -353,7 +363,9 @@ public class GameMainActivityFragment extends Fragment {
 
                             btn3.setEnabled(false);
                             btn3.setBackgroundColor(getResources().getColor(R.color.colorButtonDisabled));
-                            keypadSound.start();
+                            if(getSoundStatus() == SOUND_ON_FLAG) {
+                                keypadSound.start();
+                            }
                             handleGuess(THIRD_KEYPAD_LINE_CHARACTERS[btn3.getId() - 4001]);
 
                         }
@@ -689,7 +701,9 @@ public class GameMainActivityFragment extends Fragment {
                     case MotionEvent.ACTION_UP:
                         imageShareDialogViewListen.setVisibility(View.VISIBLE);
                         imageShareDialogViewListenPressed.setVisibility(View.INVISIBLE);
-                        buttonSound.start();
+                        if(getSoundStatus() == SOUND_ON_FLAG) {
+                            buttonSound.start();
+                        }
                         shareScreen();
                         break;
                     default:
@@ -756,7 +770,9 @@ public class GameMainActivityFragment extends Fragment {
                     case MotionEvent.ACTION_UP:
                         continueGameDialogButton.setVisibility(View.VISIBLE);
                         continueGameDialogButtonPressed.setVisibility(View.INVISIBLE);
-                        buttonSound.start();
+                        if(getSoundStatus() == SOUND_ON_FLAG) {
+                            buttonSound.start();
+                        }
                         dialog.cancel();
                         getActivity().finish();
                         break;
@@ -958,6 +974,18 @@ public class GameMainActivityFragment extends Fragment {
         share.putExtra(Intent.EXTRA_STREAM, Uri.parse("file:///sdcard/HangmanTale/HangmanTale.jpg"));
         startActivity(Intent.createChooser(share, getResources().getText(R.string.share_title)));
 
+    }
+
+    private int getSoundStatus() {
+        SharedPreferences.Editor editor = getContext().getSharedPreferences(SOUND_ON_OFF_PREFS, Context.MODE_PRIVATE).edit();
+        SharedPreferences prefs = getContext().getSharedPreferences(SOUND_ON_OFF_PREFS, Context.MODE_PRIVATE);
+        int restoredPref = prefs.getInt("soundOnOff", SOUND_ON_OFF_NOT_DEFINED_FLAG);
+        if (restoredPref == SOUND_ON_OFF_NOT_DEFINED_FLAG) {
+            editor.putInt("soundOnOff", SOUND_ON_FLAG);
+            editor.commit();
+            restoredPref = SOUND_ON_FLAG;
+        }
+        return restoredPref;
     }
 
     @Override
