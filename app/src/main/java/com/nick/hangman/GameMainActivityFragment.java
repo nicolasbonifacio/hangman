@@ -30,6 +30,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 import com.nick.hangman.Objects.Word;
@@ -1005,7 +1006,7 @@ public class GameMainActivityFragment extends Fragment {
     public void loadInterstitial() {
 
         mInterstitial.setAdUnitId(getResources().getString(R.string.interstitial_ad_unit_id));
-        mInterstitial.setAdListener(new ToastAdListener(getContext()) {
+        mInterstitial.setAdListener(new AdListener() {
             @Override
             public void onAdLoaded() {
                 super.onAdLoaded();

@@ -35,7 +35,6 @@ public class GameMainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_game_main);
 
         mAdView = (AdView) findViewById(R.id.adView);
-        mAdView.setAdListener(new ToastAdListener(this));
         AdRequest adRequest = new AdRequest.Builder()
                 .build();
         mAdView.loadAd(adRequest);

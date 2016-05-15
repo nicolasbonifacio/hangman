@@ -86,7 +86,6 @@ public class PictureManagementActivity extends AppCompatActivity {
         buttonSound = MediaPlayer.create(this, R.raw.button_sound);
 
         mAdView = (AdView) findViewById(R.id.adView);
-        mAdView.setAdListener(new ToastAdListener(this));
         AdRequest adRequest = new AdRequest.Builder()
                 .build();
         mAdView.loadAd(adRequest);
