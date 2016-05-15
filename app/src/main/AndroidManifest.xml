@@ -103,6 +103,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.nick.hangman.MainActivity" />
         </activity>
+        <activity android:name=".TesteActivity"></activity>
     </application>
 
 </manifest>
