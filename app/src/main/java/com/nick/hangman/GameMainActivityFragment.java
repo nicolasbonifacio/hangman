@@ -5,12 +5,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -18,10 +15,6 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.support.v4.content.Loader;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,7 +22,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -38,6 +30,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
 import com.nick.hangman.Objects.Word;
 import com.nick.hangman.data.HangmanContract;
 
@@ -129,6 +123,11 @@ public class GameMainActivityFragment extends Fragment {
     private static final int SOUND_ON_OFF_NOT_DEFINED_FLAG = -1;
     private static final int SOUND_ON_FLAG = 1;
 
+    public static final String INTERSTITIAL_PREFS = "interstitialPrefs";
+    public static final String INTERSTITIAL_KEY = "interstitialKey";
+    private static final int INTERSTITIAL_FIRST_PLAY_FLAG = 0;
+    private static final int INTERSTITIAL_SHOW_FLAG = 4;
+
     private Uri mUri;
     private Cursor mCursor;
     private View rootView;
@@ -156,6 +155,9 @@ public class GameMainActivityFragment extends Fragment {
     private MediaPlayer keypadSound;
     private MediaPlayer buttonSound;
 
+    private InterstitialAd mInterstitial;
+    private boolean mIsAdLoaded;
+
     public GameMainActivityFragment() {
     }
 
@@ -166,6 +168,8 @@ public class GameMainActivityFragment extends Fragment {
 
         keypadSound = MediaPlayer.create(getContext(), R.raw.keypad_sound);
         buttonSound = MediaPlayer.create(getContext(), R.raw.button_sound);
+
+        mInterstitial = new InterstitialAd(getContext());
 
         Intent intent = getActivity().getIntent();
 
@@ -643,6 +647,11 @@ public class GameMainActivityFragment extends Fragment {
 
     private void endGamePopup(boolean gameWon) {
 
+        mIsAdLoaded = false;
+        if(getInterstitialStatus()) {
+            loadInterstitial();
+        }
+
         final Dialog dialog = new Dialog(getContext());
 
         dialog.setContentView(R.layout.custom_dialog);
@@ -773,6 +782,9 @@ public class GameMainActivityFragment extends Fragment {
                         if(getSoundStatus() == SOUND_ON_FLAG) {
                             buttonSound.start();
                         }
+                        if(mIsAdLoaded || mInterstitial.isLoaded()) {
+                            mInterstitial.show();
+                        }
                         dialog.cancel();
                         getActivity().finish();
                         break;
@@ -786,8 +798,10 @@ public class GameMainActivityFragment extends Fragment {
         disableKeypad();
 
         dialog.setCanceledOnTouchOutside(false);
+        dialog.setCancelable(false);
 
         dialog.show();
+
     }
 
     private int loadPointsAndStarsFromScoreModel(int numErrors) {
@@ -986,6 +1000,45 @@ public class GameMainActivityFragment extends Fragment {
             restoredPref = SOUND_ON_FLAG;
         }
         return restoredPref;
+    }
+
+    public void loadInterstitial() {
+
+        mInterstitial.setAdUnitId(getResources().getString(R.string.interstitial_ad_unit_id));
+        mInterstitial.setAdListener(new ToastAdListener(getContext()) {
+            @Override
+            public void onAdLoaded() {
+                super.onAdLoaded();
+                mIsAdLoaded = true;
+            }
+
+            @Override
+            public void onAdFailedToLoad(int errorCode) {
+                super.onAdFailedToLoad(errorCode);
+                mIsAdLoaded = true;
+            }
+        });
+
+        AdRequest ar = new AdRequest.Builder().build();
+        mInterstitial.loadAd(ar);
+
+    }
+
+    private boolean getInterstitialStatus() {
+        SharedPreferences.Editor editor = getContext().getSharedPreferences(INTERSTITIAL_PREFS, Context.MODE_PRIVATE).edit();
+        SharedPreferences prefs = getContext().getSharedPreferences(INTERSTITIAL_PREFS, Context.MODE_PRIVATE);
+        int restoredPref = prefs.getInt(INTERSTITIAL_KEY, INTERSTITIAL_FIRST_PLAY_FLAG);
+        if (restoredPref < INTERSTITIAL_SHOW_FLAG) {
+            restoredPref++;
+            editor.putInt(INTERSTITIAL_KEY, restoredPref);
+            editor.commit();
+            return false;
+        }else {
+            editor.putInt(INTERSTITIAL_KEY, INTERSTITIAL_FIRST_PLAY_FLAG);
+            editor.commit();
+            return true;
+        }
+
     }
 
     @Override
