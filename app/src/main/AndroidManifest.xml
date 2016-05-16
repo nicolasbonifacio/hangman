@@ -19,7 +19,8 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -30,7 +31,8 @@
             android:name=".SelectionActivity"
             android:label="@string/title_activity_selection"
             android:parentActivityName=".StartActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.nick.hangman.StartActivity" />
@@ -46,7 +48,8 @@
             android:name=".GameMainActivity"
             android:label="@string/title_activity_game_main"
             android:parentActivityName=".TaleActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.nick.hangman.TaleActivity" />
@@ -55,7 +58,8 @@
             android:name=".TaleActivity"
             android:label="@string/title_activity_tale"
             android:parentActivityName=".StartActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.nick.hangman.StartActivity" />
@@ -71,7 +75,8 @@
             android:name=".PictureCreationActivity"
             android:label="@string/title_activity_picture_selection"
             android:parentActivityName=".PictureManagementActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.nick.hangman.PictureManagementActivity" />
@@ -80,7 +85,8 @@
             android:name=".PictureManagementActivity"
             android:label="@string/title_activity_picture_managment"
             android:parentActivityName=".StartActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.nick.hangman.StartActivity" />
@@ -89,7 +95,8 @@
             android:name=".SelectExistingImageActivity"
             android:label="@string/title_activity_select_existing_image"
             android:parentActivityName=".PictureManagementActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.nick.hangman.PictureManagementActivity" />
@@ -98,7 +105,8 @@
             android:name=".StartActivity"
             android:label="@string/title_activity_start"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.nick.hangman.MainActivity" />

@@ -465,7 +465,7 @@ public class GameMainActivityFragment extends Fragment {
 
             mTotalCharacters = 0;
 
-//mWord.setWord("A");
+//mWord.setWord("HOUSE OF CARDS AND WIND");
             mWord.setWord(mWord.getWord().replace("   ", " "));
             mWord.setWord(mWord.getWord().replace("  ", " "));
 
