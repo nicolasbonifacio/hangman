@@ -72,6 +72,7 @@ public class GameMainActivityFragment extends Fragment {
     private static final int SHARE_ICON_DIALOG_PRESSED_ID = 994;
     public static final float PERC_STARS_DIALOG_WIDTH = 0.6f; //60%
     private static final int ALL_CATEGORIES_ID = 0;
+    public static final float PERC_CHARACTER_HEIGHT_REDUCTION = 0.8f;
 
     private static final String WORD_SORT_ORDER = "RANDOM() LIMIT 1";
 
@@ -287,6 +288,7 @@ public class GameMainActivityFragment extends Fragment {
                     LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                             keypadButtonWidth,
                             keypadButtonHeight);
+
                     Button btn = new Button(getContext());
                     btn.setId(i);
                     final int id_ = btn.getId();
@@ -465,7 +467,7 @@ public class GameMainActivityFragment extends Fragment {
 
             mTotalCharacters = 0;
 
-//mWord.setWord("HOUSE OF CARDS AND WIND");
+//mWord.setWord("FEDERATED STATES OF MICRONESIA");
             mWord.setWord(mWord.getWord().replace("   ", " "));
             mWord.setWord(mWord.getWord().replace("  ", " "));
 
@@ -513,12 +515,21 @@ public class GameMainActivityFragment extends Fragment {
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     mCharacterHeight);
 
+            LinearLayout.LayoutParams paramsSpace = new LinearLayout.LayoutParams(
+                    getResources().getDimensionPixelSize(R.dimen.word_spacing_horizontal_padding),
+                    (int)(mCharacterHeight / 2));
+
+            wordLineLayout = new LinearLayout(getContext());
+            wordLineLayout.setOrientation(LinearLayout.HORIZONTAL);
+            wordLineLayout.setLayoutParams(params);
+            wordLineLayout.setPadding(0, (int)mDensity * WORD_PADDING_TIMES, 0, (int)mDensity * WORD_PADDING_TIMES);
             int id = 1001;
+            int charactersAdded = 0;
+            int nextWord = 0;
+            int qtdLines = 0;
             for(int j = 0; j < words.length; j++) {
-                wordLineLayout = new LinearLayout(getContext());
-                wordLineLayout.setOrientation(LinearLayout.HORIZONTAL);
-                wordLineLayout.setLayoutParams(params);
-                wordLineLayout.setPadding(0, (int)mDensity * WORD_PADDING_TIMES, 0, (int)mDensity * WORD_PADDING_TIMES);
+
+                charactersAdded = charactersAdded + words[j].length();
 
                 for (int i = 1001; i <= words[j].length() + 1000; i++) {
 
@@ -537,8 +548,42 @@ public class GameMainActivityFragment extends Fragment {
                     }
                     id++;
                 }
-                wordLayout.addView(wordLineLayout, params);
+
+                if(j + 1 < words.length) {
+                    nextWord = words[j + 1].length();
+                }else {
+                    nextWord = 0;
+                }
+
+                //If current word + next word is less than 13 characters, keep both words in the
+                // same line and the subsequent lines too (up to 13 characters)
+                if((charactersAdded + nextWord) > (MAX_CHARACTERS_PER_LINE -1) || (nextWord == 0)) {
+                    wordLayout.addView(wordLineLayout, params);
+                    qtdLines++;
+                    wordLineLayout = new LinearLayout(getContext());
+                    wordLineLayout.setOrientation(LinearLayout.HORIZONTAL);
+                    wordLineLayout.setLayoutParams(params);
+                    wordLineLayout.setPadding(0, (int)mDensity * WORD_PADDING_TIMES, 0, (int)mDensity * WORD_PADDING_TIMES);
+
+                    charactersAdded = 0;
+                }else {
+                    ImageView space = new ImageView(getContext());
+
+                    wordLineLayout.addView(space, paramsSpace);
+                }
             }
+
+            //If there's more than 3 lines, reduces each character line's height
+            if(qtdLines >= 3) {
+                LinearLayout.LayoutParams newLineParams = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        (int)(mCharacterHeight * PERC_CHARACTER_HEIGHT_REDUCTION));
+                for(int x = 1001; x < id; x++) {
+                    ImageView tempCharacters = (ImageView) rootView.findViewById(x);
+                    tempCharacters.setLayoutParams(newLineParams);
+                }
+            }
+
 
             return true;
         }

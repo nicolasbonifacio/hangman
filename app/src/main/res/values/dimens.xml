@@ -41,10 +41,8 @@
     <dimen name="use_it_picture_button_width_pressed">172dp</dimen>
     <dimen name="create_picture_button_height">56dp</dimen>
     <dimen name="create_picture_button_width">172dp</dimen>
-
     <dimen name="select_picture_button_width">172dp</dimen>
     <dimen name="select_picture_button_height">56dp</dimen>
-
     <dimen name="create_picture_button_height_pressed">33dp</dimen>
     <dimen name="select_picture_button_height_pressed">33dp</dimen>
     <dimen name="create_picture_button_width_pressed">172dp</dimen>
@@ -61,6 +59,7 @@
     <!-- Game details padding -->
     <dimen name="game_details_same_subject_vertical_padding">4dp</dimen>
     <dimen name="game_details_different_subject_vertical_padding">8dp</dimen>
+    <dimen name="word_spacing_horizontal_padding">16dp</dimen>
 
     <!-- Game dialog -->
     <dimen name="share_dialog_bar_height">32dp</dimen>
