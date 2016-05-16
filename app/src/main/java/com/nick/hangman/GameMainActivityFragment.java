@@ -467,7 +467,7 @@ public class GameMainActivityFragment extends Fragment {
 
             mTotalCharacters = 0;
 
-//mWord.setWord("FEDERATED STATES OF MICRONESIA");
+mWord.setWord("SAINT VINCENT AND THE GRENADINES");
             mWord.setWord(mWord.getWord().replace("   ", " "));
             mWord.setWord(mWord.getWord().replace("  ", " "));
 

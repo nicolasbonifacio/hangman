@@ -933,7 +933,7 @@ public class HangmanProvider extends ContentProvider {
     }
 
     @Override
-    @TargetApi(15)
+    @TargetApi(16)
     public void shutdown() {
         mOpenHelper.close();
         super.shutdown();

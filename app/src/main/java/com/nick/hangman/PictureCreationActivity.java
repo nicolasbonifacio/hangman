@@ -4,6 +4,7 @@ import com.nick.hangman.Objects.ImageTable;
 import com.nick.hangman.Views.DragRectView;
 import com.nick.hangman.data.HangmanContract;
 
+import android.app.ActivityManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -47,6 +48,8 @@ public class PictureCreationActivity extends AppCompatActivity {
     private static final int SOUND_ON_OFF_NOT_DEFINED_FLAG = -1;
     private static final int SOUND_ON_FLAG = 1;
 
+    private static final long MIN_MEMORY = 536870912;
+
     private Bitmap mBitmapImage;
 
     private int mWidth;
@@ -63,6 +66,8 @@ public class PictureCreationActivity extends AppCompatActivity {
     private float ratioHeight;
 
     private MediaPlayer buttonSound;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -207,7 +212,13 @@ public class PictureCreationActivity extends AppCompatActivity {
                             mBitmapImage = rotateImageIfRequired(mBitmapImage, orientation);
                         }else {
                             //Image is larger than cel dimensions
-                            mBitmapImage = handleBitmapBigger(this, selectedImage, orientation);
+
+                            ActivityManager actManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+                            ActivityManager.MemoryInfo memInfo = new ActivityManager.MemoryInfo();
+                            actManager.getMemoryInfo(memInfo);
+                            long totalMemory = memInfo.totalMem;
+
+                            mBitmapImage = handleBitmapBigger(this, selectedImage, orientation, totalMemory);
                             mWidth = mBitmapImage.getWidth();
                             mHeight = mBitmapImage.getHeight();
                         }
@@ -433,10 +444,18 @@ public class PictureCreationActivity extends AppCompatActivity {
         }
     }
 
-    public static Bitmap handleBitmapBigger(Context context, Uri selectedImage, final int orientation)
+    public static Bitmap handleBitmapBigger(Context context, Uri selectedImage, final int orientation, long totalMemory)
             throws IOException {
-        int MAX_HEIGHT = 1024;
-        int MAX_WIDTH = 1024;
+
+        int MAX_HEIGHT = 0;
+        int MAX_WIDTH = 0;
+        if(totalMemory < MIN_MEMORY) {
+            MAX_HEIGHT = 128;
+            MAX_WIDTH = 128;
+        }else {
+            MAX_HEIGHT = 1024;
+            MAX_WIDTH = 1024;
+        }
 
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
