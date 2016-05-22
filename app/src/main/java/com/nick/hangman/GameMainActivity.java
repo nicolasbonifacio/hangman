@@ -7,7 +7,6 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -76,8 +75,6 @@ public class GameMainActivity extends AppCompatActivity {
             b.compress(Bitmap.CompressFormat.JPEG, 100, fos);
             fos.flush();
             fos.close();
-            MediaStore.Images.Media.insertImage( getContentResolver(), b,
-                    "Screen", "screen");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (Exception e) {
@@ -102,7 +99,13 @@ public class GameMainActivity extends AppCompatActivity {
 
             Bitmap icon = mBitmap;
             Intent share = new Intent(Intent.ACTION_SEND);
-            share.setType("image/jpeg");
+
+            share.setType("*/*");
+            share.putExtra(Intent.EXTRA_TEXT, getResources().getString(R.string.share_text));
+            share.putExtra(android.content.Intent.EXTRA_SUBJECT, getResources().getString(R.string.share_email_title));
+
+            //share.setType("image/jpeg");
+
             ByteArrayOutputStream bytes = new ByteArrayOutputStream();
             icon.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
             File f = new File(Environment.getExternalStorageDirectory() + File.separator + "HangmanTale" + File.separator + "HangmanTale.jpg");

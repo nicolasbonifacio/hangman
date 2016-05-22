@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:gravity="center">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="24sp"
+            android:text="@string/choose_a_hint_text"
+            android:layout_gravity="center"/>
+
+    </FrameLayout>
+
+    <Space
+        android:layout_width="16dp"
+        android:layout_height="16dp" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/coin"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/fingerPriceText"
+            android:textSize="18sp"/>
+
+        <Space
+            android:layout_width="75dp"
+            android:layout_height="1dp" />
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/coin"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/moreChancePriceText"
+            android:textSize="18sp"/>
+
+    </LinearLayout>
+
+    <Space
+        android:layout_width="16dp"
+        android:layout_height="16dp" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:id="@+id/hintDialogLayout">
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:id="@+id/fingerHintDialog" />
+
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:id="@+id/fingerHintDialogPressed"
+                android:src="@drawable/finger_pressed"/>
+
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:id="@+id/fingerHintDialogDisabled"
+                android:src="@drawable/finger_disabled"/>
+
+        </FrameLayout>
+
+        <Space
+            android:layout_width="16dp"
+            android:layout_height="100dp" />
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:id="@+id/moreChanceHintDialog" />
+
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:id="@+id/moreChanceHintDialogPressed"
+                android:src="@drawable/more_chance_hint_pressed"/>
+
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:id="@+id/moreChanceHintDialogDisabled"
+                android:src="@drawable/more_chance_hint_disabled"/>
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+    <android.support.v4.widget.Space
+        android:layout_width="16dp"
+        android:layout_height="16dp" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:id="@+id/cancelHintDialog"
+            android:src="@drawable/cancel_hint_dialog"
+            android:layout_gravity="center"/>
+
+    </FrameLayout>
+
+</LinearLayout>

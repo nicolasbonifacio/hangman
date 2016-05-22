@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/selected" android:oneshot="false">
+    <item android:drawable="@drawable/finger_01" android:duration="500" />
+    <item android:drawable="@drawable/finger_02" android:duration="500" />
+    <item android:drawable="@drawable/finger_03" android:duration="500" />
+    <item android:drawable="@drawable/finger_04" android:duration="500" />
+    <item android:drawable="@drawable/finger_05" android:duration="500" />
+    <item android:drawable="@drawable/finger_06" android:duration="2000" />
+
+</animation-list>

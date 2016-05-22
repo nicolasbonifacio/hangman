@@ -50,6 +50,8 @@
     <string name="win_game">You win!!!</string>
     <string name="end_game">Game Finished</string>
     <string name="share_title">Share Image</string>
+    <string name="share_text">Play Hangman Tale (link)</string>
+    <string name="share_email_title">Hangman Tale</string>
 
     <!-- Game screen dialog -->
     <string name="continue_dialog_button">Continue</string>
@@ -57,7 +59,10 @@
     <string name="loose_game_dialog_text">Sorry, not this time</string>
 
     <!-- Tale screen -->
-    <string name="category_unlocked">Complete previous categories to release</string>
+    <string name="category_unlocked">Complete all previous categories to release</string>
+
+    <!-- Hint screen -->
+    <string name="choose_a_hint_text">Choose a hint</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
