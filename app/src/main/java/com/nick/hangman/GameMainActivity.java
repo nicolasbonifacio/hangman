@@ -1,9 +1,12 @@
 package com.nick.hangman;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -28,6 +31,12 @@ public class GameMainActivity extends AppCompatActivity {
     View content;
     private String mPath;
 
+    private MediaPlayer buttonSound;
+
+    public static final String SOUND_ON_OFF_PREFS = "soundOnOffPrefs";
+    private static final int SOUND_ON_OFF_NOT_DEFINED_FLAG = -1;
+    private static final int SOUND_ON_FLAG = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +54,8 @@ public class GameMainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
+
+        buttonSound = MediaPlayer.create(this, R.raw.button_sound);
 
     }
 
@@ -88,6 +99,10 @@ public class GameMainActivity extends AppCompatActivity {
         int id = item.getItemId();
         if (id == R.id.action_share) {
 
+            if(getSoundStatus() == SOUND_ON_FLAG) {
+                buttonSound.start();
+            }
+
             content = findViewById(R.id.gallowsLayout);
 
             getScreen();
@@ -100,11 +115,12 @@ public class GameMainActivity extends AppCompatActivity {
             Bitmap icon = mBitmap;
             Intent share = new Intent(Intent.ACTION_SEND);
 
-            share.setType("*/*");
+            //share.setType("image/jpeg");
+
+            share.setType("image/jpeg");
+            //share.setType("*/*");
             share.putExtra(Intent.EXTRA_TEXT, getResources().getString(R.string.share_text));
             share.putExtra(android.content.Intent.EXTRA_SUBJECT, getResources().getString(R.string.share_email_title));
-
-            //share.setType("image/jpeg");
 
             ByteArrayOutputStream bytes = new ByteArrayOutputStream();
             icon.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
@@ -133,6 +149,18 @@ public class GameMainActivity extends AppCompatActivity {
         if(fileDelete.exists()) {
             fileDelete.delete();
         }
+    }
+
+    private int getSoundStatus() {
+        SharedPreferences.Editor editor = getSharedPreferences(SOUND_ON_OFF_PREFS, Context.MODE_PRIVATE).edit();
+        SharedPreferences prefs = getSharedPreferences(SOUND_ON_OFF_PREFS, Context.MODE_PRIVATE);
+        int restoredPref = prefs.getInt("soundOnOff", SOUND_ON_OFF_NOT_DEFINED_FLAG);
+        if (restoredPref == SOUND_ON_OFF_NOT_DEFINED_FLAG) {
+            editor.putInt("soundOnOff", SOUND_ON_FLAG);
+            editor.commit();
+            restoredPref = SOUND_ON_FLAG;
+        }
+        return restoredPref;
     }
 
 }

@@ -1,5 +1,7 @@
 package com.nick.hangman;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,6 +14,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
+
+import java.util.Calendar;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,6 +32,15 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 18);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        Intent intent1 = new Intent(MainActivity.this, AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0,intent1, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager am = (AlarmManager) MainActivity.this.getSystemService(MainActivity.this.ALARM_SERVICE);
+        am.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
         // Start timer and launch main activity
@@ -34,15 +48,6 @@ public class MainActivity extends AppCompatActivity {
         launcher.start();
 
 
-
-        //startActivity(new Intent(this, StartActivity.class));
-
-/*
-        ImageView img = (ImageView) rootView.findViewById(R.id.waitIcon);
-        img.setBackgroundResource(R.drawable.wait_icon);
-        AnimationDrawable frameAnimation = (AnimationDrawable) img.getBackground();
-        frameAnimation.start();
-*/
 
     }
 

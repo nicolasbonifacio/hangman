@@ -1073,11 +1073,12 @@ public class GameMainActivityFragment extends Fragment {
         Bitmap icon = mBitmap;
         Intent share = new Intent(Intent.ACTION_SEND);
 
-        share.setType("*/*");
+        //share.setType("image/jpeg");
+
+        share.setType("image/jpeg");
+        //share.setType("*/*");
         share.putExtra(Intent.EXTRA_TEXT, getResources().getString(R.string.share_text));
         share.putExtra(android.content.Intent.EXTRA_SUBJECT, getResources().getString(R.string.share_email_title));
-
-        //share.setType("image/jpeg");
 
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         icon.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
