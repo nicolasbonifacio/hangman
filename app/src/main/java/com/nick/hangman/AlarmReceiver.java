@@ -40,7 +40,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         int MID = 1;
 
-        long fiveDays = TimeUnit.DAYS.toMillis(5);
+        long fiveDays = TimeUnit.DAYS.toMillis(3);
         long nextNotification = getLastNotificationDay(context) + fiveDays;
         long now = System.currentTimeMillis();
 
