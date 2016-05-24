@@ -19,6 +19,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -38,6 +39,9 @@ public class StartActivityFragment extends Fragment {
     private static final int SOUND_ON_OFF_NOT_DEFINED_FLAG = -1;
     private static final int SOUND_ON_FLAG = 1;
     private static final int SOUND_OFF_FLAG = 0;
+
+    public static final String NOTIFICATION_ENABLE_PREFS = "notificationEnablePrefs";
+    public static final String NOTIFICATION_ENABLE_KEY = "notificationEnableKey";
 
     public StartActivityFragment() {
     }
@@ -284,6 +288,76 @@ public class StartActivityFragment extends Fragment {
             }
         });
 
+        //Notification icon
+        boolean restoredNotificationPref = getNotificationStatus();
+
+        final ImageView noNotificationIcon = (ImageView) rootView.findViewById(R.id.noNotificationIcon);
+        final ImageView noNotificationIconPressed = (ImageView) rootView.findViewById(R.id.noNotificationIconPressed);
+        final ImageView notificationIcon = (ImageView) rootView.findViewById(R.id.notificationIcon);
+        final ImageView notificationIconPressed = (ImageView) rootView.findViewById(R.id.notificationIconPressed);
+
+        if(!restoredNotificationPref) {
+            //Notification off
+            noNotificationIcon.setVisibility(View.VISIBLE);
+            noNotificationIconPressed.setVisibility(View.INVISIBLE);
+            notificationIcon.setVisibility(View.INVISIBLE);
+            notificationIconPressed.setVisibility(View.INVISIBLE);
+        }else {
+            //Notification on
+            noNotificationIcon.setVisibility(View.INVISIBLE);
+            noNotificationIconPressed.setVisibility(View.INVISIBLE);
+            notificationIconPressed.setVisibility(View.INVISIBLE);
+            notificationIcon.setVisibility(View.VISIBLE);
+        }
+
+        //No notification is activated and user wants to activate notifications
+        noNotificationIcon.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        noNotificationIcon.setVisibility(View.INVISIBLE);
+                        noNotificationIconPressed.setVisibility(View.VISIBLE);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        notificationIcon.setVisibility(View.VISIBLE);
+                        noNotificationIconPressed.setVisibility(View.INVISIBLE);
+                        if(getSoundStatus() == SOUND_ON_FLAG) {
+                            buttonSound.start();
+                        }
+                        setNotificationStatus(true);
+                        Toast.makeText(getContext(), "Notifications enabled", Toast.LENGTH_SHORT).show();
+                        break;
+                    default:
+                        break;
+                }
+                return true;
+            }
+        });
+
+        //The notification is activated and user wants to deactivate it
+        notificationIcon.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        notificationIcon.setVisibility(View.INVISIBLE);
+                        notificationIconPressed.setVisibility(View.VISIBLE);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        noNotificationIcon.setVisibility(View.VISIBLE);
+                        notificationIconPressed.setVisibility(View.INVISIBLE);
+                        if(getSoundStatus() == SOUND_ON_FLAG) {
+                            buttonSound.start();
+                        }
+                        setNotificationStatus(false);
+                        Toast.makeText(getContext(), "Notifications disabled", Toast.LENGTH_SHORT).show();
+                        break;
+                    default:
+                        break;
+                }
+                return true;
+            }
+        });
+
 
     }
 
@@ -302,6 +376,24 @@ public class StartActivityFragment extends Fragment {
     private void setSoundStatus(int soundStatus) {
         SharedPreferences.Editor editor = getContext().getSharedPreferences(SOUND_ON_OFF_PREFS, Context.MODE_PRIVATE).edit();
         editor.putInt("soundOnOff", soundStatus);
+        editor.commit();
+    }
+
+    private boolean getNotificationStatus() {
+        SharedPreferences.Editor editor = getContext().getSharedPreferences(NOTIFICATION_ENABLE_PREFS, Context.MODE_PRIVATE).edit();
+        SharedPreferences prefs = getContext().getSharedPreferences(NOTIFICATION_ENABLE_PREFS, Context.MODE_PRIVATE);
+        boolean restoredPref = prefs.getBoolean(NOTIFICATION_ENABLE_KEY, true);
+        if (restoredPref) {
+            editor.putBoolean(NOTIFICATION_ENABLE_KEY, true);
+            editor.commit();
+            restoredPref = true;
+        }
+        return restoredPref;
+    }
+
+    private void setNotificationStatus(boolean notificationStatus) {
+        SharedPreferences.Editor editor = getContext().getSharedPreferences(NOTIFICATION_ENABLE_PREFS, Context.MODE_PRIVATE).edit();
+        editor.putBoolean(NOTIFICATION_ENABLE_KEY, notificationStatus);
         editor.commit();
     }
 

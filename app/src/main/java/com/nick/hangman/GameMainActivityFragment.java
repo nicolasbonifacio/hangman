@@ -42,6 +42,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -122,6 +123,10 @@ public class GameMainActivityFragment extends Fragment {
     public static final String COINS_KEY = "coinsKey";
     private static final int FIRST_COINS_FILL = 100;
 
+    public static final String DAILY_COINS_PREFS = "dailyCoinsPrefs";
+    public static final String DAILY_COINS_KEY = "dailyCoinsKey";
+    private static final int DAILY_COINS_QTD = 15;
+
     private static final int FINGER_HINT_PRICE = 5;
     private static final int  MORE_CHANCE_HINT_PRICE = 2;
 
@@ -187,6 +192,11 @@ public class GameMainActivityFragment extends Fragment {
                 mIsImageSelected = true;
             }else {
                 mIsImageSelected = false;
+            }
+
+            //Validate daily coins
+            if(hasDailyCoins()) {
+                setHintCoins(DAILY_COINS_QTD);
             }
 
             int horizontalPadding = (int)getResources().getDimension(R.dimen.activity_horizontal_margin);
@@ -1370,6 +1380,39 @@ public class GameMainActivityFragment extends Fragment {
         editor.putInt(COINS_KEY, restoredPref);
         editor.commit();
         return true;
+
+    }
+
+    private boolean hasDailyCoins() {
+
+        SharedPreferences.Editor editor = getContext().getSharedPreferences(DAILY_COINS_PREFS, Context.MODE_PRIVATE).edit();
+        SharedPreferences prefs = getContext().getSharedPreferences(DAILY_COINS_PREFS, Context.MODE_PRIVATE);
+
+        Calendar c = Calendar.getInstance();
+        String day = Integer.toString(c.get(Calendar.DAY_OF_MONTH));
+        String month = Integer.toString(c.get(Calendar.MONTH)+1);
+        String year = Integer.toString(c.get(Calendar.YEAR));
+        if(month.length() == 1) {
+            month = "0" + month;
+        }
+        if(day.length() == 1) {
+            day = "0" + day;
+        }
+        String sToday = year + month + day;
+        int iToday = Integer.valueOf(sToday);
+
+        int restoredPref = prefs.getInt(DAILY_COINS_KEY, 0);
+
+        if(restoredPref == 0) {
+            editor.putInt(DAILY_COINS_KEY, iToday);
+            editor.commit();
+            return false;
+        }else if (restoredPref < iToday) {
+            editor.putInt(DAILY_COINS_KEY, iToday);
+            editor.commit();
+            return true;
+        }
+        return false;
 
     }
 
