@@ -52,8 +52,8 @@ public class AlarmReceiver extends BroadcastReceiver {
 
                 NotificationCompat.Builder mNotifyBuilder = new NotificationCompat.Builder(
                         context).setSmallIcon(R.drawable.image_icon_notification_72)
-                        .setContentTitle("Hangman Tale")
-                        .setContentText("Play to claim your daily hint coins").setSound(alarmSound)
+                        .setContentTitle(context.getResources().getString(R.string.notification_title_text))
+                        .setContentText(context.getResources().getString(R.string.notification_descr_text)).setSound(alarmSound)
                         .setAutoCancel(true).setWhen(when)
                         .setContentIntent(pendingIntent)
                         .setVibrate(new long[]{1000, 1000, 1000, 1000, 1000});

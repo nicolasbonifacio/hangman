@@ -64,6 +64,10 @@
     <!-- Hint screen -->
     <string name="choose_a_hint_text">Choose a hint</string>
 
+    <!-- Notifications -->
+    <string name="notification_title_text">Hangman Tale</string>
+    <string name="notification_descr_text">Play to claim your daily hint coins</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_tale">Hangman Tale</string>
