@@ -127,6 +127,9 @@ public class GameMainActivityFragment extends Fragment {
     public static final String DAILY_COINS_KEY = "dailyCoinsKey";
     private static final int DAILY_COINS_QTD = 15;
 
+    public static final String HANGY_DIALOG_PREFS = "hangyDialogPrefs";
+    public static final String HANGY_DIALOG_KEY = "hangyDialogKey";
+
     private static final int FINGER_HINT_PRICE = 5;
     private static final int  MORE_CHANCE_HINT_PRICE = 2;
 
@@ -443,6 +446,10 @@ public class GameMainActivityFragment extends Fragment {
                     Toast.LENGTH_SHORT).show();
         }
 
+        if(isShowHangyDialog()) {
+            openHangyDialog();
+        }
+
         return rootView;
     }
 
@@ -498,7 +505,7 @@ public class GameMainActivityFragment extends Fragment {
 
             mTotalCharacters = 0;
 
-//mWord.setWord("HOUSE OF CARDS");
+//mWord.setWord("A");
             mWord.setWord(mWord.getWord().replace("   ", " "));
             mWord.setWord(mWord.getWord().replace("  ", " "));
 
@@ -860,8 +867,7 @@ public class GameMainActivityFragment extends Fragment {
         imageStarsDialogLayout.addView(imageStarsDialogView, imageStarsDialogParams);
 
         TextView wordSelectedDialogView = (TextView) dialog.findViewById(R.id.wordSelectedDialogView);
-        String wordScreen = mWord.getWord().replace(" ", "\n");
-        wordSelectedDialogView.setText(wordScreen);
+        wordSelectedDialogView.setText(mWord.getWord());
         wordSelectedDialogView.setTextColor(getResources().getColor(R.color.colorWordDialog));
         wordSelectedDialogView.setTypeface(wordSelectedDialogView.getTypeface(), Typeface.BOLD);
         wordSelectedDialogView.setTextSize(getResources().getDimension(R.dimen.word_dialog_text_size) / mScaledDensity);
@@ -904,6 +910,42 @@ public class GameMainActivityFragment extends Fragment {
                 return true;
             }
         });
+
+        TextView dialogDefinitionIconText = (TextView) dialog.findViewById(R.id.dialogDefinitionIconText);
+        dialogDefinitionIconText.setText(getResources().getString(mUtils.getDefinitionIconTextId(mWord.getCategoryId())));
+
+        final ImageView definitionButton = (ImageView) dialog.findViewById(R.id.dialogDefinitionIconImage);
+        definitionButton.setImageDrawable(getResources().getDrawable(mUtils.getDefinitionIconImageId(mWord.getCategoryId())));
+
+        definitionButton.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        break;
+                    case MotionEvent.ACTION_UP:
+
+                        if(getSoundStatus() == SOUND_ON_FLAG) {
+                            buttonSound.start();
+                        }
+                        if(mWord.getCategoryId() == 2 || mWord.getCategoryId() == 3 || mWord.getCategoryId() == 18) {
+                            startMap(mWord.getWord());
+                        }else {
+                            String url = mUtils.getURL(mWord.getCategoryId());
+                            startGoogleBrowser(url, mWord.getWord());
+                        }
+
+                        break;
+                    default:
+                        break;
+                }
+                return true;
+            }
+        });
+
+
+
+
+
 
         disableKeypad();
 
@@ -1049,6 +1091,7 @@ public class GameMainActivityFragment extends Fragment {
     private void shareScreen() {
 
         View content = rootView.findViewById(R.id.gallowsLayout);
+        boolean hasStoragePermission = true;
 
         File folder = new File(Environment.getExternalStorageDirectory() +
                 File.separator + "HangmanTale");
@@ -1069,40 +1112,39 @@ public class GameMainActivityFragment extends Fragment {
             b.compress(Bitmap.CompressFormat.JPEG, 100, fos);
             fos.flush();
             fos.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (Exception e) {
-            e.printStackTrace();
+            Toast.makeText(getContext(), getResources().getString(R.string.share_no_permission_storage), Toast.LENGTH_LONG).show();
+            hasStoragePermission = false;
         }
 
+        if(hasStoragePermission) {
+            File image = new File(Environment.getExternalStorageDirectory() + File.separator + "HangmanTale" + File.separator, "HangmanTale_temp.jpg");
+            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+            Bitmap mBitmap = BitmapFactory.decodeFile(image.getAbsolutePath(), bmOptions);
 
-        File image = new File(Environment.getExternalStorageDirectory() + File.separator + "HangmanTale" + File.separator, "HangmanTale_temp.jpg");
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        Bitmap mBitmap = BitmapFactory.decodeFile(image.getAbsolutePath(), bmOptions);
+            Bitmap icon = mBitmap;
+            Intent share = new Intent(Intent.ACTION_SEND);
 
-        Bitmap icon = mBitmap;
-        Intent share = new Intent(Intent.ACTION_SEND);
+            //share.setType("image/jpeg");
 
-        //share.setType("image/jpeg");
+            share.setType("image/jpeg");
+            //share.setType("*/*");
+            share.putExtra(Intent.EXTRA_TEXT, getResources().getString(R.string.share_text));
+            share.putExtra(android.content.Intent.EXTRA_SUBJECT, getResources().getString(R.string.share_email_title));
 
-        share.setType("image/jpeg");
-        //share.setType("*/*");
-        share.putExtra(Intent.EXTRA_TEXT, getResources().getString(R.string.share_text));
-        share.putExtra(android.content.Intent.EXTRA_SUBJECT, getResources().getString(R.string.share_email_title));
-
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        icon.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-        File f = new File(Environment.getExternalStorageDirectory() + File.separator + "HangmanTale" + File.separator + "HangmanTale.jpg");
-        try {
-            f.createNewFile();
-            FileOutputStream fo = new FileOutputStream(f);
-            fo.write(bytes.toByteArray());
-        } catch (IOException e) {
-            e.printStackTrace();
+            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+            icon.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+            File f = new File(Environment.getExternalStorageDirectory() + File.separator + "HangmanTale" + File.separator + "HangmanTale.jpg");
+            try {
+                f.createNewFile();
+                FileOutputStream fo = new FileOutputStream(f);
+                fo.write(bytes.toByteArray());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            share.putExtra(Intent.EXTRA_STREAM, Uri.parse("file:///sdcard/HangmanTale/HangmanTale.jpg"));
+            startActivity(Intent.createChooser(share, getResources().getText(R.string.share_title)));
         }
-        share.putExtra(Intent.EXTRA_STREAM, Uri.parse("file:///sdcard/HangmanTale/HangmanTale.jpg"));
-        startActivity(Intent.createChooser(share, getResources().getText(R.string.share_title)));
-
     }
 
     private int getSoundStatus() {
@@ -1307,7 +1349,7 @@ public class GameMainActivityFragment extends Fragment {
             }
         });
 
-        // Button for more chance hint option
+        // Button for cancel the dialog
         cancelHintDialog.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 switch (motionEvent.getAction()) {
@@ -1414,6 +1456,95 @@ public class GameMainActivityFragment extends Fragment {
         }
         return false;
 
+    }
+
+    private void startMap(String location) {
+        Uri mapUri = Uri.parse("geo:0,0?q=" + location);
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(mapUri);
+
+        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+            startActivity(intent);
+        } else {
+            Toast.makeText(getContext(), getResources().getString(R.string.no_app_to_show), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void startGoogleBrowser(String url, String wordToSearch) {
+        Uri webPage = Uri.parse(url + wordToSearch);
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(webPage);
+
+        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+            startActivity(intent);
+        } else {
+            Toast.makeText(getContext(), getResources().getString(R.string.no_app_to_show), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void openHangyDialog() {
+        final Dialog hangyDialog = new Dialog(getContext(), android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+
+        Drawable d = new ColorDrawable(Color.BLACK);
+        d.setAlpha(180);
+        hangyDialog.getWindow().setBackgroundDrawable(d);
+
+        hangyDialog.setContentView(R.layout.hangy_dialog);
+        hangyDialog.setCanceledOnTouchOutside(false);
+        hangyDialog.setCancelable(false);
+
+        //Main dialog layout
+        LinearLayout hangyDialogLayout = (LinearLayout) hangyDialog.findViewById(R.id.hangyDialogLayout);
+        LinearLayout.LayoutParams dialogParams = new LinearLayout.LayoutParams(
+                (int)(widthPx * PERC_WIDTH_DIALOG),
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+        hangyDialogLayout.setLayoutParams(dialogParams);
+
+        TextView hangyText = (TextView) hangyDialog.findViewById(R.id.hangyText);
+        hangyText.setText(getResources().getString(R.string.hangy_dialog_text));
+
+        final ImageView hangyOkButton = (ImageView) hangyDialog.findViewById(R.id.hangyOkButton);
+
+        // Button for close the dialog
+        hangyOkButton.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        hangyOkButton.setVisibility(View.INVISIBLE);
+                        break;
+                    case MotionEvent.ACTION_UP:
+
+                        if(getSoundStatus() == SOUND_ON_FLAG) {
+                            buttonSound.start();
+                        }
+
+                        hangyDialog.cancel();
+
+                        break;
+                    default:
+                        break;
+                }
+                return true;
+            }
+        });
+
+        hangyDialog.show();
+    }
+
+    private boolean isShowHangyDialog() {
+        SharedPreferences.Editor editor = getContext().getSharedPreferences(HANGY_DIALOG_PREFS, Context.MODE_PRIVATE).edit();
+        SharedPreferences prefs = getContext().getSharedPreferences(HANGY_DIALOG_PREFS, Context.MODE_PRIVATE);
+        boolean restoredPref = prefs.getBoolean(HANGY_DIALOG_KEY, true);
+
+        if(restoredPref) {
+            editor.putBoolean(HANGY_DIALOG_KEY, false);
+            editor.commit();
+        }
+
+        return restoredPref;
     }
 
     @Override

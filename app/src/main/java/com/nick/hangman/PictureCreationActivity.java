@@ -435,13 +435,10 @@ public class PictureCreationActivity extends AppCompatActivity {
             }
         }
 
-        catch (FileNotFoundException e) {
-            e.printStackTrace();
+        catch (Exception e) {
+            Toast.makeText(this, getResources().getString(R.string.share_no_permission_storage), Toast.LENGTH_LONG).show();
         }
 
-        catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public static Bitmap handleBitmapBigger(Context context, Uri selectedImage, final int orientation, long totalMemory)

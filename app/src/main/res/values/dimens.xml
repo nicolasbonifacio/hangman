@@ -76,7 +76,7 @@
 
     <dimen name="win_game_dialog_text_size">22sp</dimen>
     <dimen name="loose_game_dialog_text_size">22sp</dimen>
-    <dimen name="word_dialog_text_size">16sp</dimen>
+    <dimen name="word_dialog_text_size">18sp</dimen>
 
 
 </resources>

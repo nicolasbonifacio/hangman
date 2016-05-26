@@ -305,4 +305,89 @@ public class Utils {
         return iconCode;
     }
 
+    public String getURL(int categoryId) {
+
+        String url;
+
+        switch (categoryId) {
+            case 1: url = "http://www.google.com/images?q="; break;
+            case 4: url = "http://www.google.ca/search?q=food+"; break;
+            case 5: url = "http://www.google.com/images?q=clothing+"; break;
+            case 6: url = "http://www.google.com/images?q=color+"; break;
+            case 7: url = "http://www.google.ca/search?q=definition+"; break;
+            case 8: url = "http://www.google.ca/search?q=fruit+"; break;
+            case 9: url = "http://www.google.com/images?q=furniture+"; break;
+            case 10: url = "http://www.google.ca/search?q=definition+"; break;
+            case 11: url = "http://www.google.com/images?q=kitchen+"; break;
+            case 12: url = "http://www.google.ca/search?q=language+"; break;
+            case 13: url = "http://www.google.com/images?q="; break;
+            case 14: url = "http://www.google.ca/search?q=definition+"; break;
+            case 15: url = "http://www.google.ca/search?q=definition+"; break;
+            case 16: url = "http://www.google.ca/search?q=definition+"; break;
+            case 17: url = "http://www.google.com/images?q="; break;
+            default: url = "http://www.google.ca/search?q=definition+"; break;
+        }
+
+        return url;
+    }
+
+    public int getDefinitionIconTextId(int categoryId) {
+
+        int definitionIconTextId;
+
+        switch (categoryId) {
+            case 1: definitionIconTextId = R.string.dialog_definition_icon_text_animals; break;
+            case 2: definitionIconTextId = R.string.dialog_definition_icon_text_countries; break;
+            case 3: definitionIconTextId = R.string.dialog_definition_icon_text_country_capitals; break;
+            case 4: definitionIconTextId = R.string.dialog_definition_icon_text_foods; break;
+            case 5: definitionIconTextId = R.string.dialog_definition_icon_text_clothes_parts; break;
+            case 6: definitionIconTextId = R.string.dialog_definition_icon_text_colors; break;
+            case 7: definitionIconTextId = R.string.dialog_definition_icon_text_compound_words; break;
+            case 8: definitionIconTextId = R.string.dialog_definition_icon_text_fruits; break;
+            case 9: definitionIconTextId = R.string.dialog_definition_icon_text_furniture; break;
+            case 10: definitionIconTextId = R.string.dialog_definition_icon_text_irregular_verbs; break;
+            case 11: definitionIconTextId = R.string.dialog_definition_icon_text_kitchen_parts; break;
+            case 12: definitionIconTextId = R.string.dialog_definition_icon_text_languages; break;
+            case 13: definitionIconTextId = R.string.dialog_definition_icon_text_musical_instruments; break;
+            case 14: definitionIconTextId = R.string.dialog_definition_icon_text_phrasal_verbs; break;
+            case 15: definitionIconTextId = R.string.dialog_definition_icon_text_professions; break;
+            case 16: definitionIconTextId = R.string.dialog_definition_icon_text_regular_verbs; break;
+            case 17: definitionIconTextId = R.string.dialog_definition_icon_text_sports; break;
+            case 18: definitionIconTextId = R.string.dialog_definition_icon_text_us_canada_states_capitals; break;
+            default: definitionIconTextId = R.string.dialog_definition_icon_text_default; break;
+        }
+
+        return definitionIconTextId;
+
+    }
+
+    public int getDefinitionIconImageId(int categoryId) {
+
+        int definitionIconImageId;
+
+        switch (categoryId) {
+            case 1: definitionIconImageId = R.drawable.browser; break;
+            case 2: definitionIconImageId = R.drawable.map; break;
+            case 3: definitionIconImageId = R.drawable.map; break;
+            case 4: definitionIconImageId = R.drawable.browser; break;
+            case 5: definitionIconImageId = R.drawable.browser; break;
+            case 6: definitionIconImageId = R.drawable.browser; break;
+            case 7: definitionIconImageId = R.drawable.browser; break;
+            case 8: definitionIconImageId = R.drawable.browser; break;
+            case 9: definitionIconImageId = R.drawable.browser; break;
+            case 10: definitionIconImageId = R.drawable.browser; break;
+            case 11: definitionIconImageId = R.drawable.browser; break;
+            case 12: definitionIconImageId = R.drawable.browser; break;
+            case 13: definitionIconImageId = R.drawable.browser; break;
+            case 14: definitionIconImageId = R.drawable.browser; break;
+            case 15: definitionIconImageId = R.drawable.browser; break;
+            case 16: definitionIconImageId = R.drawable.browser; break;
+            case 17: definitionIconImageId = R.drawable.browser; break;
+            case 18: definitionIconImageId = R.drawable.map; break;
+            default: definitionIconImageId = R.drawable.browser; break;
+        }
+
+        return definitionIconImageId;
+
+    }
 }

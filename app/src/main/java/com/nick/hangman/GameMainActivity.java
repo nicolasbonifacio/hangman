@@ -15,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -65,7 +66,9 @@ public class GameMainActivity extends AppCompatActivity {
         return true;
     }
 
-    public void getScreen() {
+    public boolean getScreen() {
+
+        boolean hasStoragePermission = true;
 
         File folder = new File(Environment.getExternalStorageDirectory() +
                 File.separator + "HangmanTale");
@@ -86,11 +89,12 @@ public class GameMainActivity extends AppCompatActivity {
             b.compress(Bitmap.CompressFormat.JPEG, 100, fos);
             fos.flush();
             fos.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (Exception e) {
-            e.printStackTrace();
+            Toast.makeText(this, getResources().getString(R.string.share_no_permission_storage), Toast.LENGTH_LONG).show();
+            hasStoragePermission = false;
         }
+
+        return hasStoragePermission;
     }
 
     @Override
@@ -105,35 +109,37 @@ public class GameMainActivity extends AppCompatActivity {
 
             content = findViewById(R.id.gallowsLayout);
 
-            getScreen();
+            boolean hasStoragePermission = getScreen();
 
+            if(hasStoragePermission) {
 
-            File image = new File(Environment.getExternalStorageDirectory() + File.separator + "HangmanTale" + File.separator, "HangmanTale_temp.jpg");
-            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-            Bitmap mBitmap = BitmapFactory.decodeFile(image.getAbsolutePath(), bmOptions);
+                File image = new File(Environment.getExternalStorageDirectory() + File.separator + "HangmanTale" + File.separator, "HangmanTale_temp.jpg");
+                BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+                Bitmap mBitmap = BitmapFactory.decodeFile(image.getAbsolutePath(), bmOptions);
 
-            Bitmap icon = mBitmap;
-            Intent share = new Intent(Intent.ACTION_SEND);
+                Bitmap icon = mBitmap;
+                Intent share = new Intent(Intent.ACTION_SEND);
 
-            //share.setType("image/jpeg");
+                //share.setType("image/jpeg");
 
-            share.setType("image/jpeg");
-            //share.setType("*/*");
-            share.putExtra(Intent.EXTRA_TEXT, getResources().getString(R.string.share_text));
-            share.putExtra(android.content.Intent.EXTRA_SUBJECT, getResources().getString(R.string.share_email_title));
+                share.setType("image/jpeg");
+                //share.setType("*/*");
+                share.putExtra(Intent.EXTRA_TEXT, getResources().getString(R.string.share_text));
+                share.putExtra(android.content.Intent.EXTRA_SUBJECT, getResources().getString(R.string.share_email_title));
 
-            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-            icon.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-            File f = new File(Environment.getExternalStorageDirectory() + File.separator + "HangmanTale" + File.separator + "HangmanTale.jpg");
-            try {
-                f.createNewFile();
-                FileOutputStream fo = new FileOutputStream(f);
-                fo.write(bytes.toByteArray());
-            } catch (IOException e) {
-                e.printStackTrace();
+                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                icon.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+                File f = new File(Environment.getExternalStorageDirectory() + File.separator + "HangmanTale" + File.separator + "HangmanTale.jpg");
+                try {
+                    f.createNewFile();
+                    FileOutputStream fo = new FileOutputStream(f);
+                    fo.write(bytes.toByteArray());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                share.putExtra(Intent.EXTRA_STREAM, Uri.parse("file:///sdcard/HangmanTale/HangmanTale.jpg"));
+                startActivity(Intent.createChooser(share, getResources().getText(R.string.share_title)));
             }
-            share.putExtra(Intent.EXTRA_STREAM, Uri.parse("file:///sdcard/HangmanTale/HangmanTale.jpg"));
-            startActivity(Intent.createChooser(share, getResources().getText(R.string.share_title)));
         }
         return super.onOptionsItemSelected(item);
     }

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:gravity="center">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/hangyDialogLayout"
+        android:gravity="center">
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="69dp"
+            android:src="@drawable/hangy_looking_forward" />
+
+        <Space
+            android:layout_width="4dp"
+            android:layout_height="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/hangyText"
+            android:gravity="center"
+            android:textSize="18sp" />
+
+        <Space
+            android:layout_width="4dp"
+            android:layout_height="16dp" />
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:id="@+id/hangyOkButton"
+            android:src="@drawable/ok_button" />
+
+    </LinearLayout>
+
+</LinearLayout>

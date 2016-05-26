@@ -53,16 +53,43 @@
     <string name="share_text">Play Hangman Tale (link)</string>
     <string name="share_email_title">Hangman Tale</string>
 
+    <string name="share_no_permission_storage">No permission was granted to this app to access storage.</string>
+
     <!-- Game screen dialog -->
     <string name="continue_dialog_button">Continue</string>
     <string name="win_game_dialog_text">You got it!!!</string>
     <string name="loose_game_dialog_text">Sorry, not this time</string>
+    <string name="no_app_to_show">No app available to show content</string>
+    <!-- Icons text -->
+    <string name="dialog_definition_icon_text_animals">What animal is that?</string>
+    <string name="dialog_definition_icon_text_countries">Where is this country?</string>
+    <string name="dialog_definition_icon_text_country_capitals">Where is this capital?</string>
+    <string name="dialog_definition_icon_text_foods">What food is that?</string>
+    <string name="dialog_definition_icon_text_clothes_parts">What kind of clothing is this?</string>
+    <string name="dialog_definition_icon_text_colors">What color is that?</string>
+    <string name="dialog_definition_icon_text_compound_words">What does that mean?</string>
+    <string name="dialog_definition_icon_text_fruits">What fruit is that?</string>
+    <string name="dialog_definition_icon_text_furniture">What furniture is that?</string>
+    <string name="dialog_definition_icon_text_irregular_verbs">What does that mean?</string>
+    <string name="dialog_definition_icon_text_kitchen_parts">What is that?</string>
+    <string name="dialog_definition_icon_text_languages">What about that language?</string>
+    <string name="dialog_definition_icon_text_musical_instruments">What instrument is that?</string>
+    <string name="dialog_definition_icon_text_phrasal_verbs">What does that mean?</string>
+    <string name="dialog_definition_icon_text_professions">What does that profession?</string>
+    <string name="dialog_definition_icon_text_regular_verbs">What does that mean?</string>
+    <string name="dialog_definition_icon_text_sports">What sport is that?</string>
+    <string name="dialog_definition_icon_text_us_canada_states_capitals">Where is this place?</string>
+    <string name="dialog_definition_icon_text_default">What is that?</string>
+
 
     <!-- Tale screen -->
-    <string name="category_unlocked">Complete all previous categories to release</string>
+    <string name="category_unlocked">Complete previous category to unlock</string>
 
     <!-- Hint screen -->
     <string name="choose_a_hint_text">Choose a hint</string>
+
+    <!-- Hangy screen -->
+    <string name="hangy_dialog_text">Hello, my name is Hanger! But don\'t worry, I\'m here to help you. If you need any hint, just click me. Good luck!</string>
 
     <!-- Notifications -->
     <string name="notification_title_text">Hangman Tale</string>
