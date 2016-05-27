@@ -948,7 +948,7 @@ public class GameMainActivityFragment extends Fragment {
                 return true;
             }
         });
-        
+
         disableKeypad();
 
         dialog.setCanceledOnTouchOutside(false);
