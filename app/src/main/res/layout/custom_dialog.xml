@@ -51,10 +51,24 @@
             android:textSize="16sp"
             android:paddingTop="16dp"/>
 
-        <ImageView
-            android:layout_width="72dp"
-            android:layout_height="72dp"
-            android:id="@+id/dialogDefinitionIconImage"/>
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center">
+
+            <ImageView
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:id="@+id/dialogDefinitionIconImage"
+                android:layout_gravity="center"/>
+
+            <ImageView
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:id="@+id/dialogDefinitionIconImagePressed"
+                android:layout_gravity="center"/>
+
+        </FrameLayout>
 
         <FrameLayout
             android:layout_width="wrap_content"

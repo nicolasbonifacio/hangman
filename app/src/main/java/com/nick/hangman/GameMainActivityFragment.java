@@ -914,6 +914,10 @@ public class GameMainActivityFragment extends Fragment {
         TextView dialogDefinitionIconText = (TextView) dialog.findViewById(R.id.dialogDefinitionIconText);
         dialogDefinitionIconText.setText(getResources().getString(mUtils.getDefinitionIconTextId(mWord.getCategoryId())));
 
+        final ImageView definitionButtonPressed = ((ImageView) dialog.findViewById(R.id.dialogDefinitionIconImagePressed));
+        definitionButtonPressed.setImageDrawable(getResources().getDrawable(mUtils.getDefinitionIconImageId(mWord.getCategoryId())));
+        definitionButtonPressed.setVisibility(View.INVISIBLE);
+
         final ImageView definitionButton = (ImageView) dialog.findViewById(R.id.dialogDefinitionIconImage);
         definitionButton.setImageDrawable(getResources().getDrawable(mUtils.getDefinitionIconImageId(mWord.getCategoryId())));
 
@@ -921,9 +925,12 @@ public class GameMainActivityFragment extends Fragment {
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 switch (motionEvent.getAction()) {
                     case MotionEvent.ACTION_DOWN:
+                        definitionButton.setVisibility(View.INVISIBLE);
+                        definitionButtonPressed.setVisibility(View.VISIBLE);
                         break;
                     case MotionEvent.ACTION_UP:
-
+                        definitionButton.setVisibility(View.VISIBLE);
+                        definitionButtonPressed.setVisibility(View.INVISIBLE);
                         if(getSoundStatus() == SOUND_ON_FLAG) {
                             buttonSound.start();
                         }
@@ -941,12 +948,7 @@ public class GameMainActivityFragment extends Fragment {
                 return true;
             }
         });
-
-
-
-
-
-
+        
         disableKeypad();
 
         dialog.setCanceledOnTouchOutside(false);
