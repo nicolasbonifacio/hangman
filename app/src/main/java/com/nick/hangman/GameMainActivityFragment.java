@@ -117,7 +117,7 @@ public class GameMainActivityFragment extends Fragment {
     public static final String INTERSTITIAL_PREFS = "interstitialPrefs";
     public static final String INTERSTITIAL_KEY = "interstitialKey";
     private static final int INTERSTITIAL_FIRST_PLAY_FLAG = 0;
-    private static final int INTERSTITIAL_SHOW_FLAG = 4;
+    private static final int INTERSTITIAL_SHOW_FLAG = 9;
 
     public static final String COINS_PREFS = "coinsPrefs";
     public static final String COINS_KEY = "coinsKey";
