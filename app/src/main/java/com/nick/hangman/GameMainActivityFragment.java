@@ -1115,7 +1115,8 @@ public class GameMainActivityFragment extends Fragment {
             fos.flush();
             fos.close();
         } catch (Exception e) {
-            Toast.makeText(getContext(), getResources().getString(R.string.share_no_permission_storage), Toast.LENGTH_LONG).show();
+            Utils utils = new Utils();
+            utils.showPermissionErrorDialog(getContext());
             hasStoragePermission = false;
         }
 

@@ -1,11 +1,23 @@
 package com.nick.hangman;
 
+import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 /**
  * Created by Nick on 2016-04-26.
  */
 public class Utils {
+
+    public static final float PERC_WIDTH_DIALOG = 0.8f; //80%
 
     public Utils() {
     }
@@ -388,6 +400,56 @@ public class Utils {
         }
 
         return definitionIconImageId;
+    }
+
+    public void showPermissionErrorDialog(Context context) {
+
+        int widthPx = context.getResources().getDisplayMetrics().widthPixels;
+
+        final Dialog permissionErrorDialog = new Dialog(context, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+
+        Drawable d = new ColorDrawable(Color.BLACK);
+        d.setAlpha(180);
+        permissionErrorDialog.getWindow().setBackgroundDrawable(d);
+
+        permissionErrorDialog.setContentView(R.layout.permission_error_dialog);
+
+        LinearLayout permissionErrorDialogLayout = (LinearLayout) permissionErrorDialog.findViewById(R.id.permissionErrorDialogLayout);
+        LinearLayout.LayoutParams dialogParams = new LinearLayout.LayoutParams(
+                (int)(widthPx * PERC_WIDTH_DIALOG),
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+        permissionErrorDialogLayout.setLayoutParams(dialogParams);
+
+        TextView permissionErrorText = (TextView) permissionErrorDialog.findViewById(R.id.permissionErrorText);
+        permissionErrorText.setText(context.getResources().getString(R.string.share_no_permission_storage));
+
+        permissionErrorDialog.setCanceledOnTouchOutside(false);
+        permissionErrorDialog.setCancelable(false);
+
+        final ImageView permissionErrorOkButton = (ImageView) permissionErrorDialog.findViewById(R.id.permissionErrorOkButton);
+
+        // Button for close the dialog
+        permissionErrorOkButton.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        permissionErrorOkButton.setVisibility(View.INVISIBLE);
+                        break;
+                    case MotionEvent.ACTION_UP:
+
+                        permissionErrorDialog.cancel();
+
+                        break;
+                    default:
+                        break;
+                }
+                return true;
+            }
+        });
+
+        permissionErrorDialog.show();
 
     }
+
 }

@@ -224,6 +224,9 @@ public class PictureCreationActivity extends AppCompatActivity {
                         }
                     }catch(IOException e) {
                         e.printStackTrace();
+                    }catch (SecurityException s) {
+                        Utils utils = new Utils();
+                        utils.showPermissionErrorDialog(this);
                     }
 
                     setImageToView();
