@@ -50,7 +50,7 @@
     <string name="win_game">You win!!!</string>
     <string name="end_game">Game Finished</string>
     <string name="share_title">Share Image</string>
-    <string name="share_text">Play Hangman Tale (link)</string>
+    <string name="share_text">Play Hangman Tale https://play.google.com/store/apps/details?id=com.nick.hangman</string>
     <string name="share_email_title">Hangman Tale</string>
 
     <string name="share_no_permission_storage">No permission was granted to this app to access storage.</string>
