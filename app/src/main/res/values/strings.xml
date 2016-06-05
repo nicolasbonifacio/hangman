@@ -53,7 +53,7 @@
     <string name="share_text">Play Hangman Tale https://play.google.com/store/apps/details?id=com.nick.hangman</string>
     <string name="share_email_title">Hangman Tale</string>
 
-    <string name="share_no_permission_storage">No permission was granted to this app to access storage.</string>
+    <string name="share_no_permission_storage">You have not given \'Storage\' permission to perform this activity yet. To do that, just click on \'Settings\', then on \'General\', and after that on \'Apps\'. In the new screen that opens, click on \'HangmanTale\', and then on the item \'Permissions\'. To finish, just enable the option \'Storage\', and it\'s done!</string>
 
     <!-- Game screen dialog -->
     <string name="continue_dialog_button">Continue</string>

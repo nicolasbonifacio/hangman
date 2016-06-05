@@ -439,7 +439,8 @@ public class PictureCreationActivity extends AppCompatActivity {
         }
 
         catch (Exception e) {
-            Toast.makeText(this, getResources().getString(R.string.share_no_permission_storage), Toast.LENGTH_LONG).show();
+            Utils utils = new Utils();
+            utils.showPermissionErrorDialog(this);
         }
 
     }
