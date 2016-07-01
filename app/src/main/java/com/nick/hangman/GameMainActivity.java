@@ -1,8 +1,10 @@
 package com.nick.hangman;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
@@ -10,6 +12,8 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -37,6 +41,8 @@ public class GameMainActivity extends AppCompatActivity {
     public static final String SOUND_ON_OFF_PREFS = "soundOnOffPrefs";
     private static final int SOUND_ON_OFF_NOT_DEFINED_FLAG = -1;
     private static final int SOUND_ON_FLAG = 1;
+
+    private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,12 +72,10 @@ public class GameMainActivity extends AppCompatActivity {
         return true;
     }
 
-    public boolean getScreen() {
-
-        boolean hasStoragePermission = true;
+    public void getScreen() {
 
         File folder = new File(Environment.getExternalStorageDirectory() +
-                File.separator + "HangmanTale");
+                File.separator + "JogoDaForca");
 
         if (!folder.exists()) {
             folder.mkdir();
@@ -81,8 +85,8 @@ public class GameMainActivity extends AppCompatActivity {
         View v = view.getRootView();
         v.setDrawingCacheEnabled(true);
         Bitmap b = v.getDrawingCache();
-        mPath = Environment.getExternalStorageDirectory().toString() + File.separator + "HangmanTale" + File.separator;
-        File myPath = new File(mPath, "HangmanTale_temp.jpg");
+        mPath = Environment.getExternalStorageDirectory().toString() + File.separator + "JogoDaForca" + File.separator;
+        File myPath = new File(mPath, "Jogo_da_forca_temp.jpg");
         FileOutputStream fos = null;
         try {
             fos = new FileOutputStream(myPath);
@@ -90,12 +94,8 @@ public class GameMainActivity extends AppCompatActivity {
             fos.flush();
             fos.close();
         } catch (Exception e) {
-            Utils utils = new Utils();
-            utils.showPermissionErrorDialog(this);
-            hasStoragePermission = false;
+            e.printStackTrace();
         }
-
-        return hasStoragePermission;
     }
 
     @Override
@@ -110,39 +110,76 @@ public class GameMainActivity extends AppCompatActivity {
 
             content = findViewById(R.id.gallowsLayout);
 
-            boolean hasStoragePermission = getScreen();
+            int permissionWriteStorage = ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
-            if(hasStoragePermission) {
+            if(permissionWriteStorage == PackageManager.PERMISSION_GRANTED) {
 
-                File image = new File(Environment.getExternalStorageDirectory() + File.separator + "HangmanTale" + File.separator, "HangmanTale_temp.jpg");
-                BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-                Bitmap mBitmap = BitmapFactory.decodeFile(image.getAbsolutePath(), bmOptions);
+                getScreen();
+                processScreen();
 
-                Bitmap icon = mBitmap;
-                Intent share = new Intent(Intent.ACTION_SEND);
+            }else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
 
-                //share.setType("image/jpeg");
-
-                share.setType("image/jpeg");
-                //share.setType("*/*");
-                share.putExtra(Intent.EXTRA_TEXT, getResources().getString(R.string.share_text));
-                share.putExtra(android.content.Intent.EXTRA_SUBJECT, getResources().getString(R.string.share_email_title));
-
-                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                icon.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-                File f = new File(Environment.getExternalStorageDirectory() + File.separator + "HangmanTale" + File.separator + "HangmanTale.jpg");
-                try {
-                    f.createNewFile();
-                    FileOutputStream fo = new FileOutputStream(f);
-                    fo.write(bytes.toByteArray());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                share.putExtra(Intent.EXTRA_STREAM, Uri.parse("file:///sdcard/HangmanTale/HangmanTale.jpg"));
-                startActivity(Intent.createChooser(share, getResources().getText(R.string.share_title)));
             }
+
+
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void processScreen() {
+
+        File image = new File(Environment.getExternalStorageDirectory() + File.separator + "JogoDaForca" + File.separator, "Jogo_da_forca_temp.jpg");
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        Bitmap mBitmap = BitmapFactory.decodeFile(image.getAbsolutePath(), bmOptions);
+
+        Bitmap icon = mBitmap;
+        Intent share = new Intent(Intent.ACTION_SEND);
+
+        //share.setType("image/jpeg");
+
+        share.setType("image/jpeg");
+        //share.setType("*/*");
+        share.putExtra(Intent.EXTRA_TEXT, getResources().getString(R.string.share_text));
+        share.putExtra(android.content.Intent.EXTRA_SUBJECT, getResources().getString(R.string.share_email_title));
+
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        icon.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        File f = new File(Environment.getExternalStorageDirectory() + File.separator + "JogoDaForca" + File.separator + "JogoDaForca.jpg");
+        try {
+            f.createNewFile();
+            FileOutputStream fo = new FileOutputStream(f);
+            fo.write(bytes.toByteArray());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        share.putExtra(Intent.EXTRA_STREAM, Uri.parse("file:///sdcard/JogoDaForca/JogoDaForca.jpg"));
+        startActivity(Intent.createChooser(share, getResources().getText(R.string.share_title)));
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE: {
+
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    getScreen();
+                    processScreen();
+
+                } else {
+                    Utils utils = new Utils();
+                    utils.showPermissionErrorDialog(this);
+                }
+            }
+
+        }
     }
 
     @Override

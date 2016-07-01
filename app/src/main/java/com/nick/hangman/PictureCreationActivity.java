@@ -4,11 +4,13 @@ import com.nick.hangman.Objects.ImageTable;
 import com.nick.hangman.Views.DragRectView;
 import com.nick.hangman.data.HangmanContract;
 
+import android.Manifest;
 import android.app.ActivityManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -20,6 +22,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -47,6 +51,8 @@ public class PictureCreationActivity extends AppCompatActivity {
     public static final String SOUND_ON_OFF_PREFS = "soundOnOffPrefs";
     private static final int SOUND_ON_OFF_NOT_DEFINED_FLAG = -1;
     private static final int SOUND_ON_FLAG = 1;
+
+    private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1;
 
     private static final long MIN_MEMORY = 536870912;
 
@@ -146,7 +152,19 @@ public class PictureCreationActivity extends AppCompatActivity {
                             buttonSound.start();
                         }
                         if(mRight > 0 && mBottom > 0) {
-                            cropImage(mLeft, mTop, mRight, mBottom);
+                            int permissionWriteStorage = ContextCompat.checkSelfPermission(getBaseContext(),
+                                    Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+                            if(permissionWriteStorage == PackageManager.PERMISSION_GRANTED) {
+
+                                cropImage(mLeft, mTop, mRight, mBottom);
+
+                            }else {
+                                ActivityCompat.requestPermissions(PictureCreationActivity.this,
+                                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                        MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+                            }
+
                         }else {
                             Toast.makeText(getBaseContext(), getResources().getText(R.string.area_not_selected), Toast.LENGTH_SHORT).show();
                         }
@@ -274,8 +292,6 @@ public class PictureCreationActivity extends AppCompatActivity {
                     mTop = rect.top;
                     mRight = rect.right;
                     mBottom = rect.bottom;
-
-                    //cropImage(rect.left, rect.top, rect.right, rect.bottom);
 
                 }
             });
@@ -549,5 +565,26 @@ public class PictureCreationActivity extends AppCompatActivity {
         }
         return restoredPref;
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE: {
+
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    cropImage(mLeft, mTop, mRight, mBottom);
+
+                } else {
+                    Utils utils = new Utils();
+                    utils.showPermissionErrorDialog(this);
+                }
+            }
+
+        }
+    }
+
 
 }
