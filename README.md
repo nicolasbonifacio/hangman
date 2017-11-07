@@ -1,1 +1,2 @@
 # hangman
+Android hangman game
